@@ -125,7 +125,7 @@
 <!-- Top Navigation Bar - Contextual for Transactional (Minimized) -->
 <header class="fixed top-0 w-full z-50 bg-transparent py-md px-lg">
 <div class="max-w-7xl mx-auto flex items-center justify-center md:justify-start gap-xs">
-<img src="https://lh3.googleusercontent.com/aida/AP1WRLvui6t1-xTAam6Nvw0Fa_mDTtJOsK1LF1v3aTI1cf0F1roCp9O_PaATbfMeQ1yemqPKv5aaXQ2HZyigRbPYX0qClyT4v-Rrpj1lTeRodQ-va-8Jf5LyMwjn_Ss1YqhH2Oq-JxBoXr-OZ_hYHY2S4UOS1JoiDOoboQ1tWzeDsFQ8XjaglTSQhcq7zX-jqsjWjIm2UjVwg9detGJvrL-lGDf1m_9HdoYBFCE0SikSt-ATUriVe438Fq9LJw" alt="Logo" class="w-8 h-8 object-contain" />
+<img src="../logo.png" alt="Logo" class="w-8 h-8 object-contain" />
 <span class="text-headline-md font-headline-md font-bold text-primary">KosanLaundry</span>
 </div>
 </header>
