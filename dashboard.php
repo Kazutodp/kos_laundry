@@ -3,11 +3,11 @@
 session_start();
 
 // Hubungkan ke database
-require_once '../koneksi.php';
+require_once 'koneksi.php';
 
 // Proteksi halaman: periksa apakah pengguna sudah login
 if (!isset($_SESSION['user_id'])) {
-    header("Location: login.html?error=" . urlencode("Silakan masuk terlebih dahulu untuk mengakses dashboard."));
+    header("Location: user/login.html?error=" . urlencode("Silakan masuk terlebih dahulu untuk mengakses dashboard."));
     exit();
 }
 
@@ -18,7 +18,7 @@ $result = mysqli_query($koneksi, $query);
 if (mysqli_num_rows($result) === 0) {
     // Jika user id tidak ada di DB, hancurkan sesi
     session_destroy();
-    header("Location: login.html?error=" . urlencode("Sesi Anda tidak valid."));
+    header("Location: user/login.html?error=" . urlencode("Sesi Anda tidak valid."));
     exit();
 }
 
@@ -179,7 +179,7 @@ $login_via_google = !empty($user['google_id']);
         </nav>
 
         <div class="pt-md border-t border-outline-variant">
-            <a href="logout.php" class="flex items-center gap-sm px-sm py-3 text-error rounded-xl font-label-md text-label-md transition-colors hover:bg-error-container hover:text-on-error-container">
+            <a href="user/logout.php" class="flex items-center gap-sm px-sm py-3 text-error rounded-xl font-label-md text-label-md transition-colors hover:bg-error-container hover:text-on-error-container">
                 <span class="material-symbols-outlined">logout</span>
                 Keluar Sesi
             </a>
@@ -192,7 +192,7 @@ $login_via_google = !empty($user['google_id']);
             <img src="https://lh3.googleusercontent.com/aida/AP1WRLvui6t1-xTAam6Nvw0Fa_mDTtJOsK1LF1v3aTI1cf0F1roCp9O_PaATbfMeQ1yemqPKv5aaXQ2HZyigRbPYX0qClyT4v-Rrpj1lTeRodQ-va-8Jf5LyMwjn_Ss1YqhH2Oq-JxBoXr-OZ_hYHY2S4UOS1JoiDOoboQ1tWzeDsFQ8XjaglTSQhcq7zX-jqsjWjIm2UjVwg9detGJvrL-lGDf1m_9HdoYBFCE0SikSt-ATUriVe438Fq9LJw" alt="Logo" class="w-6 h-6 object-contain" />
             <span class="font-headline text-headline-md text-primary font-bold">KosanLaundry</span>
         </div>
-        <a href="logout.php" class="text-error flex items-center justify-center p-2 rounded-lg hover:bg-error-container hover:text-on-error-container transition-colors">
+        <a href="user/logout.php" class="text-error flex items-center justify-center p-2 rounded-lg hover:bg-error-container hover:text-on-error-container transition-colors">
             <span class="material-symbols-outlined">logout</span>
         </a>
     </header>
@@ -384,7 +384,7 @@ $login_via_google = !empty($user['google_id']);
             // Mengirim token ke backend auth_google.php.
             // Karena auth_google.php mencocokkan email user saat ini dan mengupdate google_id,
             // proses ini akan menautkan akun Google ke akun email manual yang sedang aktif ini.
-            fetch('auth_google.php', {
+            fetch('user/auth_google.php', {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
                 body: JSON.stringify({ id_token: token })
