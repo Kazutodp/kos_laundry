@@ -144,7 +144,7 @@ $admin_nama = htmlspecialchars($_SESSION['admin_nama']);
 <!-- SideNavBar -->
 <aside class="hidden lg:flex flex-col h-screen sticky top-0 p-md space-y-md bg-surface-container-low border-r border-outline-variant w-64 shrink-0">
 <div class="flex items-center gap-xs px-xs py-sm">
-<img src="../logo.png" alt="Logo" class="w-8 h-8 object-contain" />
+<img src="../logo.png?v=2" alt="Logo" class="w-8 h-8 object-contain" />
 <span class="text-headline-sm font-headline-md font-bold text-primary">KosanLaundry</span>
 </div>
 <div class="flex flex-col gap-xs py-md border-b border-outline-variant">

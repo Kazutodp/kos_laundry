@@ -155,7 +155,7 @@ $login_via_google = !empty($user['google_id']);
     <!-- Sidebar (Desktop) -->
     <aside class="hidden md:flex flex-col w-64 bg-surface-container-low border-r border-outline-variant p-md shrink-0">
         <div class="flex items-center gap-xs mb-xl">
-            <img src="logo.png" alt="Logo" class="w-8 h-8 object-contain" />
+            <img src="logo.png?v=2" alt="Logo" class="w-8 h-8 object-contain" />
             <span class="font-headline text-headline-md text-primary font-bold">KosanLaundry</span>
         </div>
         
@@ -189,7 +189,7 @@ $login_via_google = !empty($user['google_id']);
     <!-- Mobile Top Navigation Header -->
     <header class="md:hidden flex items-center justify-between bg-surface-container-low border-b border-outline-variant px-container-margin py-sm">
         <div class="flex items-center gap-xs">
-            <img src="logo.png" alt="Logo" class="w-6 h-6 object-contain" />
+            <img src="logo.png?v=2" alt="Logo" class="w-6 h-6 object-contain" />
             <span class="font-headline text-headline-md text-primary font-bold">KosanLaundry</span>
         </div>
         <a href="user/logout.php" class="text-error flex items-center justify-center p-2 rounded-lg hover:bg-error-container hover:text-on-error-container transition-colors">
@@ -223,7 +223,7 @@ $login_via_google = !empty($user['google_id']);
             <div class="lg:col-span-2 glass-card rounded-3xl p-md flex flex-col md:flex-row items-center gap-md relative overflow-hidden">
                 <!-- Background decoration -->
                 <div class="absolute -right-10 -bottom-10 opacity-5 pointer-events-none">
-                    <img src="logo.png" alt="" class="w-[160px] h-[160px] object-contain" />
+                    <img src="logo.png?v=2" alt="" class="w-[160px] h-[160px] object-contain" />
                 </div>
                 
                 <!-- Profile Avatar -->
