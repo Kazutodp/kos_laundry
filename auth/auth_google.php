@@ -5,7 +5,7 @@ header('Content-Type: application/json');
 session_start();
 
 // Hubungkan ke database
-require_once 'koneksi.php';
+require_once '../koneksi.php';
 
 // Membaca input JSON dari fetch
 $input = json_decode(file_get_contents('php://input'), true);

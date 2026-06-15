@@ -125,7 +125,7 @@
 <!-- Top Navigation Bar - Contextual for Transactional (Minimized) -->
 <header class="fixed top-0 w-full z-50 bg-transparent py-md px-lg">
 <div class="max-w-7xl mx-auto flex items-center justify-center md:justify-start gap-xs">
-<img src="logo.png" alt="Logo" class="w-8 h-8 object-contain" />
+<img src="../logo.png" alt="Logo" class="w-8 h-8 object-contain" />
 <span class="text-headline-md font-headline-md font-bold text-primary">KosanLaundry</span>
 </div>
 </header>

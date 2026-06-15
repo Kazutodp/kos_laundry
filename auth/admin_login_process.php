@@ -3,7 +3,7 @@
 session_start();
 
 // Hubungkan ke database
-require_once 'koneksi.php';
+require_once '../koneksi.php';
 
 // Memastikan request dikirim via POST
 if ($_SERVER['REQUEST_METHOD'] !== 'POST') {
@@ -39,7 +39,7 @@ if (password_verify($password, $admin['password'])) {
     $_SESSION['admin_username'] = $admin['username'];
     $_SESSION['admin_nama'] = $admin['nama'];
     
-    header("Location: admin_dashboard.php");
+    header("Location: ../admin_dashboard.php");
     exit();
 } else {
     header("Location: admin_login.php?error=" . urlencode("Kata sandi salah."));

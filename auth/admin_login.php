@@ -125,7 +125,7 @@
 <!-- Left Side: Visual/Context Area -->
 <section class="hidden lg:flex flex-col justify-between p-xl bg-surface-container-low relative overflow-hidden">
 <div class="relative z-10">
-<img alt="KosanLaundry Logo" class="h-10 w-auto mb-xl" src="logo.png"/>
+<img alt="KosanLaundry Logo" class="h-10 w-auto mb-xl" src="../logo.png"/>
 <h1 class="text-headline-lg font-headline-lg text-primary mb-md leading-tight">Admin Portal Access</h1>
 <p class="text-body-lg text-on-surface-variant max-w-xs">
                     Secure management gateway for KosanLaundry operations and logistics orchestration.
@@ -148,7 +148,7 @@
 <section class="p-xl md:p-24 flex flex-col justify-center bg-surface-container-lowest">
 <div class="mb-xl text-center lg:text-left">
 <!-- Mobile Logo -->
-<img alt="KosanLaundry Logo" class="h-8 w-auto mb-md lg:hidden mx-auto" src="logo.png"/>
+<img alt="KosanLaundry Logo" class="h-8 w-auto mb-md lg:hidden mx-auto" src="../logo.png"/>
 <h2 class="text-headline-md font-headline-md text-on-surface">Masuk Panel Admin</h2>
 <p class="text-label-md text-on-surface-variant mt-xs">Identitas internal diperlukan untuk akses.</p>
 <?php if (isset($_GET['error'])): ?>
