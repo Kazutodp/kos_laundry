@@ -144,7 +144,7 @@ $admin_nama = htmlspecialchars($_SESSION['admin_nama']);
 <!-- SideNavBar -->
 <aside class="hidden lg:flex flex-col h-screen sticky top-0 p-md space-y-md bg-surface-container-low border-r border-outline-variant w-64 shrink-0">
 <div class="flex items-center gap-xs px-xs py-sm">
-<img src="../logo.png" alt="Logo" class="w-8 h-8 object-contain" />
+<img src="https://lh3.googleusercontent.com/aida/AP1WRLvui6t1-xTAam6Nvw0Fa_mDTtJOsK1LF1v3aTI1cf0F1roCp9O_PaATbfMeQ1yemqPKv5aaXQ2HZyigRbPYX0qClyT4v-Rrpj1lTeRodQ-va-8Jf5LyMwjn_Ss1YqhH2Oq-JxBoXr-OZ_hYHY2S4UOS1JoiDOoboQ1tWzeDsFQ8XjaglTSQhcq7zX-jqsjWjIm2UjVwg9detGJvrL-lGDf1m_9HdoYBFCE0SikSt-ATUriVe438Fq9LJw" alt="Logo" class="w-8 h-8 object-contain" />
 <span class="text-headline-sm font-headline-md font-bold text-primary">KosanLaundry</span>
 </div>
 <div class="flex flex-col gap-xs py-md border-b border-outline-variant">
