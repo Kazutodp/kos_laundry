@@ -1,10 +1,10 @@
 <?php
 session_start();
-require_once 'koneksi.php';
+require_once '../koneksi.php';
 
 // Proteksi halaman admin
 if (!isset($_SESSION['admin_id'])) {
-    header("Location: admin_login.php?error=" . urlencode("Silakan masuk terlebih dahulu untuk mengakses panel admin."));
+    header("Location: login.php?error=" . urlencode("Silakan masuk terlebih dahulu untuk mengakses panel admin."));
     exit();
 }
 
@@ -144,7 +144,7 @@ $admin_nama = htmlspecialchars($_SESSION['admin_nama']);
 <!-- SideNavBar -->
 <aside class="hidden lg:flex flex-col h-screen sticky top-0 p-md space-y-md bg-surface-container-low border-r border-outline-variant w-64 shrink-0">
 <div class="flex items-center gap-xs px-xs py-sm">
-<img src="logo.png" alt="Logo" class="w-8 h-8 object-contain" />
+<img src="../logo.png" alt="Logo" class="w-8 h-8 object-contain" />
 <span class="text-headline-sm font-headline-md font-bold text-primary">KosanLaundry</span>
 </div>
 <div class="flex flex-col gap-xs py-md border-b border-outline-variant">
@@ -180,7 +180,7 @@ $admin_nama = htmlspecialchars($_SESSION['admin_nama']);
 <span class="material-symbols-outlined">help</span>
 <span class="text-label-md font-label-md">Help</span>
 </a>
-<a class="flex items-center gap-sm px-md py-sm text-on-surface-variant hover:bg-surface-container-high rounded-lg transition-all" href="logout_admin.php">
+<a class="flex items-center gap-sm px-md py-sm text-on-surface-variant hover:bg-surface-container-high rounded-lg transition-all" href="logout.php">
 <span class="material-symbols-outlined text-error">logout</span>
 <span class="text-label-md font-label-md text-error">Logout</span>
 </a>

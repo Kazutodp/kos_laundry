@@ -3,11 +3,11 @@
 session_start();
 
 // Hubungkan ke database
-require_once 'koneksi.php';
+require_once '../koneksi.php';
 
 // Proteksi halaman: periksa apakah pengguna sudah login
 if (!isset($_SESSION['user_id'])) {
-    header("Location: auth/login.html?error=" . urlencode("Silakan masuk terlebih dahulu untuk mengakses dashboard."));
+    header("Location: login.html?error=" . urlencode("Silakan masuk terlebih dahulu untuk mengakses dashboard."));
     exit();
 }
 
@@ -18,7 +18,7 @@ $result = mysqli_query($koneksi, $query);
 if (mysqli_num_rows($result) === 0) {
     // Jika user id tidak ada di DB, hancurkan sesi
     session_destroy();
-    header("Location: auth/login.html?error=" . urlencode("Sesi Anda tidak valid."));
+    header("Location: login.html?error=" . urlencode("Sesi Anda tidak valid."));
     exit();
 }
 
@@ -155,7 +155,7 @@ $login_via_google = !empty($user['google_id']);
     <!-- Sidebar (Desktop) -->
     <aside class="hidden md:flex flex-col w-64 bg-surface-container-low border-r border-outline-variant p-md shrink-0">
         <div class="flex items-center gap-xs mb-xl">
-            <img src="logo.png" alt="Logo" class="w-8 h-8 object-contain" />
+            <img src="../logo.png" alt="Logo" class="w-8 h-8 object-contain" />
             <span class="font-headline text-headline-md text-primary font-bold">KosanLaundry</span>
         </div>
         
@@ -179,7 +179,7 @@ $login_via_google = !empty($user['google_id']);
         </nav>
 
         <div class="pt-md border-t border-outline-variant">
-            <a href="auth/logout.php" class="flex items-center gap-sm px-sm py-3 text-error rounded-xl font-label-md text-label-md transition-colors hover:bg-error-container hover:text-on-error-container">
+            <a href="logout.php" class="flex items-center gap-sm px-sm py-3 text-error rounded-xl font-label-md text-label-md transition-colors hover:bg-error-container hover:text-on-error-container">
                 <span class="material-symbols-outlined">logout</span>
                 Keluar Sesi
             </a>
@@ -189,10 +189,10 @@ $login_via_google = !empty($user['google_id']);
     <!-- Mobile Top Navigation Header -->
     <header class="md:hidden flex items-center justify-between bg-surface-container-low border-b border-outline-variant px-container-margin py-sm">
         <div class="flex items-center gap-xs">
-            <img src="logo.png" alt="Logo" class="w-6 h-6 object-contain" />
+            <img src="../logo.png" alt="Logo" class="w-6 h-6 object-contain" />
             <span class="font-headline text-headline-md text-primary font-bold">KosanLaundry</span>
         </div>
-        <a href="auth/logout.php" class="text-error flex items-center justify-center p-2 rounded-lg hover:bg-error-container hover:text-on-error-container transition-colors">
+        <a href="logout.php" class="text-error flex items-center justify-center p-2 rounded-lg hover:bg-error-container hover:text-on-error-container transition-colors">
             <span class="material-symbols-outlined">logout</span>
         </a>
     </header>
@@ -223,7 +223,7 @@ $login_via_google = !empty($user['google_id']);
             <div class="lg:col-span-2 glass-card rounded-3xl p-md flex flex-col md:flex-row items-center gap-md relative overflow-hidden">
                 <!-- Background decoration -->
                 <div class="absolute -right-10 -bottom-10 opacity-5 pointer-events-none">
-                    <img src="logo.png" alt="" class="w-[160px] h-[160px] object-contain" />
+                    <img src="../logo.png" alt="" class="w-[160px] h-[160px] object-contain" />
                 </div>
                 
                 <!-- Profile Avatar -->

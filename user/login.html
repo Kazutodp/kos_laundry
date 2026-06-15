@@ -266,7 +266,7 @@
                     </p>
                     <div class="pt-md border-t border-outline-variant">
                         <a class="inline-flex items-center gap-xs font-label-sm text-label-sm text-outline hover:text-primary transition-colors"
-                            href="admin_login.php">
+                            href="../admin/login.php">
                             <span class="material-symbols-outlined text-[18px]">admin_panel_settings</span>
                             Masuk sebagai Admin
                         </a>
@@ -341,7 +341,7 @@
                 })
                 .then(data => {
                     if (data.success) {
-                        window.location.href = '../dashboard_user.html';
+                        window.location.href = 'dashboard.php';
                     } else {
                         alert('Gagal login: ' + data.message);
                     }

@@ -45,7 +45,7 @@ if (password_verify($password, $user['password'])) {
     $_SESSION['nama'] = $user['nama'];
     $_SESSION['email'] = $user['email'];
     
-    header("Location: ../dashboard_user.html");
+    header("Location: dashboard.php");
     exit();
 } else {
     header("Location: login.html?error=" . urlencode("Kata sandi yang Anda masukkan salah. Silakan coba lagi."));

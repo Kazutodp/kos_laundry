@@ -68,7 +68,7 @@ if (mysqli_query($koneksi, $insert_query)) {
     $_SESSION['nama'] = $nama;
     $_SESSION['email'] = $email;
     
-    header("Location: ../dashboard_user.html");
+    header("Location: dashboard.php");
     exit();
 } else {
     header("Location: register.html?error=" . urlencode("Terjadi kesalahan database saat mendaftar: " . mysqli_error($koneksi)));

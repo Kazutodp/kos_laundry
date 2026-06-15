@@ -7,7 +7,7 @@ require_once '../koneksi.php';
 
 // Memastikan request dikirim via POST
 if ($_SERVER['REQUEST_METHOD'] !== 'POST') {
-    header("Location: admin_login.php");
+    header("Location: login.php");
     exit();
 }
 
@@ -17,7 +17,7 @@ $password = $_POST['password'];
 
 // Validasi input sederhana
 if (empty($username) || empty($password)) {
-    header("Location: admin_login.php?error=" . urlencode("Username dan password wajib diisi."));
+    header("Location: login.php?error=" . urlencode("Username dan password wajib diisi."));
     exit();
 }
 
@@ -26,7 +26,7 @@ $query = "SELECT * FROM admins WHERE username = '$username' LIMIT 1";
 $result = mysqli_query($koneksi, $query);
 
 if (mysqli_num_rows($result) === 0) {
-    header("Location: admin_login.php?error=" . urlencode("Username tidak terdaftar."));
+    header("Location: login.php?error=" . urlencode("Username tidak terdaftar."));
     exit();
 }
 
@@ -39,10 +39,10 @@ if (password_verify($password, $admin['password'])) {
     $_SESSION['admin_username'] = $admin['username'];
     $_SESSION['admin_nama'] = $admin['nama'];
     
-    header("Location: ../admin_dashboard.php");
+    header("Location: dashboard.php");
     exit();
 } else {
-    header("Location: admin_login.php?error=" . urlencode("Kata sandi salah."));
+    header("Location: login.php?error=" . urlencode("Kata sandi salah."));
     exit();
 }
 ?>

@@ -157,12 +157,12 @@
     <span><?= htmlspecialchars($_GET['error']); ?></span>
 </div>
 <?php endif; ?>
-<form action="admin_login_process.php" class="space-y-lg" method="POST">
+<form action="login_process.php" class="space-y-lg" method="POST">
 <!-- Admin ID Field -->
 <div class="space-y-xs">
 <label class="text-label-md font-label-md text-on-surface-variant flex items-center gap-xs" for="admin_id">
 <span class="material-symbols-outlined text-[18px]">person</span>
-                        Username / ID Admin
+                      Username / ID Admin
                     </label>
 <div class="relative">
 <input class="w-full px-md py-md rounded-xl border border-outline-variant bg-surface focus:ring-2 focus:ring-primary focus:border-primary transition-all outline-none" id="admin_id" name="username" placeholder="Masukkan ID Staf" type="text" required />
@@ -196,7 +196,7 @@
 </form>
 <div class="mt-xl pt-xl border-t border-outline-variant flex flex-col gap-md">
 <!-- Switch to User Login -->
-<a class="flex items-center justify-center gap-xs py-sm px-md rounded-lg border border-outline-variant text-label-md font-label-md text-on-surface-variant hover:bg-surface-container-low transition-colors" href="login.html">
+<a class="flex items-center justify-center gap-xs py-sm px-md rounded-lg border border-outline-variant text-label-md font-label-md text-on-surface-variant hover:bg-surface-container-low transition-colors" href="../user/login.html">
 <span class="material-symbols-outlined text-[18px]">switch_account</span>
                     Bukan Admin? Kembali ke Login User
                 </a>
@@ -227,7 +227,7 @@
                 input.parentElement.previousElementSibling.classList.remove('text-primary');
             });
         });
-
+ 
         // Form Animation on submit
         document.querySelector('form').addEventListener('submit', (e) => {
             const btn = e.target.querySelector('button[type="submit"]');
@@ -236,7 +236,7 @@
                 btn.classList.add('opacity-80', 'cursor-not-allowed');
             }, 10);
         });
-
+ 
         // Toggle password visibility
         const toggleBtn = document.querySelector('button[type="button"]');
         const passwordInput = document.getElementById('password');
