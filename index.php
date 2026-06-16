@@ -131,13 +131,13 @@ $login_url = "login/login.php";
                 <img alt="KosanLaundry Logo" class="h-10 w-10 object-contain" src="logo.png?v=3">
                 <span class="">KosanLaundry</span>
             </a>
-            <div class="hidden md:block relative w-48 lg:w-64">
+            <div class="hidden md:block relative w-72 lg:w-96">
                 <div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
-                    <svg class="h-4 w-4 text-slate-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <svg class="h-5 w-5 text-slate-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                         <path d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" stroke-linecap="round" stroke-linejoin="round" stroke-width="2"></path>
                     </svg>
                 </div>
-                <input class="block w-full pl-9 pr-3 py-1.5 border border-slate-200 rounded-xl bg-slate-50 text-xs placeholder-slate-400 focus:outline-none focus:ring-2 focus:ring-primary/20 focus:border-primary transition-all" placeholder="Cari layanan atau mitra..." type="text">
+                <input class="block w-full pl-10 pr-3 py-2.5 border border-slate-300 rounded-xl bg-white text-sm placeholder-slate-400 focus:outline-none focus:ring-2 focus:ring-primary/20 focus:border-primary transition-all shadow-sm" placeholder="Cari layanan atau mitra..." type="text">
             </div>
         </div>
         <div class="flex items-center space-x-md">
