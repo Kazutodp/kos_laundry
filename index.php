@@ -153,6 +153,14 @@ $login_url = "login/login.php";
                             <span class="material-symbols-outlined text-[20px] text-outline">edit</span>
                             <span>Edit Profil</span>
                         </a>
+                        <a href="#" class="flex items-center gap-xs px-md py-sm text-body-md text-on-surface hover:bg-surface-container transition-colors">
+                            <span class="material-symbols-outlined text-[20px] text-outline">history</span>
+                            <span>Riwayat Pesanan</span>
+                        </a>
+                        <a href="#" class="flex items-center gap-xs px-md py-sm text-body-md text-on-surface hover:bg-surface-container transition-colors">
+                            <span class="material-symbols-outlined text-[20px] text-outline">notifications</span>
+                            <span>Notifikasi</span>
+                        </a>
                         <div class="border-t border-outline-variant my-xs"></div>
                         <a href="logout.php" class="flex items-center gap-xs px-md py-sm text-body-md text-error hover:bg-error-container/10 transition-colors">
                             <span class="material-symbols-outlined text-[20px] text-error">logout</span>
