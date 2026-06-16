@@ -7,11 +7,11 @@ if (!isset($_SESSION['user_id'])) {
 }
 ?>
 <!DOCTYPE html>
-<html lang="id">
+<html class="light" lang="id">
 <head>
     <meta charset="utf-8">
     <meta content="width=device-width, initial-scale=1.0" name="viewport">
-    <title>Edit Profil | KosanLaundry</title>
+    <title>Password &amp; Keamanan | KosanLaundry</title>
     <script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&amp;display=swap" rel="stylesheet">
     <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet">
@@ -110,14 +110,20 @@ if (!isset($_SESSION['user_id'])) {
       }
     </script>
     <style>
-        body { font-family: 'Inter', sans-serif; background-color: #f9f9ff; }
+        body {
+            font-family: 'Inter', sans-serif;
+            background-color: #f9f9ff;
+        }
         .material-symbols-outlined {
             font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 24;
             vertical-align: middle;
         }
-        .custom-shadow { box-shadow: 0px 4px 20px rgba(0, 0, 0, 0.05); }
-        .input-focus-ring:focus { border-color: #0058be; ring: 2px; ring-color: #0058be; }
-        .transition-standard { transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1); }
+        .custom-shadow {
+            box-shadow: 0px 4px 20px rgba(0, 0, 0, 0.05);
+        }
+        .transition-standard {
+            transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+        }
     </style>
 </head>
 <body class="text-on-background bg-background">
@@ -136,158 +142,115 @@ if (!isset($_SESSION['user_id'])) {
     </div>
 </header>
 
-<!-- TopNavBar Shell -->
 <main class="max-w-7xl mx-auto px-6 py-12 pt-10">
 <div class="flex flex-col lg:flex-row gap-8">
 <!-- Sidebar Navigation -->
 <aside class="w-full lg:w-72 flex-shrink-0">
 <div class="bg-surface-container-lowest rounded-xl p-4 custom-shadow border border-outline-variant/30 sticky top-28">
 <div class="flex flex-col space-y-1">
-<a class="flex items-center space-x-3 px-4 py-3 bg-primary-container text-on-primary-container rounded-lg font-bold transition-standard" href="edit_profile.php">
+<a class="flex items-center space-x-3 px-4 py-3 text-on-surface-variant hover:bg-surface-container-high rounded-lg transition-standard" href="edit_profile.php">
 <span class="material-symbols-outlined">person</span>
 <span class="text-label-md">Personal Info</span>
 </a>
-<a class="flex items-center space-x-3 px-4 py-3 text-on-surface-variant hover:bg-surface-container-high rounded-lg transition-standard" href="security.php">
-<span class="material-symbols-outlined">lock</span>
+<!-- Active Item: Password & Keamanan -->
+<a class="flex items-center space-x-3 px-4 py-3 bg-primary-container text-on-primary-container rounded-lg font-bold transition-standard" href="security.php">
+<span class="material-symbols-outlined" style="font-variation-settings: 'FILL' 1;">lock</span>
 <span class="text-label-md">Password &amp; Keamanan</span>
 </a>
 </div>
 </div>
 </aside>
-<!-- Main Form Content -->
+<!-- Main Content Area -->
 <section class="flex-grow">
 <div class="bg-surface-container-lowest rounded-xl custom-shadow border border-outline-variant/30 overflow-hidden">
 <!-- Header Form -->
 <div class="p-8 border-b border-outline-variant/20">
-<h1 class="text-headline-md font-headline-md text-on-surface mb-2">Edit Profil</h1>
-<p class="text-body-md font-body-md text-on-surface-variant">Perbarui informasi pribadi dan alamat kos Anda untuk mempermudah penjemputan.</p>
+<h1 class="text-headline-md font-headline-md text-on-surface mb-2">Password &amp; Keamanan</h1>
+<p class="text-body-md font-body-md text-on-surface-variant">Kelola kata sandi dan pengaturan keamanan akun Anda.</p>
 </div>
-<div class="p-8">
-<form class="space-y-10">
-<!-- Avatar Upload Section -->
-<div class="flex flex-col items-center sm:flex-row sm:items-end space-y-4 sm:space-y-0 sm:space-x-8">
-<div class="relative group">
-<div class="w-32 h-32 rounded-full overflow-hidden border-4 border-surface-container-high custom-shadow bg-primary text-on-primary flex items-center justify-center font-bold text-4xl select-none">
-    <?php if (!empty($_SESSION['profile_pic'])): ?>
-        <img alt="User Large Avatar" class="w-full h-full object-cover" src="<?= htmlspecialchars($_SESSION['profile_pic']); ?>">
-    <?php else: ?>
-        <?= strtoupper(substr($_SESSION['username'], 0, 1)); ?>
-    <?php endif; ?>
+<div class="p-8 space-y-10">
+<!-- Section 1: Change Password -->
+<div class="space-y-8">
+<div class="flex items-center space-x-2">
+<span class="material-symbols-outlined text-primary">lock_reset</span>
+<h2 class="text-headline-sm font-headline-md text-on-surface">Ubah Kata Sandi</h2>
 </div>
-<button class="absolute bottom-1 right-1 bg-primary text-white p-2 rounded-full shadow-lg hover:scale-105 transition-transform" type="button">
-<span class="material-symbols-outlined text-sm">photo_camera</span>
+<div class="grid grid-cols-1 md:grid-cols-2 gap-8 items-start">
+<form class="space-y-6">
+<div class="space-y-2">
+<label class="text-label-md font-bold text-on-surface-variant" for="current-password">Kata Sandi Saat Ini</label>
+<div class="relative">
+<span class="material-symbols-outlined absolute left-3 top-1/2 -translate-y-1/2 text-on-surface-variant">vpn_key</span>
+<input class="w-full pl-10 pr-12 py-3 rounded-xl border border-outline-variant bg-surface focus:ring-2 focus:ring-primary focus:border-primary outline-none transition-standard text-body-md" id="current-password" placeholder="••••••••" type="password">
+<button class="absolute right-3 top-1/2 -translate-y-1/2 text-on-surface-variant hover:text-primary transition-colors" onclick="togglePassword('current-password')" type="button">
+<span class="material-symbols-outlined text-[20px]">visibility</span>
 </button>
 </div>
-<div class="text-center sm:text-left">
-<h3 class="text-label-md font-bold text-on-surface">Foto Profil</h3>
-<p class="text-label-sm font-label-sm text-on-surface-variant mt-1">JPG atau PNG, Maksimal 2MB.</p>
-<div class="mt-3 flex space-x-3">
-<button class="text-label-sm font-bold text-primary hover:underline" type="button">Ganti Foto</button>
-<button class="text-label-sm font-bold text-error hover:underline" type="button">Hapus</button>
-</div>
-</div>
-</div>
-<!-- Personal Information Section -->
-<div>
-<div class="flex items-center space-x-2 mb-6">
-<span class="material-symbols-outlined text-primary">account_circle</span>
-<h2 class="text-headline-sm font-headline-md text-on-surface">Informasi Pribadi</h2>
-</div>
-<div class="grid grid-cols-1 md:grid-cols-2 gap-6">
-<div class="space-y-2">
-<label class="text-label-md font-bold text-on-surface-variant">Nama Lengkap</label>
-<div class="relative">
-<span class="material-symbols-outlined absolute left-3 top-1/2 -translate-y-1/2 text-on-surface-variant">person</span>
-<input class="w-full pl-10 pr-4 py-3 rounded-xl border border-outline-variant bg-surface focus:ring-2 focus:ring-primary focus:border-primary outline-none transition-standard text-body-md" type="text" value="<?= htmlspecialchars($_SESSION['username']); ?>">
-</div>
 </div>
 <div class="space-y-2">
-<label class="text-label-md font-bold text-on-surface-variant">Email</label>
+<label class="text-label-md font-bold text-on-surface-variant" for="new-password">Kata Sandi Baru</label>
 <div class="relative">
-<span class="material-symbols-outlined absolute left-3 top-1/2 -translate-y-1/2 text-on-surface-variant">mail</span>
-<input class="w-full pl-10 pr-4 py-3 rounded-xl border border-outline-variant bg-surface-container-high text-on-surface-variant/70 cursor-not-allowed text-body-md" disabled="" type="email" value="<?= htmlspecialchars($_SESSION['email']); ?>">
-<button class="absolute right-3 top-1/2 -translate-y-1/2 text-primary text-label-sm font-bold hover:underline" type="button">Ubah</button>
+<span class="material-symbols-outlined absolute left-3 top-1/2 -translate-y-1/2 text-on-surface-variant">lock</span>
+<input class="w-full pl-10 pr-12 py-3 rounded-xl border border-outline-variant bg-surface focus:ring-2 focus:ring-primary focus:border-primary outline-none transition-standard text-body-md" id="new-password" placeholder="••••••••" type="password">
+<button class="absolute right-3 top-1/2 -translate-y-1/2 text-on-surface-variant hover:text-primary transition-colors" onclick="togglePassword('new-password')" type="button">
+<span class="material-symbols-outlined text-[20px]">visibility</span>
+</button>
 </div>
+<p class="text-label-sm text-on-surface-variant opacity-70">Gunakan minimal 8 karakter dengan kombinasi angka dan simbol.</p>
 </div>
 <div class="space-y-2">
-<label class="text-label-md font-bold text-on-surface-variant">Nomor Telepon</label>
+<label class="text-label-md font-bold text-on-surface-variant" for="confirm-password">Konfirmasi Kata Sandi Baru</label>
 <div class="relative">
-<span class="material-symbols-outlined absolute left-3 top-1/2 -translate-y-1/2 text-on-surface-variant">call</span>
-<input class="w-full pl-10 pr-4 py-3 rounded-xl border border-outline-variant bg-surface focus:ring-2 focus:ring-primary focus:border-primary outline-none transition-standard text-body-md" type="tel" value="+62 812 3456 7890">
+<span class="material-symbols-outlined absolute left-3 top-1/2 -translate-y-1/2 text-on-surface-variant">verified</span>
+<input class="w-full pl-10 pr-12 py-3 rounded-xl border border-outline-variant bg-surface focus:ring-2 focus:ring-primary focus:border-primary outline-none transition-standard text-body-md" id="confirm-password" placeholder="••••••••" type="password">
+<button class="absolute right-3 top-1/2 -translate-y-1/2 text-on-surface-variant hover:text-primary transition-colors" onclick="togglePassword('confirm-password')" type="button">
+<span class="material-symbols-outlined text-[20px]">visibility</span>
+</button>
 </div>
 </div>
-<div class="space-y-2">
-<label class="text-label-md font-bold text-on-surface-variant">Jenis Kelamin</label>
-<div class="relative">
-<span class="material-symbols-outlined absolute left-3 top-1/2 -translate-y-1/2 text-on-surface-variant">wc</span>
-<select class="w-full pl-10 pr-4 py-3 rounded-xl border border-outline-variant bg-surface focus:ring-2 focus:ring-primary focus:border-primary outline-none appearance-none transition-standard text-body-md">
-<option selected="" value="Laki-laki">Laki-laki</option>
-<option value="Perempuan">Perempuan</option>
-<option value="Lainnya">Lainnya</option>
-</select>
-<span class="material-symbols-outlined absolute right-3 top-1/2 -translate-y-1/2 pointer-events-none text-on-surface-variant">expand_more</span>
+</form>
+<div class="hidden md:flex flex-col items-center justify-center bg-surface-container-low rounded-2xl p-8 text-center border border-outline-variant/30">
+<div class="relative w-24 h-24 mb-4">
+<div class="absolute inset-0 bg-primary opacity-10 rounded-full animate-pulse"></div>
+<div class="absolute inset-0 flex items-center justify-center">
+<span class="material-symbols-outlined text-[48px] text-primary">security</span>
 </div>
 </div>
-</div>
-</div>
-<!-- Address Section -->
-<div class="pt-6">
-<div class="flex items-center space-x-2 mb-6">
-<span class="material-symbols-outlined text-primary">location_on</span>
-<h2 class="text-headline-sm font-headline-md text-on-surface">Informasi Alamat Kos</h2>
-</div>
-<div class="space-y-6">
-
-<div class="space-y-2">
-<label class="text-label-md font-bold text-on-surface-variant">Alamat Lengkap</label>
-<div class="relative">
-<span class="material-symbols-outlined absolute left-3 top-4 text-on-surface-variant">map</span>
-<textarea class="w-full pl-10 pr-4 py-3 rounded-xl border border-outline-variant bg-surface focus:ring-2 focus:ring-primary focus:border-primary outline-none transition-standard text-body-md" placeholder="Masukkan alamat lengkap penjemputan..." rows="3"></textarea>
-</div>
+<h3 class="text-body-md font-bold text-on-surface">Jaga Keamanan Akun</h3>
+<p class="text-label-sm text-on-surface-variant mt-2 leading-relaxed">Memperbarui kata sandi secara berkala membantu melindungi data transaksi dan informasi pribadi Anda.</p>
 </div>
 </div>
 </div>
 <!-- Form Actions -->
 <div class="flex flex-col sm:flex-row justify-end items-center space-y-4 sm:space-y-0 sm:space-x-4 pt-10 border-t border-outline-variant/20">
 <button onclick="window.location.href='../index.php'" class="w-full sm:w-auto px-8 py-3 rounded-xl text-label-md font-bold text-on-surface-variant hover:bg-surface-container-high transition-standard" type="button">
-                                    Batal
-                                </button>
-<button class="w-full sm:w-auto px-10 py-3 rounded-xl bg-primary text-white text-label-md font-bold custom-shadow hover:scale-[1.02] active:scale-95 transition-standard" type="submit">
-                                    Simpan Perubahan
-                                </button>
+                                Batal
+                            </button>
+<button class="w-full sm:w-auto px-10 py-3 rounded-xl bg-primary text-white text-label-md font-bold custom-shadow hover:scale-[1.02] active:scale-95 transition-standard flex items-center justify-center gap-2" type="submit">
+<span class="material-symbols-outlined text-[20px]">save</span>
+                                Simpan Perubahan
+                            </button>
 </div>
-</form>
 </div>
 </div>
 </section>
 </div>
 </main>
-
 <script>
-        // Simple micro-interaction for form submission
-        document.querySelector('form').addEventListener('submit', function(e) {
-            e.preventDefault();
-            const btn = e.target.querySelector('button[type="submit"]');
-            const originalText = btn.innerText;
-            btn.innerHTML = '<span class="material-symbols-outlined animate-spin mr-2">sync</span> Menyimpan...';
-            btn.disabled = true;
-            btn.classList.add('opacity-80');
-            
-            setTimeout(() => {
-                btn.innerHTML = '<span class="material-symbols-outlined mr-2">check_circle</span> Berhasil!';
-                btn.classList.replace('bg-primary', 'bg-secondary');
-                
-                setTimeout(() => {
-                    btn.innerText = originalText;
-                    btn.classList.replace('bg-secondary', 'bg-primary');
-                    btn.disabled = false;
-                    btn.classList.remove('opacity-80');
-                }, 2000);
-            }, 1500);
-        });
+        function togglePassword(inputId) {
+            const input = document.getElementById(inputId);
+            const icon = input.nextElementSibling.querySelector('.material-symbols-outlined');
+            if (input.type === "password") {
+                input.type = "text";
+                icon.innerText = "visibility_off";
+            } else {
+                input.type = "password";
+                icon.innerText = "visibility";
+            }
+        }
 
-        // Toggle focus state visuals
-        const inputs = document.querySelectorAll('input, select, textarea');
+        // Visual feedback for focus
+        const inputs = document.querySelectorAll('input');
         inputs.forEach(input => {
             input.addEventListener('focus', () => {
                 input.parentElement.querySelector('.material-symbols-outlined')?.classList.add('text-primary');
