@@ -126,10 +126,20 @@ $login_url = "login/login.php";
 <!-- TopNavBar -->
 <nav class="sticky top-0 w-full z-50 bg-surface shadow-sm transition-all duration-300">
     <div class="max-w-7xl mx-auto px-gutter py-md flex justify-between items-center">
-        <a class="flex items-center space-x-xs text-headline-md font-headline-md font-bold text-primary" href="#">
-            <img alt="KosanLaundry Logo" class="h-10 w-10 object-contain" src="logo.png?v=3">
-            <span class="">KosanLaundry</span>
-        </a>
+        <div class="flex items-center space-x-md lg:space-x-lg">
+            <a class="flex items-center space-x-xs text-headline-md font-headline-md font-bold text-primary" href="#">
+                <img alt="KosanLaundry Logo" class="h-10 w-10 object-contain" src="logo.png?v=3">
+                <span class="">KosanLaundry</span>
+            </a>
+            <div class="hidden md:block relative w-48 lg:w-64">
+                <div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
+                    <svg class="h-4 w-4 text-slate-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" stroke-linecap="round" stroke-linejoin="round" stroke-width="2"></path>
+                    </svg>
+                </div>
+                <input class="block w-full pl-9 pr-3 py-1.5 border border-slate-200 rounded-xl bg-slate-50 text-xs placeholder-slate-400 focus:outline-none focus:ring-2 focus:ring-primary/20 focus:border-primary transition-all" placeholder="Cari layanan atau mitra..." type="text">
+            </div>
+        </div>
         <div class="flex items-center space-x-md">
             <!-- Desktop Nav moved to right -->
             <div class="hidden md:flex space-x-lg items-center mr-lg">
@@ -198,14 +208,6 @@ $login_url = "login/login.php";
             <p class="text-body-lg text-on-surface-variant max-w-lg">
                 Urusan baju kotor serahkan ke kami. Jemput antar gratis, proses cepat, dan hasil wangi segar seperti baru. Fokus pada studi dan karir Anda, biarkan kami yang mencuci.
             </p>
-            <div class="relative w-full max-w-md">
-                <div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
-                    <svg class="h-5 w-5 text-slate-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                        <path d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" stroke-linecap="round" stroke-linejoin="round" stroke-width="2"></path>
-                    </svg>
-                </div>
-                <input class="block w-full pl-10 pr-3 py-2 border border-slate-200 rounded-xl bg-slate-50 text-sm placeholder-slate-400 focus:outline-none focus:ring-2 focus:ring-primary/20 focus:border-primary transition-all" placeholder="Cari layanan atau mitra..." type="text">
-            </div>
             <div class="flex flex-wrap gap-md pt-md">
                 <button onclick="window.location.href='<?= $is_logged_in ? $dashboard_url : 'login/daftar.php'; ?>'" class="px-xl py-md bg-primary text-on-primary rounded-xl font-bold text-body-md shadow-lg hover:shadow-primary/20 transition-all active:scale-95">
                     Pesan Sekarang
