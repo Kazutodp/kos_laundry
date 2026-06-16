@@ -28,7 +28,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     } else {
         try {
             // Cek apakah username sudah ada
-            $stmt = $pdo->prepare("SELECT id FROM users WHERE username = ?");
+            $stmt = $pdo->prepare("SELECT id FROM users WHERE nama = ?");
             $stmt->execute([$username]);
             if ($stmt->fetch()) {
                 $error = 'Nama pengguna sudah digunakan.';
@@ -41,7 +41,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                 } else {
                     // Hash password dan simpan ke database
                     $hashed_password = password_hash($password, PASSWORD_DEFAULT);
-                    $stmt = $pdo->prepare("INSERT INTO users (username, email, password) VALUES (?, ?, ?)");
+                    $stmt = $pdo->prepare("INSERT INTO users (nama, email, password) VALUES (?, ?, ?)");
                     $stmt->execute([$username, $email, $hashed_password]);
                     
                     // Redirect ke login dengan pesan sukses
