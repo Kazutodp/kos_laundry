@@ -138,7 +138,31 @@ $login_url = "login/login.php";
                 <a class="text-on-surface-variant hover:text-primary transition-colors font-label-md" href="#">Locations</a>
                 <a class="text-on-surface-variant hover:text-primary transition-colors font-label-md" href="#">Support</a>
             </div>
-            <button onclick="window.location.href='<?= $login_url; ?>'" class="px-lg py-xs rounded-xl bg-primary text-on-primary font-bold hover:bg-primary-container transition-colors active:scale-95 duration-150">Login</button>
+            <?php if ($is_logged_in): ?>
+                <!-- Profile Indicator with Hover Dropdown -->
+                <div class="relative group" id="profile-dropdown-container">
+                    <button class="flex items-center justify-center w-10 h-10 rounded-full border border-outline-variant focus:outline-none select-none overflow-hidden bg-surface-container hover:bg-surface-container-high transition-all">
+                        <img src="https://images.unsplash.com/photo-1535713875002-d1d0cf377fde?auto=format&fit=crop&w=80&h=80" alt="Avatar" class="w-full h-full object-cover" onerror="this.style.display='none'; document.getElementById('avatar-fallback').classList.remove('hidden')">
+                        <div id="avatar-fallback" class="hidden w-full h-full bg-primary text-on-primary flex items-center justify-center font-bold text-label-md">
+                            <?= strtoupper(substr($_SESSION['username'], 0, 1)); ?>
+                        </div>
+                    </button>
+                    <!-- Dropdown Menu -->
+                    <div class="absolute right-0 mt-xs w-48 bg-surface-container-lowest border border-outline-variant rounded-xl shadow-lg py-xs z-50 transform origin-top-right scale-95 opacity-0 pointer-events-none group-hover:scale-100 group-hover:opacity-100 group-hover:pointer-events-auto transition-all duration-200">
+                        <a href="#" class="flex items-center gap-xs px-md py-sm text-body-md text-on-surface hover:bg-surface-container transition-colors">
+                            <span class="material-symbols-outlined text-[20px] text-outline">edit</span>
+                            <span>Edit Profil</span>
+                        </a>
+                        <div class="border-t border-outline-variant my-xs"></div>
+                        <a href="logout.php" class="flex items-center gap-xs px-md py-sm text-body-md text-error hover:bg-error-container/10 transition-colors">
+                            <span class="material-symbols-outlined text-[20px] text-error">logout</span>
+                            <span>Keluar</span>
+                        </a>
+                    </div>
+                </div>
+            <?php else: ?>
+                <button onclick="window.location.href='<?= $login_url; ?>'" class="px-lg py-xs rounded-xl bg-primary text-on-primary font-bold hover:bg-primary-container transition-colors active:scale-95 duration-150">Login</button>
+            <?php endif; ?>
             <button class="md:hidden flex items-center">
                 <span class="material-symbols-outlined">menu</span>
             </button>
@@ -163,7 +187,7 @@ $login_url = "login/login.php";
                 Urusan baju kotor serahkan ke kami. Jemput antar gratis, proses cepat, dan hasil wangi segar seperti baru. Fokus pada studi dan karir Anda, biarkan kami yang mencuci.
             </p>
             <div class="flex flex-wrap gap-md pt-md">
-                <button onclick="window.location.href='<?= $is_logged_in ? $dashboard_url : 'user/register.html'; ?>'" class="px-xl py-md bg-primary text-on-primary rounded-xl font-bold text-body-md shadow-lg hover:shadow-primary/20 transition-all active:scale-95">
+                <button onclick="window.location.href='<?= $is_logged_in ? $dashboard_url : 'login/daftar.php'; ?>'" class="px-xl py-md bg-primary text-on-primary rounded-xl font-bold text-body-md shadow-lg hover:shadow-primary/20 transition-all active:scale-95">
                     Pesan Sekarang
                 </button>
                 <button class="px-xl py-md border-2 border-primary text-primary rounded-xl font-bold text-body-md hover:bg-primary-fixed transition-all">
@@ -378,7 +402,7 @@ $login_url = "login/login.php";
             <h2 class="text-display-lg text-on-primary font-display-lg leading-tight">Siap Untuk Baju Wangi &amp; Rapi Hari Ini?</h2>
             <p class="text-body-lg text-primary-fixed/80">Bergabunglah dengan ribuan mahasiswa lainnya yang sudah beralih ke KosanLaundry.</p>
             <div class="pt-md">
-                <button onclick="window.location.href='<?= $is_logged_in ? $dashboard_url : 'user/register.html'; ?>'" class="px-[48px] py-[20px] bg-secondary-container text-on-secondary-container rounded-2xl font-bold text-headline-md shadow-xl hover:scale-105 transition-transform active:scale-95">
+                <button onclick="window.location.href='<?= $is_logged_in ? $dashboard_url : 'login/daftar.php'; ?>'" class="px-[48px] py-[20px] bg-secondary-container text-on-secondary-container rounded-2xl font-bold text-headline-md shadow-xl hover:scale-105 transition-transform active:scale-95">
                     Pesan Sekarang
                 </button>
             </div>

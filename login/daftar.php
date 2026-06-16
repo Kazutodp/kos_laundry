@@ -11,31 +11,43 @@ if (isset($_SESSION['user_id'])) {
 $error = '';
 $success = '';
 
-if (isset($_GET['registered'])) {
-    $success = 'Pendaftaran berhasil! Silakan masuk dengan akun Anda.';
-}
-
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
+    $username = trim($_POST['username'] ?? '');
     $email = trim($_POST['email'] ?? '');
     $password = $_POST['password'] ?? '';
+    $confirm_password = $_POST['confirm-password'] ?? '';
 
-    if (empty($email) || empty($password)) {
-        $error = 'Email dan kata sandi wajib diisi.';
+    if (empty($username) || empty($email) || empty($password) || empty($confirm_password)) {
+        $error = 'Semua kolom wajib diisi.';
+    } elseif (!filter_var($email, FILTER_VALIDATE_EMAIL)) {
+        $error = 'Format email tidak valid.';
+    } elseif ($password !== $confirm_password) {
+        $error = 'Konfirmasi kata sandi tidak cocok.';
+    } elseif (strlen($password) < 6) {
+        $error = 'Kata sandi minimal harus 6 karakter.';
     } else {
         try {
-            $stmt = $pdo->prepare("SELECT * FROM users WHERE email = ?");
-            $stmt->execute([$email]);
-            $user = $stmt->fetch();
-
-            if ($user && password_verify($password, $user['password'])) {
-                $_SESSION['user_id'] = $user['id'];
-                $_SESSION['username'] = $user['username'];
-                $_SESSION['email'] = $user['email'];
-
-                header("Location: ../index.php");
-                exit();
+            // Cek apakah username sudah ada
+            $stmt = $pdo->prepare("SELECT id FROM users WHERE username = ?");
+            $stmt->execute([$username]);
+            if ($stmt->fetch()) {
+                $error = 'Nama pengguna sudah digunakan.';
             } else {
-                $error = 'Email atau kata sandi salah.';
+                // Cek apakah email sudah ada
+                $stmt = $pdo->prepare("SELECT id FROM users WHERE email = ?");
+                $stmt->execute([$email]);
+                if ($stmt->fetch()) {
+                    $error = 'Alamat email sudah digunakan.';
+                } else {
+                    // Hash password dan simpan ke database
+                    $hashed_password = password_hash($password, PASSWORD_DEFAULT);
+                    $stmt = $pdo->prepare("INSERT INTO users (username, email, password) VALUES (?, ?, ?)");
+                    $stmt->execute([$username, $email, $hashed_password]);
+                    
+                    // Redirect ke login dengan pesan sukses
+                    header("Location: login.php?registered=1");
+                    exit();
+                }
             }
         } catch (PDOException $e) {
             $error = 'Terjadi kesalahan sistem: ' . $e->getMessage();
@@ -48,9 +60,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 <head>
     <meta charset="utf-8"/>
     <meta content="width=device-width, initial-scale=1.0" name="viewport"/>
-    <title>Masuk | KosanLaundry</title>
-    <!-- Google Identity Services SDK -->
-    <script async="" defer="" src="https://accounts.google.com/gsi/client"></script>
+    <title>Daftar Akun | KosanLaundry</title>
     <script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&amp;display=swap" rel="stylesheet"/>
     <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
@@ -180,19 +190,19 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                 <img alt="KosanLaundry Logo" class="w-16 h-16 object-contain" src="../logo.png?v=3"/>
             </div>
             <h1 class="font-headline-lg text-headline-lg text-on-primary mb-md leading-tight">
-                Kesegaran Maksimal untuk Pakaian Anda.
+                Mulai Rawat Pakaian Anda dengan Mudah.
             </h1>
             <p class="font-body-lg text-body-lg text-primary-fixed opacity-90 mb-xl">
-                Hemat waktu dan nikmati kebersihan profesional langsung dari genggaman tangan Anda. Kami merawat setiap serat benang dengan cinta.
+                Daftarkan akun sekarang untuk memesan laundry, memantau proses cuci, dan menikmati promo eksklusif mahasiswa!
             </p>
             <div class="grid grid-cols-2 gap-md text-left">
                 <div class="p-md glass-card rounded-xl">
-                    <span class="material-symbols-outlined text-white mb-xs">schedule</span>
-                    <p class="font-label-md text-label-md text-white">Pengerjaan Kilat</p>
+                    <span class="material-symbols-outlined text-white mb-xs">local_shipping</span>
+                    <p class="font-label-md text-label-md text-white">Jemput Antar Gratis</p>
                 </div>
                 <div class="p-md glass-card rounded-xl">
-                    <span class="material-symbols-outlined text-white mb-xs">verified</span>
-                    <p class="font-label-md text-label-md text-white">Higienis &amp; Bersih</p>
+                    <span class="material-symbols-outlined text-white mb-xs">sell</span>
+                    <p class="font-label-md text-label-md text-white">Tarif Mahasiswa</p>
                 </div>
             </div>
         </div>
@@ -208,8 +218,8 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         </div>
         <div class="max-w-md w-full mx-auto">
             <header class="mb-lg">
-                <h2 class="font-headline-lg text-headline-lg text-on-surface mb-xs">Selamat Datang</h2>
-                <p class="font-body-md text-body-md text-on-surface-variant">Silakan masuk untuk mengelola pesanan laundry Anda.</p>
+                <h2 class="font-headline-lg text-headline-lg text-on-surface mb-xs">Daftar Akun</h2>
+                <p class="font-body-md text-body-md text-on-surface-variant">Silakan isi data untuk membuat akun baru.</p>
             </header>
 
             <?php if (!empty($error)): ?>
@@ -219,21 +229,22 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                 </div>
             <?php endif; ?>
 
-            <?php if (!empty($success)): ?>
-                <div class="p-md bg-secondary-container text-on-secondary-container rounded-xl flex items-center gap-xs font-label-sm border border-secondary mb-md">
-                    <span class="material-symbols-outlined text-secondary">check_circle</span>
-                    <span><?= htmlspecialchars($success); ?></span>
+            <!-- Register Form -->
+            <form class="space-y-md" action="daftar.php" method="POST">
+                <!-- Username -->
+                <div class="space-y-xs" id="username-field">
+                    <label class="font-label-md text-label-md text-on-surface-variant block" for="username">Nama Pengguna</label>
+                    <div class="relative">
+                        <span class="material-symbols-outlined absolute left-md top-1/2 -translate-y-1/2 text-outline">person</span>
+                        <input class="w-full pl-[48px] pr-md py-sm bg-surface-container-low border border-outline-variant rounded-lg focus:border-primary focus:ring-1 focus:ring-primary outline-none transition-all font-body-md text-on-surface" id="username" name="username" placeholder="username_anda" required type="text" value="<?= isset($_POST['username']) ? htmlspecialchars($_POST['username']) : '' ?>"/>
+                    </div>
                 </div>
-            <?php endif; ?>
-
-            <!-- Login Form -->
-            <form class="space-y-md" action="login.php" method="POST">
                 <!-- Email -->
                 <div class="space-y-xs">
                     <label class="font-label-md text-label-md text-on-surface-variant block" for="email">Alamat Email</label>
                     <div class="relative">
                         <span class="material-symbols-outlined absolute left-md top-1/2 -translate-y-1/2 text-outline">mail</span>
-                        <input class="w-full pl-[48px] pr-md py-sm bg-surface-container-low border border-outline-variant rounded-lg focus:border-primary focus:ring-1 focus:ring-primary outline-none transition-all font-body-md text-on-surface" id="email" name="email" placeholder="contoh@email.com" required="" type="email" value="<?= isset($_POST['email']) ? htmlspecialchars($_POST['email']) : '' ?>"/>
+                        <input class="w-full pl-[48px] pr-md py-sm bg-surface-container-low border border-outline-variant rounded-lg focus:border-primary focus:ring-1 focus:ring-primary outline-none transition-all font-body-md text-on-surface" id="email" name="email" placeholder="contoh@email.com" required type="email" value="<?= isset($_POST['email']) ? htmlspecialchars($_POST['email']) : '' ?>"/>
                     </div>
                 </div>
                 <!-- Password -->
@@ -241,63 +252,38 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                     <label class="font-label-md text-label-md text-on-surface-variant block" for="password">Kata Sandi</label>
                     <div class="relative">
                         <span class="material-symbols-outlined absolute left-md top-1/2 -translate-y-1/2 text-outline">lock</span>
-                        <input class="w-full pl-[48px] pr-12 py-sm bg-surface-container-low border border-outline-variant rounded-lg focus:border-primary focus:ring-1 focus:ring-primary outline-none transition-all font-body-md text-on-surface" id="password" name="password" placeholder="••••••••" required="" type="password"/>
+                        <input class="w-full pl-[48px] pr-12 py-sm bg-surface-container-low border border-outline-variant rounded-lg focus:border-primary focus:ring-1 focus:ring-primary outline-none transition-all font-body-md text-on-surface" id="password" name="password" placeholder="••••••••" required type="password"/>
                         <button class="absolute right-md top-1/2 -translate-y-1/2 text-outline hover:text-on-surface transition-colors" id="toggle-password" type="button">
                             <span class="material-symbols-outlined">visibility</span>
                         </button>
                     </div>
                 </div>
-                <!-- Options -->
-                <div class="flex items-center justify-between" id="options-container">
-                    <label class="flex items-center gap-xs cursor-pointer group">
-                        <input class="w-4 h-4 rounded border-outline-variant text-primary focus:ring-primary" type="checkbox"/>
-                        <span class="font-label-sm text-label-sm text-on-surface-variant group-hover:text-on-surface transition-colors">Ingat Saya</span>
-                    </label>
-                    <a class="font-label-sm text-label-sm text-primary hover:underline font-semibold" href="forgot_password.php">Lupa Kata Sandi?</a>
+                <!-- Password Ulang -->
+                <div class="space-y-xs" id="confirm-password-field">
+                    <label class="font-label-md text-label-md text-on-surface-variant block" for="confirm-password">Ulangi Kata Sandi</label>
+                    <div class="relative">
+                        <span class="material-symbols-outlined absolute left-md top-1/2 -translate-y-1/2 text-outline">lock_reset</span>
+                        <input class="w-full pl-[48px] pr-12 py-sm bg-surface-container-low border border-outline-variant rounded-lg focus:border-primary focus:ring-1 focus:ring-primary outline-none transition-all font-body-md text-on-surface" id="confirm-password" name="confirm-password" placeholder="••••••••" required type="password"/>
+                        <button class="absolute right-md top-1/2 -translate-y-1/2 text-outline hover:text-on-surface transition-colors" id="toggle-confirm-password" type="button">
+                            <span class="material-symbols-outlined">visibility</span>
+                        </button>
+                    </div>
                 </div>
                 <!-- Action Button -->
                 <button class="w-full py-md bg-primary text-on-primary rounded-xl font-label-md text-label-md hover:bg-primary-container transition-all shadow-md active:scale-[0.98]" type="submit">
-                    <span id="submit-btn-text">Masuk Sekarang</span>
+                    <span>Daftar Sekarang</span>
                 </button>
-                <!-- Divider -->
-                <div class="relative flex items-center py-base">
-                    <div class="flex-grow border-t border-outline-variant"></div>
-                    <span class="flex-shrink mx-md font-label-sm text-label-sm text-outline">Atau masuk dengan</span>
-                    <div class="flex-grow border-t border-outline-variant"></div>
-                </div>
-                <!-- Social Login Container -->
-                <div class="w-full flex justify-center">
-                    <div class="w-full" id="google-login-btn-container"></div>
-                </div>
             </form>
             <footer class="mt-xl text-center space-y-md">
                 <p class="font-label-md text-label-md text-on-surface-variant">
-                    <span>Belum punya akun? </span><a class="text-primary font-bold hover:underline" href="daftar.php">Daftar Sekarang</a>
+                    <span>Sudah punya akun? </span><a class="text-primary font-bold hover:underline" href="login.php">Masuk Sekarang</a>
                 </p>
-                <div class="pt-md border-t border-outline-variant">
-                    <a class="inline-flex items-center gap-xs font-label-sm text-label-sm text-outline hover:text-primary transition-colors" href="#">
-                        <span class="material-symbols-outlined text-[20px]">admin_panel_settings</span>
-                        Masuk sebagai Admin
-                    </a>
-                </div>
             </footer>
         </div>
-
     </section>
 </main>
 
 <script>
-    window.onload = function () {
-        google.accounts.id.initialize({
-            client_id: "YOUR_GOOGLE_CLIENT_ID",
-            callback: (response) => console.log(response)
-        });
-        google.accounts.id.renderButton(
-            document.getElementById("google-login-btn-container"),
-            { theme: "outline", size: "large", width: "100%", shape: "rectangular" }
-        );
-    }
-
     // Toggle passwords visibility
     const togglePasswordBtn = document.getElementById('toggle-password');
     const passwordInput = document.getElementById('password');
@@ -312,6 +298,18 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         });
     }
 
+    const toggleConfirmPasswordBtn = document.getElementById('toggle-confirm-password');
+    const confirmPasswordInput = document.getElementById('confirm-password');
+    if (toggleConfirmPasswordBtn && confirmPasswordInput) {
+        toggleConfirmPasswordBtn.addEventListener('click', () => {
+            const isPassword = confirmPasswordInput.type === 'password';
+            confirmPasswordInput.type = isPassword ? 'text' : 'password';
+            const iconSpan = toggleConfirmPasswordBtn.querySelector('.material-symbols-outlined');
+            if (iconSpan) {
+                iconSpan.textContent = isPassword ? 'visibility_off' : 'visibility';
+            }
+        });
+    }
 </script>
 </body>
 </html>
