@@ -158,7 +158,7 @@ $login_url = "login/login.php";
                             <span class="material-symbols-outlined text-[20px] text-outline">history</span>
                             <span>Riwayat Pesanan</span>
                         </a>
-                        <a href="#" class="flex items-center gap-xs px-md py-sm text-body-md text-on-surface hover:bg-surface-container transition-colors">
+                        <a href="user/notifikasi.php" class="flex items-center gap-xs px-md py-sm text-body-md text-on-surface hover:bg-surface-container transition-colors">
                             <span class="material-symbols-outlined text-[20px] text-outline">notifications</span>
                             <span>Notifikasi</span>
                         </a>
@@ -181,7 +181,10 @@ $login_url = "login/login.php";
 
 <main>
 <!-- Hero Section -->
-<section class="relative min-h-[80vh] flex items-center px-container-margin overflow-hidden bg-surface-container-low">
+<section class="relative min-h-[calc(100vh-72px)] flex items-center px-container-margin overflow-hidden bg-surface-container-low">
+    <!-- Background Image with low opacity -->
+    <div class="absolute inset-0 bg-cover bg-center opacity-40 pointer-events-none" style="background-image: url('uploads/laundry_hero_bg.png');"></div>
+    
     <div class="max-w-7xl mx-auto w-full grid lg:grid-cols-2 gap-xl items-center py-xl relative z-10">
         <div class="space-y-lg animate-fade-in">
             <div class="inline-flex items-center space-x-xs px-md py-xs bg-secondary-container rounded-full text-on-secondary-container font-label-sm">
@@ -206,23 +209,8 @@ $login_url = "login/login.php";
         </div>
         
         <div class="relative hidden lg:block">
-            <!-- Simulated premium washer graphics inside bento-style aspect container -->
-            <div class="aspect-square rounded-[3rem] overflow-hidden shadow-2xl relative bg-gradient-to-tr from-primary to-secondary flex flex-col items-center justify-center text-white p-xl">
-                <span class="material-symbols-outlined text-[140px] animate-spin" style="animation-duration: 12s">local_laundry_service</span>
-                <h3 class="font-headline text-3xl font-bold mt-md">KosanLaundry</h3>
-                <p class="text-white/80 mt-xs text-center max-w-xs">Freshness and Cleanliness Delivered Fast to Your Doorstep</p>
-            </div>
-            <!-- Floating Badge -->
-            <div class="absolute -bottom-6 -left-6 bg-surface-container-lowest p-lg rounded-2xl shadow-xl border border-outline-variant max-w-[240px]">
-                <div class="flex items-center space-x-md">
-                    <div class="bg-secondary-container p-sm rounded-full">
-                        <span class="material-symbols-outlined text-secondary">local_shipping</span>
-                    </div>
-                    <div>
-                        <p class="text-label-sm text-on-surface-variant">Jemput Antar</p>
-                        <p class="text-label-md font-bold text-on-surface">Estimasi 2 Jam Selesai</p>
-                    </div>
-                </div>
+            <!-- Premium Laundry Room Photo -->
+            <div class="h-[450px] w-full rounded-[2.5rem] overflow-hidden shadow-2xl relative bg-cover bg-center border border-outline-variant/30" style="background-image: url('uploads/clean_washer_hero.png');">
             </div>
         </div>
     </div>
