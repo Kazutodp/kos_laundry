@@ -1,9 +1,50 @@
 <?php
 session_start();
+require_once '../db_connect.php';
+
 // Cek apakah user sudah login, jika belum arahkan ke halaman login
 if (!isset($_SESSION['user_id'])) {
     header("Location: ../login/login.php");
     exit();
+}
+
+$user_id = $_SESSION['user_id'];
+$error = '';
+$success = '';
+
+if ($_SERVER['REQUEST_METHOD'] === 'POST') {
+    $current_password = $_POST['current_password'] ?? '';
+    $new_password = $_POST['new_password'] ?? '';
+    $confirm_password = $_POST['confirm_password'] ?? '';
+    
+    if (empty($current_password) || empty($new_password) || empty($confirm_password)) {
+        $error = 'Semua kolom kata sandi wajib diisi.';
+    } elseif ($new_password !== $confirm_password) {
+        $error = 'Konfirmasi kata sandi baru tidak cocok.';
+    } elseif (strlen($new_password) < 6) {
+        $error = 'Kata sandi baru minimal harus 6 karakter.';
+    } else {
+        try {
+            // Ambil data user dari database
+            $stmt = $pdo->prepare("SELECT password FROM users WHERE id = ?");
+            $stmt->execute([$user_id]);
+            $user = $stmt->fetch();
+            
+            // Verifikasi kata sandi saat ini
+            if ($user && ($user['password'] === null || password_verify($current_password, $user['password']))) {
+                // Hash kata sandi baru dan simpan ke database
+                $new_hashed = password_hash($new_password, PASSWORD_DEFAULT);
+                $update_stmt = $pdo->prepare("UPDATE users SET password = ? WHERE id = ?");
+                $update_stmt->execute([$new_hashed, $user_id]);
+                
+                $success = 'Kata sandi berhasil diperbarui!';
+            } else {
+                $error = 'Kata sandi saat ini salah.';
+            }
+        } catch (PDOException $e) {
+            $error = 'Terjadi kesalahan sistem: ' . $e->getMessage();
+        }
+    }
 }
 ?>
 <!DOCTYPE html>
@@ -169,6 +210,23 @@ if (!isset($_SESSION['user_id'])) {
 <p class="text-body-md font-body-md text-on-surface-variant">Kelola kata sandi dan pengaturan keamanan akun Anda.</p>
 </div>
 <div class="p-8 space-y-10">
+
+<?php if (!empty($error)): ?>
+    <div class="p-md bg-error-container text-on-error-container rounded-xl flex items-center gap-xs font-label-sm border border-error">
+        <span class="material-symbols-outlined text-error">error</span>
+        <span><?= htmlspecialchars($error); ?></span>
+    </div>
+<?php endif; ?>
+
+<?php if (!empty($success)): ?>
+    <div class="p-md bg-secondary-container text-on-secondary-container rounded-xl flex items-center gap-xs font-label-sm border border-secondary">
+        <span class="material-symbols-outlined text-secondary">check_circle</span>
+        <span><?= htmlspecialchars($success); ?></span>
+    </div>
+<?php endif; ?>
+
+<!-- Form Action and Inputs Wrap -->
+<form action="security.php" method="POST" class="space-y-10">
 <!-- Section 1: Change Password -->
 <div class="space-y-8">
 <div class="flex items-center space-x-2">
@@ -176,12 +234,12 @@ if (!isset($_SESSION['user_id'])) {
 <h2 class="text-headline-sm font-headline-md text-on-surface">Ubah Kata Sandi</h2>
 </div>
 <div class="grid grid-cols-1 md:grid-cols-2 gap-8 items-start">
-<form class="space-y-6">
+<div class="space-y-6">
 <div class="space-y-2">
 <label class="text-label-md font-bold text-on-surface-variant" for="current-password">Kata Sandi Saat Ini</label>
 <div class="relative">
 <span class="material-symbols-outlined absolute left-3 top-1/2 -translate-y-1/2 text-on-surface-variant">vpn_key</span>
-<input class="w-full pl-10 pr-12 py-3 rounded-xl border border-outline-variant bg-surface focus:ring-2 focus:ring-primary focus:border-primary outline-none transition-standard text-body-md" id="current-password" placeholder="••••••••" type="password">
+<input class="w-full pl-10 pr-12 py-3 rounded-xl border border-outline-variant bg-surface focus:ring-2 focus:ring-primary focus:border-primary outline-none transition-standard text-body-md" id="current-password" name="current_password" required placeholder="••••••••" type="password">
 <button class="absolute right-3 top-1/2 -translate-y-1/2 text-on-surface-variant hover:text-primary transition-colors" onclick="togglePassword('current-password')" type="button">
 <span class="material-symbols-outlined text-[20px]">visibility</span>
 </button>
@@ -191,24 +249,24 @@ if (!isset($_SESSION['user_id'])) {
 <label class="text-label-md font-bold text-on-surface-variant" for="new-password">Kata Sandi Baru</label>
 <div class="relative">
 <span class="material-symbols-outlined absolute left-3 top-1/2 -translate-y-1/2 text-on-surface-variant">lock</span>
-<input class="w-full pl-10 pr-12 py-3 rounded-xl border border-outline-variant bg-surface focus:ring-2 focus:ring-primary focus:border-primary outline-none transition-standard text-body-md" id="new-password" placeholder="••••••••" type="password">
+<input class="w-full pl-10 pr-12 py-3 rounded-xl border border-outline-variant bg-surface focus:ring-2 focus:ring-primary focus:border-primary outline-none transition-standard text-body-md" id="new-password" name="new_password" required placeholder="••••••••" type="password">
 <button class="absolute right-3 top-1/2 -translate-y-1/2 text-on-surface-variant hover:text-primary transition-colors" onclick="togglePassword('new-password')" type="button">
 <span class="material-symbols-outlined text-[20px]">visibility</span>
 </button>
 </div>
-<p class="text-label-sm text-on-surface-variant opacity-70">Gunakan minimal 8 karakter dengan kombinasi angka dan simbol.</p>
+<p class="text-label-sm text-on-surface-variant opacity-70">Gunakan minimal 6 karakter dengan kombinasi angka dan simbol.</p>
 </div>
 <div class="space-y-2">
 <label class="text-label-md font-bold text-on-surface-variant" for="confirm-password">Konfirmasi Kata Sandi Baru</label>
 <div class="relative">
 <span class="material-symbols-outlined absolute left-3 top-1/2 -translate-y-1/2 text-on-surface-variant">verified</span>
-<input class="w-full pl-10 pr-12 py-3 rounded-xl border border-outline-variant bg-surface focus:ring-2 focus:ring-primary focus:border-primary outline-none transition-standard text-body-md" id="confirm-password" placeholder="••••••••" type="password">
+<input class="w-full pl-10 pr-12 py-3 rounded-xl border border-outline-variant bg-surface focus:ring-2 focus:ring-primary focus:border-primary outline-none transition-standard text-body-md" id="confirm-password" name="confirm_password" required placeholder="••••••••" type="password">
 <button class="absolute right-3 top-1/2 -translate-y-1/2 text-on-surface-variant hover:text-primary transition-colors" onclick="togglePassword('confirm-password')" type="button">
 <span class="material-symbols-outlined text-[20px]">visibility</span>
 </button>
 </div>
 </div>
-</form>
+</div>
 <div class="hidden md:flex flex-col items-center justify-center bg-surface-container-low rounded-2xl p-8 text-center border border-outline-variant/30">
 <div class="relative w-24 h-24 mb-4">
 <div class="absolute inset-0 bg-primary opacity-10 rounded-full animate-pulse"></div>
@@ -231,6 +289,7 @@ if (!isset($_SESSION['user_id'])) {
                                 Simpan Perubahan
                             </button>
 </div>
+</form>
 </div>
 </div>
 </section>

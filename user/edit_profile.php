@@ -1,9 +1,114 @@
 <?php
 session_start();
+require_once '../db_connect.php';
+
 // Cek apakah user sudah login, jika belum arahkan ke halaman login
 if (!isset($_SESSION['user_id'])) {
     header("Location: ../login/login.php");
     exit();
+}
+
+$user_id = $_SESSION['user_id'];
+$error = '';
+$success = '';
+
+// Proses update profil
+if ($_SERVER['REQUEST_METHOD'] === 'POST') {
+    $nama = trim($_POST['nama'] ?? '');
+    $telp = trim($_POST['telp'] ?? '');
+    $gender = $_POST['gender'] ?? '';
+    $alamat = trim($_POST['alamat'] ?? '');
+    $hapus_foto = $_POST['hapus_foto'] ?? '0';
+    
+    if (empty($nama)) {
+        $error = 'Nama Lengkap wajib diisi.';
+    } else {
+        try {
+            // Ambil path foto profil saat ini dari DB
+            $stmt = $pdo->prepare("SELECT foto_profil FROM users WHERE id = ?");
+            $stmt->execute([$user_id]);
+            $user_current = $stmt->fetch();
+            $foto_path = $user_current['foto_profil'] ?? null;
+            
+            // Proses hapus foto profil jika ditrigger
+            if ($hapus_foto === '1') {
+                if (!empty($user_current['foto_profil'])) {
+                    $old_file = '../' . $user_current['foto_profil'];
+                    if (file_exists($old_file)) {
+                        unlink($old_file);
+                    }
+                }
+                $foto_path = null;
+            }
+            
+            // Proses upload foto profil baru
+            if (isset($_FILES['foto_profil']) && $_FILES['foto_profil']['error'] === UPLOAD_ERR_OK) {
+                $file_tmp = $_FILES['foto_profil']['tmp_name'];
+                $file_name = $_FILES['foto_profil']['name'];
+                $file_size = $_FILES['foto_profil']['size'];
+                $file_ext = strtolower(pathinfo($file_name, PATHINFO_EXTENSION));
+                
+                $allowed_extensions = ['jpg', 'jpeg', 'png'];
+                
+                if (!in_array($file_ext, $allowed_extensions)) {
+                    $error = 'Ekstensi file tidak valid. Hanya JPG, JPEG, dan PNG yang diperbolehkan.';
+                } elseif ($file_size > 2 * 1024 * 1024) {
+                    $error = 'Ukuran file terlalu besar. Maksimal 2MB.';
+                } else {
+                    // Buat folder uploads jika belum ada
+                    $upload_dir = '../uploads/';
+                    if (!is_dir($upload_dir)) {
+                        mkdir($upload_dir, 0777, true);
+                    }
+                    
+                    // Buat nama file unik
+                    $new_file_name = 'avatar_' . $user_id . '_' . time() . '.' . $file_ext;
+                    $dest_path = $upload_dir . $new_file_name;
+                    
+                    if (move_uploaded_file($file_tmp, $dest_path)) {
+                        // Hapus file lama jika ada dan bukan URL eksternal
+                        if (!empty($user_current['foto_profil'])) {
+                            $old_file = '../' . $user_current['foto_profil'];
+                            if (file_exists($old_file)) {
+                                unlink($old_file);
+                            }
+                        }
+                        // Path relatif untuk disimpan di DB dan session
+                        $foto_path = 'uploads/' . $new_file_name;
+                    } else {
+                        $error = 'Gagal mengunggah gambar ke server.';
+                    }
+                }
+            }
+            
+            if (empty($error)) {
+                // Update database
+                $stmt = $pdo->prepare("UPDATE users SET nama = ?, foto_profil = ?, no_telp = ?, jenis_kelamin = ?, alamat = ? WHERE id = ?");
+                $stmt->execute([$nama, $foto_path, $telp, $gender, $alamat, $user_id]);
+                
+                // Update session
+                $_SESSION['username'] = $nama;
+                $_SESSION['profile_pic'] = $foto_path;
+                
+                $success = 'Profil Anda berhasil diperbarui!';
+            }
+        } catch (PDOException $e) {
+            $error = 'Gagal menyimpan perubahan: ' . $e->getMessage();
+        }
+    }
+}
+
+// Ambil data user terbaru dari database
+try {
+    $stmt = $pdo->prepare("SELECT * FROM users WHERE id = ?");
+    $stmt->execute([$user_id]);
+    $user = $stmt->fetch();
+    
+    // Simpan ke session untuk memastikan data selalu sinkron
+    $_SESSION['username'] = $user['nama'];
+    $_SESSION['profile_pic'] = $user['foto_profil'];
+} catch (PDOException $e) {
+    $error = 'Gagal mengambil data profil: ' . $e->getMessage();
 }
 ?>
 <!DOCTYPE html>
@@ -163,27 +268,46 @@ if (!isset($_SESSION['user_id'])) {
 <p class="text-body-md font-body-md text-on-surface-variant">Perbarui informasi pribadi dan alamat kos Anda untuk mempermudah penjemputan.</p>
 </div>
 <div class="p-8">
-<form class="space-y-10">
+
+<?php if (!empty($error)): ?>
+    <div class="p-md bg-error-container text-on-error-container rounded-xl flex items-center gap-xs font-label-sm border border-error mb-md">
+        <span class="material-symbols-outlined text-error">error</span>
+        <span><?= htmlspecialchars($error); ?></span>
+    </div>
+<?php endif; ?>
+
+<?php if (!empty($success)): ?>
+    <div class="p-md bg-secondary-container text-on-secondary-container rounded-xl flex items-center gap-xs font-label-sm border border-secondary mb-md">
+        <span class="material-symbols-outlined text-secondary">check_circle</span>
+        <span><?= htmlspecialchars($success); ?></span>
+    </div>
+<?php endif; ?>
+
+<form class="space-y-10" action="edit_profile.php" method="POST" enctype="multipart/form-data">
+<!-- Hidden deletion input -->
+<input type="hidden" id="hapus-foto-input" name="hapus_foto" value="0">
+
 <!-- Avatar Upload Section -->
 <div class="flex flex-col items-center sm:flex-row sm:items-end space-y-4 sm:space-y-0 sm:space-x-8">
 <div class="relative group">
-<div class="w-32 h-32 rounded-full overflow-hidden border-4 border-surface-container-high custom-shadow bg-primary text-on-primary flex items-center justify-center font-bold text-4xl select-none">
-    <?php if (!empty($_SESSION['profile_pic'])): ?>
-        <img alt="User Large Avatar" class="w-full h-full object-cover" src="<?= htmlspecialchars($_SESSION['profile_pic']); ?>">
+<div class="w-32 h-32 rounded-full overflow-hidden border-4 border-surface-container-high custom-shadow bg-primary text-on-primary flex items-center justify-center font-bold text-4xl select-none" id="avatar-container">
+    <?php if (!empty($user['foto_profil'])): ?>
+        <img alt="User Avatar" id="avatar-img" class="w-full h-full object-cover" src="../<?= htmlspecialchars($user['foto_profil']); ?>">
     <?php else: ?>
-        <?= strtoupper(substr($_SESSION['username'], 0, 1)); ?>
+        <span id="avatar-initial"><?= strtoupper(substr($user['nama'], 0, 1)); ?></span>
     <?php endif; ?>
 </div>
-<button class="absolute bottom-1 right-1 bg-primary text-white p-2 rounded-full shadow-lg hover:scale-105 transition-transform" type="button">
+<button onclick="triggerUpload()" class="absolute bottom-1 right-1 bg-primary text-white p-2 rounded-full shadow-lg hover:scale-105 transition-transform" type="button">
 <span class="material-symbols-outlined text-sm">photo_camera</span>
 </button>
+<input type="file" id="foto-profil-input" name="foto_profil" accept="image/png, image/jpeg, image/jpg" class="hidden" onchange="previewImage(event)">
 </div>
 <div class="text-center sm:text-left">
 <h3 class="text-label-md font-bold text-on-surface">Foto Profil</h3>
 <p class="text-label-sm font-label-sm text-on-surface-variant mt-1">JPG atau PNG, Maksimal 2MB.</p>
 <div class="mt-3 flex space-x-3">
-<button class="text-label-sm font-bold text-primary hover:underline" type="button">Ganti Foto</button>
-<button class="text-label-sm font-bold text-error hover:underline" type="button">Hapus</button>
+<button onclick="triggerUpload()" class="text-label-sm font-bold text-primary hover:underline" type="button">Ganti Foto</button>
+<button onclick="deletePhoto()" class="text-label-sm font-bold text-error hover:underline" type="button">Hapus</button>
 </div>
 </div>
 </div>
@@ -198,32 +322,31 @@ if (!isset($_SESSION['user_id'])) {
 <label class="text-label-md font-bold text-on-surface-variant">Nama Lengkap</label>
 <div class="relative">
 <span class="material-symbols-outlined absolute left-3 top-1/2 -translate-y-1/2 text-on-surface-variant">person</span>
-<input class="w-full pl-10 pr-4 py-3 rounded-xl border border-outline-variant bg-surface focus:ring-2 focus:ring-primary focus:border-primary outline-none transition-standard text-body-md" type="text" value="<?= htmlspecialchars($_SESSION['username']); ?>">
+<input class="w-full pl-10 pr-4 py-3 rounded-xl border border-outline-variant bg-surface focus:ring-2 focus:ring-primary focus:border-primary outline-none transition-standard text-body-md" type="text" name="nama" required value="<?= htmlspecialchars($user['nama']); ?>">
 </div>
 </div>
 <div class="space-y-2">
 <label class="text-label-md font-bold text-on-surface-variant">Email</label>
 <div class="relative">
 <span class="material-symbols-outlined absolute left-3 top-1/2 -translate-y-1/2 text-on-surface-variant">mail</span>
-<input class="w-full pl-10 pr-4 py-3 rounded-xl border border-outline-variant bg-surface-container-high text-on-surface-variant/70 cursor-not-allowed text-body-md" disabled="" type="email" value="<?= htmlspecialchars($_SESSION['email']); ?>">
-<button class="absolute right-3 top-1/2 -translate-y-1/2 text-primary text-label-sm font-bold hover:underline" type="button">Ubah</button>
+<input class="w-full pl-10 pr-4 py-3 rounded-xl border border-outline-variant bg-surface-container-high text-on-surface-variant/70 cursor-not-allowed text-body-md" disabled="" type="email" value="<?= htmlspecialchars($user['email']); ?>">
 </div>
 </div>
 <div class="space-y-2">
 <label class="text-label-md font-bold text-on-surface-variant">Nomor Telepon</label>
 <div class="relative">
 <span class="material-symbols-outlined absolute left-3 top-1/2 -translate-y-1/2 text-on-surface-variant">call</span>
-<input class="w-full pl-10 pr-4 py-3 rounded-xl border border-outline-variant bg-surface focus:ring-2 focus:ring-primary focus:border-primary outline-none transition-standard text-body-md" type="tel" value="+62 812 3456 7890">
+<input class="w-full pl-10 pr-4 py-3 rounded-xl border border-outline-variant bg-surface focus:ring-2 focus:ring-primary focus:border-primary outline-none transition-standard text-body-md" type="tel" name="telp" value="<?= htmlspecialchars($user['no_telp'] ?? ''); ?>">
 </div>
 </div>
 <div class="space-y-2">
 <label class="text-label-md font-bold text-on-surface-variant">Jenis Kelamin</label>
 <div class="relative">
 <span class="material-symbols-outlined absolute left-3 top-1/2 -translate-y-1/2 text-on-surface-variant">wc</span>
-<select class="w-full pl-10 pr-4 py-3 rounded-xl border border-outline-variant bg-surface focus:ring-2 focus:ring-primary focus:border-primary outline-none appearance-none transition-standard text-body-md">
-<option selected="" value="Laki-laki">Laki-laki</option>
-<option value="Perempuan">Perempuan</option>
-<option value="Lainnya">Lainnya</option>
+<select name="gender" class="w-full pl-10 pr-4 py-3 rounded-xl border border-outline-variant bg-surface focus:ring-2 focus:ring-primary focus:border-primary outline-none appearance-none transition-standard text-body-md">
+<option value="Laki-laki" <?= ($user['jenis_kelamin'] ?? '') === 'Laki-laki' ? 'selected' : '' ?>>Laki-laki</option>
+<option value="Perempuan" <?= ($user['jenis_kelamin'] ?? '') === 'Perempuan' ? 'selected' : '' ?>>Perempuan</option>
+<option value="Lainnya" <?= ($user['jenis_kelamin'] ?? '') === 'Lainnya' ? 'selected' : '' ?>>Lainnya</option>
 </select>
 <span class="material-symbols-outlined absolute right-3 top-1/2 -translate-y-1/2 pointer-events-none text-on-surface-variant">expand_more</span>
 </div>
@@ -242,7 +365,7 @@ if (!isset($_SESSION['user_id'])) {
 <label class="text-label-md font-bold text-on-surface-variant">Alamat Lengkap</label>
 <div class="relative">
 <span class="material-symbols-outlined absolute left-3 top-4 text-on-surface-variant">map</span>
-<textarea class="w-full pl-10 pr-4 py-3 rounded-xl border border-outline-variant bg-surface focus:ring-2 focus:ring-primary focus:border-primary outline-none transition-standard text-body-md" placeholder="Masukkan alamat lengkap penjemputan..." rows="3"></textarea>
+<textarea name="alamat" class="w-full pl-10 pr-4 py-3 rounded-xl border border-outline-variant bg-surface focus:ring-2 focus:ring-primary focus:border-primary outline-none transition-standard text-body-md" placeholder="Masukkan alamat lengkap penjemputan..." rows="3"><?= htmlspecialchars($user['alamat'] ?? ''); ?></textarea>
 </div>
 </div>
 </div>
@@ -264,27 +387,29 @@ if (!isset($_SESSION['user_id'])) {
 </main>
 
 <script>
-        // Simple micro-interaction for form submission
-        document.querySelector('form').addEventListener('submit', function(e) {
-            e.preventDefault();
-            const btn = e.target.querySelector('button[type="submit"]');
-            const originalText = btn.innerText;
-            btn.innerHTML = '<span class="material-symbols-outlined animate-spin mr-2">sync</span> Menyimpan...';
-            btn.disabled = true;
-            btn.classList.add('opacity-80');
-            
-            setTimeout(() => {
-                btn.innerHTML = '<span class="material-symbols-outlined mr-2">check_circle</span> Berhasil!';
-                btn.classList.replace('bg-primary', 'bg-secondary');
-                
-                setTimeout(() => {
-                    btn.innerText = originalText;
-                    btn.classList.replace('bg-secondary', 'bg-primary');
-                    btn.disabled = false;
-                    btn.classList.remove('opacity-80');
-                }, 2000);
-            }, 1500);
-        });
+        function triggerUpload() {
+            document.getElementById('foto-profil-input').click();
+        }
+
+        function deletePhoto() {
+            if (confirm("Apakah Anda yakin ingin menghapus foto profil?")) {
+                document.getElementById('hapus-foto-input').value = "1";
+                // Submit form langsung untuk menghapus foto
+                document.querySelector('form').submit();
+            }
+        }
+
+        function previewImage(event) {
+            const input = event.target;
+            if (input.files && input.files[0]) {
+                const reader = new FileReader();
+                reader.onload = function(e) {
+                    const container = document.getElementById('avatar-container');
+                    container.innerHTML = `<img alt="User Avatar" id="avatar-img" class="w-full h-full object-cover" src="${e.target.result}">`;
+                }
+                reader.readAsDataURL(input.files[0]);
+            }
+        }
 
         // Toggle focus state visuals
         const inputs = document.querySelectorAll('input, select, textarea');
