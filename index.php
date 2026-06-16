@@ -141,11 +141,12 @@ $login_url = "login/login.php";
             <?php if ($is_logged_in): ?>
                 <!-- Profile Indicator with Hover Dropdown -->
                 <div class="relative group" id="profile-dropdown-container">
-                    <button class="flex items-center justify-center w-10 h-10 rounded-full border border-outline-variant focus:outline-none select-none overflow-hidden bg-surface-container hover:bg-surface-container-high transition-all">
-                        <img src="https://images.unsplash.com/photo-1535713875002-d1d0cf377fde?auto=format&fit=crop&w=80&h=80" alt="Avatar" class="w-full h-full object-cover" onerror="this.style.display='none'; document.getElementById('avatar-fallback').classList.remove('hidden')">
-                        <div id="avatar-fallback" class="hidden w-full h-full bg-primary text-on-primary flex items-center justify-center font-bold text-label-md">
+                    <button class="flex items-center justify-center w-10 h-10 rounded-full border border-outline-variant focus:outline-none select-none overflow-hidden bg-primary text-on-primary font-bold text-body-lg shadow-sm hover:scale-105 transition-all">
+                        <?php if (!empty($_SESSION['profile_pic'])): ?>
+                            <img src="<?= htmlspecialchars($_SESSION['profile_pic']); ?>" alt="Avatar" class="w-full h-full object-cover">
+                        <?php else: ?>
                             <?= strtoupper(substr($_SESSION['username'], 0, 1)); ?>
-                        </div>
+                        <?php endif; ?>
                     </button>
                     <!-- Dropdown Menu -->
                     <div class="absolute right-0 mt-xs w-48 bg-surface-container-lowest border border-outline-variant rounded-xl shadow-lg py-xs z-50 transform origin-top-right scale-95 opacity-0 pointer-events-none group-hover:scale-100 group-hover:opacity-100 group-hover:pointer-events-auto transition-all duration-200">
