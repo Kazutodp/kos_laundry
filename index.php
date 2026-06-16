@@ -150,7 +150,7 @@ $login_url = "login/login.php";
                     </button>
                     <!-- Dropdown Menu -->
                     <div class="absolute right-0 mt-xs w-48 bg-surface-container-lowest border border-outline-variant rounded-xl shadow-lg py-xs z-50 transform origin-top-right scale-95 opacity-0 pointer-events-none group-hover:scale-100 group-hover:opacity-100 group-hover:pointer-events-auto transition-all duration-200">
-                        <a href="#" class="flex items-center gap-xs px-md py-sm text-body-md text-on-surface hover:bg-surface-container transition-colors">
+                        <a href="user/edit_profile.php" class="flex items-center gap-xs px-md py-sm text-body-md text-on-surface hover:bg-surface-container transition-colors">
                             <span class="material-symbols-outlined text-[20px] text-outline">edit</span>
                             <span>Edit Profil</span>
                         </a>
