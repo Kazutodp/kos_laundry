@@ -276,7 +276,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                     <span>Belum punya akun? </span><a class="text-primary font-bold hover:underline" href="daftar.php">Daftar Sekarang</a>
                 </p>
                 <div class="pt-md border-t border-outline-variant">
-                    <a class="inline-flex items-center gap-xs font-label-sm text-label-sm text-outline hover:text-primary transition-colors" href="#">
+                    <a class="inline-flex items-center gap-xs font-label-sm text-label-sm text-outline hover:text-primary transition-colors" href="../admin/admin.php">
                         <span class="material-symbols-outlined text-[20px]">admin_panel_settings</span>
                         Masuk sebagai Admin
                     </a>
