@@ -145,7 +145,7 @@ $login_url = "login/login.php";
             <div class="hidden md:flex space-x-lg items-center mr-lg">
                 <a class="text-primary font-bold border-b-2 border-primary pb-1 font-label-md" href="#">Home</a>
                 <a class="text-on-surface-variant hover:text-primary transition-colors font-label-md" href="#">Services</a>
-                <a class="text-on-surface-variant hover:text-primary transition-colors font-label-md" href="#">Locations</a>
+                <a class="text-on-surface-variant hover:text-primary transition-colors font-label-md" href="lokasi/locations.php">Locations</a>
                 <a class="text-on-surface-variant hover:text-primary transition-colors font-label-md" href="#">Support</a>
             </div>
             <?php if ($is_logged_in): ?>
