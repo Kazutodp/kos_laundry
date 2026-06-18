@@ -1,3 +1,44 @@
+<?php
+session_start();
+require_once '../db_connect.php';
+
+// Redirect jika sudah login
+if (isset($_SESSION['admin_logged_in'])) {
+    header("Location: dashboard_admin.php");
+    exit();
+}
+
+$error = '';
+
+if ($_SERVER['REQUEST_METHOD'] === 'POST') {
+    $username = trim($_POST['admin_id'] ?? '');
+    $password = $_POST['password'] ?? '';
+
+    if (empty($username) || empty($password)) {
+        $error = 'ID Admin dan password wajib diisi.';
+    } else {
+        try {
+            $stmt = $pdo->prepare("SELECT * FROM admins WHERE username = ?");
+            $stmt->execute([$username]);
+            $admin = $stmt->fetch();
+
+            if ($admin && password_verify($password, $admin['password'])) {
+                $_SESSION['admin_logged_in'] = true;
+                $_SESSION['admin_id'] = $admin['id'];
+                $_SESSION['admin_username'] = $admin['username'];
+                $_SESSION['admin_nama'] = $admin['nama'];
+
+                header("Location: dashboard_admin.php");
+                exit();
+            } else {
+                $error = 'ID Admin atau password salah.';
+            }
+        } catch (PDOException $e) {
+            $error = 'Terjadi kesalahan sistem: ' . $e->getMessage();
+        }
+    }
+}
+?>
 <!DOCTYPE html><html class="light" lang="id"><head>
 <meta charset="utf-8">
 <meta content="width=device-width, initial-scale=1.0" name="viewport">
@@ -151,7 +192,14 @@
 <h2 class="text-headline-md font-headline-lg text-on-surface">Masuk Panel Admin</h2>
 <p class="text-body-md text-on-surface-variant mt-xs">Identitas internal diperlukan untuk akses kontrol.</p>
 </div>
-<form class="space-y-lg" onsubmit="event.preventDefault();">
+<?php if (!empty($error)): ?>
+<div class="p-md bg-error-container text-on-error-container rounded-xl flex items-center gap-xs font-label-sm border border-error mb-md animate-pulse">
+    <span class="material-symbols-outlined text-error">error</span>
+    <span><?= htmlspecialchars($error); ?></span>
+</div>
+<?php endif; ?>
+
+<form class="space-y-lg" action="admin.php" method="POST">
 <!-- Admin ID Field -->
 <div class="space-y-xs">
 <label class="text-label-md font-label-md text-on-surface-variant flex items-center gap-xs" for="admin_id">
@@ -159,7 +207,7 @@
                     Username / ID Admin
                 </label>
 <div class="relative">
-<input class="w-full px-md py-md rounded-lg border border-outline-variant bg-surface focus:ring-2 focus:ring-primary focus:border-primary transition-all outline-none" id="admin_id" placeholder="Masukkan ID Staf" type="text">
+<input class="w-full px-md py-md rounded-lg border border-outline-variant bg-surface focus:ring-2 focus:ring-primary focus:border-primary transition-all outline-none" id="admin_id" name="admin_id" placeholder="Masukkan ID Staf" type="text" value="<?= isset($_POST['admin_id']) ? htmlspecialchars($_POST['admin_id']) : '' ?>">
 </div>
 </div>
 <!-- Password Field -->
@@ -172,7 +220,7 @@
 <button class="text-label-sm text-primary hover:underline font-semibold" id="toggle-password" type="button">Tampilkan</button>
 </div>
 <div class="relative">
-<input class="w-full px-md py-md rounded-lg border border-outline-variant bg-surface focus:ring-2 focus:ring-primary focus:border-primary transition-all outline-none" id="password" placeholder="••••••••" type="password">
+<input class="w-full px-md py-md rounded-lg border border-outline-variant bg-surface focus:ring-2 focus:ring-primary focus:border-primary transition-all outline-none" id="password" name="password" placeholder="••••••••" type="password">
 </div>
 </div>
 <!-- Primary Action Button -->
@@ -230,15 +278,18 @@
         });
     });
 
-    // Form Animation Simulation
+    // Form Animation and Submission
     document.querySelector('form').addEventListener('submit', (e) => {
-        const btn = e.target.querySelector('button[type="submit"]');
+        e.preventDefault();
+        const form = e.target;
+        const btn = form.querySelector('button[type="submit"]');
         const originalText = btn.innerHTML;
+        
         btn.innerHTML = '<span class="material-symbols-outlined animate-spin">sync</span> Memverifikasi...';
         btn.classList.add('opacity-80', 'cursor-not-allowed');
+        
         setTimeout(() => {
-            btn.innerHTML = originalText;
-            btn.classList.remove('opacity-80', 'cursor-not-allowed');
+            form.submit();
         }, 1500);
     });
 </script>
