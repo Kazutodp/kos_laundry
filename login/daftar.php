@@ -61,6 +61,8 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     <meta charset="utf-8"/>
     <meta content="width=device-width, initial-scale=1.0" name="viewport"/>
     <title>Daftar Akun | KosanLaundry</title>
+    <!-- Google Identity Services SDK -->
+    <script async="" defer="" src="https://accounts.google.com/gsi/client"></script>
     <script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&amp;display=swap" rel="stylesheet"/>
     <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
@@ -273,6 +275,16 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                 <button class="w-full py-md bg-primary text-on-primary rounded-xl font-label-md text-label-md hover:bg-primary-container transition-all shadow-md active:scale-[0.98]" type="submit">
                     <span>Daftar Sekarang</span>
                 </button>
+                <!-- Divider -->
+                <div class="relative flex items-center py-base">
+                    <div class="flex-grow border-t border-outline-variant"></div>
+                    <span class="flex-shrink mx-md font-label-sm text-label-sm text-outline">Atau daftar dengan</span>
+                    <div class="flex-grow border-t border-outline-variant"></div>
+                </div>
+                <!-- Social Register Container -->
+                <div class="w-full flex justify-center">
+                    <div class="w-full" id="google-register-btn-container"></div>
+                </div>
             </form>
             <footer class="mt-xl text-center space-y-md">
                 <p class="font-label-md text-label-md text-on-surface-variant">
@@ -284,6 +296,39 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 </main>
 
 <script>
+    function handleCredentialResponse(response) {
+        fetch('google_auth.php', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json'
+            },
+            body: JSON.stringify({ credential: response.credential })
+        })
+        .then(res => res.json())
+        .then(data => {
+            if (data.success) {
+                window.location.href = data.redirect;
+            } else {
+                alert(data.message || 'Gagal mendaftar dengan Google.');
+            }
+        })
+        .catch(err => {
+            console.error(err);
+            alert('Terjadi kesalahan koneksi ke server.');
+        });
+    }
+
+    window.addEventListener('load', function () {
+        google.accounts.id.initialize({
+            client_id: "YOUR_GOOGLE_CLIENT_ID",
+            callback: handleCredentialResponse
+        });
+        google.accounts.id.renderButton(
+            document.getElementById("google-register-btn-container"),
+            { theme: "outline", size: "large", width: "100%", shape: "rectangular", text: "signup_with" }
+        );
+    });
+
     // Toggle passwords visibility
     const togglePasswordBtn = document.getElementById('toggle-password');
     const passwordInput = document.getElementById('password');

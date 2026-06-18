@@ -288,10 +288,32 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 </main>
 
 <script>
+    function handleCredentialResponse(response) {
+        fetch('google_auth.php', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json'
+            },
+            body: JSON.stringify({ credential: response.credential })
+        })
+        .then(res => res.json())
+        .then(data => {
+            if (data.success) {
+                window.location.href = data.redirect;
+            } else {
+                alert(data.message || 'Gagal masuk dengan Google.');
+            }
+        })
+        .catch(err => {
+            console.error(err);
+            alert('Terjadi kesalahan koneksi ke server.');
+        });
+    }
+
     window.onload = function () {
         google.accounts.id.initialize({
             client_id: "YOUR_GOOGLE_CLIENT_ID",
-            callback: (response) => console.log(response)
+            callback: handleCredentialResponse
         });
         google.accounts.id.renderButton(
             document.getElementById("google-login-btn-container"),
