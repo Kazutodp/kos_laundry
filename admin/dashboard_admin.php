@@ -236,7 +236,7 @@ if (!isset($_SESSION['admin_logged_in'])) {
 </div>
 <div>
 <p class="text-label-md text-on-surface-variant">Total Mitra Aktif</p>
-<p class="text-headline-md font-bold">156</p>
+<p class="text-headline-md font-bold">0</p>
 </div>
 </div>
 <div class="bento-card p-lg rounded-xl flex items-center gap-lg">
@@ -245,7 +245,7 @@ if (!isset($_SESSION['admin_logged_in'])) {
 </div>
 <div>
 <p class="text-label-md text-on-surface-variant">Total Pesanan Provinsi</p>
-<p class="text-headline-md font-bold">1,284</p>
+<p class="text-headline-md font-bold">0</p>
 </div>
 </div>
 <div class="bento-card p-lg rounded-xl flex items-center gap-lg">
@@ -254,7 +254,7 @@ if (!isset($_SESSION['admin_logged_in'])) {
 </div>
 <div>
 <p class="text-label-md text-on-surface-variant">Pendapatan Mitra</p>
-<p class="text-headline-md font-bold">Rp 42.5M</p>
+<p class="text-headline-md font-bold">Rp 0</p>
 </div>
 </div>
 <div class="bento-card p-lg rounded-xl flex items-center gap-lg">
@@ -263,7 +263,7 @@ if (!isset($_SESSION['admin_logged_in'])) {
 </div>
 <div>
 <p class="text-label-md text-on-surface-variant">Avg Rating Provinsi</p>
-<p class="text-headline-md font-bold">4.8/5</p>
+<p class="text-headline-md font-bold">0.0/5</p>
 </div>
 </div>
 </div>
@@ -280,31 +280,31 @@ if (!isset($_SESSION['admin_logged_in'])) {
 </div>
 <div class="flex-grow flex items-end justify-between gap-base h-48 pt-md px-md">
 <div class="w-full flex flex-col items-center gap-xs">
-<div class="w-full bg-primary-fixed rounded-t-lg transition-all duration-500 hover:bg-primary" style="height: 95%;"></div>
+<div class="w-full bg-primary-fixed rounded-t-lg transition-all duration-500 hover:bg-primary" style="height: 0%;"></div>
 <span class="text-label-sm text-outline">Bandung</span>
 </div>
 <div class="w-full flex flex-col items-center gap-xs">
-<div class="w-full bg-primary-fixed rounded-t-lg transition-all duration-500 hover:bg-primary" style="height: 45%;"></div>
+<div class="w-full bg-primary-fixed rounded-t-lg transition-all duration-500 hover:bg-primary" style="height: 0%;"></div>
 <span class="text-label-sm text-outline">Bogor</span>
 </div>
 <div class="w-full flex flex-col items-center gap-xs">
-<div class="w-full bg-primary-fixed rounded-t-lg transition-all duration-500 hover:bg-primary" style="height: 75%;"></div>
+<div class="w-full bg-primary-fixed rounded-t-lg transition-all duration-500 hover:bg-primary" style="height: 0%;"></div>
 <span class="text-label-sm text-outline">Bekasi</span>
 </div>
 <div class="w-full flex flex-col items-center gap-xs">
-<div class="w-full bg-primary-container rounded-t-lg transition-all duration-500 hover:bg-primary" style="height: 60%;"></div>
+<div class="w-full bg-primary-container rounded-t-lg transition-all duration-500 hover:bg-primary" style="height: 0%;"></div>
 <span class="text-label-sm text-outline font-bold text-on-surface">Depok</span>
 </div>
 <div class="w-full flex flex-col items-center gap-xs">
-<div class="w-full bg-primary-fixed rounded-t-lg transition-all duration-500 hover:bg-primary" style="height: 35%;"></div>
+<div class="w-full bg-primary-fixed rounded-t-lg transition-all duration-500 hover:bg-primary" style="height: 0%;"></div>
 <span class="text-label-sm text-outline">Cirebon</span>
 </div>
 <div class="w-full flex flex-col items-center gap-xs">
-<div class="w-full bg-primary-fixed rounded-t-lg transition-all duration-500 hover:bg-primary" style="height: 55%;"></div>
+<div class="w-full bg-primary-fixed rounded-t-lg transition-all duration-500 hover:bg-primary" style="height: 0%;"></div>
 <span class="text-label-sm text-outline">Garut</span>
 </div>
 <div class="w-full flex flex-col items-center gap-xs">
-<div class="w-full bg-primary-fixed rounded-t-lg transition-all duration-500 hover:bg-primary" style="height: 25%;"></div>
+<div class="w-full bg-primary-fixed rounded-t-lg transition-all duration-500 hover:bg-primary" style="height: 0%;"></div>
 <span class="text-label-sm text-outline">Sumedang</span>
 </div>
 </div>
@@ -313,36 +313,12 @@ if (!isset($_SESSION['admin_logged_in'])) {
 <div class="bento-card p-lg rounded-xl space-y-md">
 <h2 class="text-headline-sm font-bold">Sebaran Mitra</h2>
 <div class="space-y-sm">
-<div class="flex items-center justify-between p-sm bg-surface rounded-lg border border-outline-variant">
-<div class="flex items-center gap-sm">
-<div class="w-2 h-2 bg-primary rounded-full"></div>
-<span class="text-label-md">Bandung Kota</span>
-</div>
-<span class="text-label-sm font-bold">42 Mitra</span>
-</div>
-<div class="flex items-center justify-between p-sm bg-surface rounded-lg border border-outline-variant">
-<div class="flex items-center gap-sm">
-<div class="w-2 h-2 bg-primary rounded-full"></div>
-<span class="text-label-md">Kab. Bogor</span>
-</div>
-<span class="text-label-sm font-bold">35 Mitra</span>
-</div>
-<div class="flex items-center justify-between p-sm bg-surface rounded-lg border border-outline-variant">
-<div class="flex items-center gap-sm">
-<div class="w-2 h-2 bg-primary rounded-full"></div>
-<span class="text-label-md">Bekasi Kota</span>
-</div>
-<span class="text-label-sm font-bold">28 Mitra</span>
-</div>
-<div class="flex items-center justify-between p-sm bg-surface rounded-lg border border-outline-variant">
-<div class="flex items-center gap-sm">
-<div class="w-2 h-2 bg-primary rounded-full"></div>
-<span class="text-label-md">Depok</span>
-</div>
-<span class="text-label-sm font-bold">22 Mitra</span>
+<div class="text-center py-10 text-on-surface-variant">
+<span class="material-symbols-outlined text-outline text-[40px] mb-2">location_off</span>
+<p class="text-label-md font-semibold">Belum ada sebaran mitra</p>
 </div>
 </div>
-<button class="w-full py-xs text-primary font-bold text-label-md hover:underline">Detail Peta Wilayah</button>
+<button class="w-full py-xs text-primary font-bold text-label-md hover:underline disabled:opacity-50" disabled>Detail Peta Wilayah</button>
 </div>
 </div>
 <!-- Recent Partners Table -->
@@ -363,72 +339,21 @@ if (!isset($_SESSION['admin_logged_in'])) {
 </tr>
 </thead>
 <tbody class="divide-y divide-outline-variant">
-<tr class="hover:bg-surface-container-lowest transition-colors">
-<td class="px-lg py-md text-body-md font-bold">Laundry Sejahtera Bandung</td>
-<td class="px-lg py-md text-body-md">Coblong, Bandung</td>
-<td class="px-lg py-md text-body-md">8/10</td>
-<td class="px-lg py-md">
-<span class="px-sm py-xs bg-secondary-container text-secondary rounded-full text-label-sm font-bold">Online</span>
-</td>
-<td class="px-lg py-md text-right">
-<span class="font-bold text-primary">9.8</span>
-</td>
-</tr>
-<tr class="hover:bg-surface-container-lowest transition-colors">
-<td class="px-lg py-md text-body-md font-bold">Bersih Kilat Bogor</td>
-<td class="px-lg py-md text-body-md">Sempur, Bogor</td>
-<td class="px-lg py-md text-body-md">12/12</td>
-<td class="px-lg py-md">
-<span class="px-sm py-xs bg-secondary-container text-secondary rounded-full text-label-sm font-bold">Online</span>
-</td>
-<td class="px-lg py-md text-right">
-<span class="font-bold text-primary">9.5</span>
-</td>
-</tr>
-<tr class="hover:bg-surface-container-lowest transition-colors">
-<td class="px-lg py-md text-body-md font-bold">Mitra Laundry Sumedang</td>
-<td class="px-lg py-md text-body-md">Jatinangor, Sumedang</td>
-<td class="px-lg py-md text-body-md">4/10</td>
-<td class="px-lg py-md">
-<span class="px-sm py-xs bg-surface-container-highest text-on-surface-variant rounded-full text-label-sm font-bold">Maintenance</span>
-</td>
-<td class="px-lg py-md text-right">
-<span class="font-bold text-tertiary">7.2</span>
-</td>
-</tr>
-<tr class="hover:bg-surface-container-lowest transition-colors">
-<td class="px-lg py-md text-body-md font-bold">Rapi Jaya Bekasi</td>
-<td class="px-lg py-md text-body-md">Bekasi Barat</td>
-<td class="px-lg py-md text-body-md">0/8</td>
-<td class="px-lg py-md">
-<span class="px-sm py-xs bg-error-container text-error rounded-full text-label-sm font-bold">Offline</span>
-</td>
-<td class="px-lg py-md text-right">
-<span class="font-bold text-error">4.5</span>
-</td>
-</tr>
-<tr class="hover:bg-surface-container-lowest transition-colors">
-<td class="px-lg py-md text-body-md font-bold"> Laundry Cirebon Super</td>
-<td class="px-lg py-md text-body-md">Kesambi, Cirebon</td>
-<td class="px-lg py-md text-body-md">6/6</td>
-<td class="px-lg py-md">
-<span class="px-sm py-xs bg-secondary-container text-secondary rounded-full text-label-sm font-bold">Online</span>
-</td>
-<td class="px-lg py-md text-right">
-<span class="font-bold text-primary">9.2</span>
+<tr>
+<td colspan="5" class="px-lg py-12 text-center text-on-surface-variant">
+<span class="material-symbols-outlined text-outline text-[48px] mb-2">storefront_off</span>
+<p class="text-body-md font-semibold">Belum ada aktivitas mitra saat ini</p>
 </td>
 </tr>
 </tbody>
 </table>
 </div>
 <div class="px-lg py-md bg-surface-container-low flex justify-between items-center border-t border-outline-variant">
-<p class="text-label-sm text-outline">Menampilkan 5 dari 156 mitra terdaftar</p>
+<p class="text-label-sm text-outline">Menampilkan 0 dari 0 mitra terdaftar</p>
 <div class="flex gap-xs">
 <button class="w-8 h-8 flex items-center justify-center rounded border border-outline-variant text-on-surface-variant hover:bg-white transition-colors disabled:opacity-50" disabled=""><span class="material-symbols-outlined text-[18px]">chevron_left</span></button>
 <button class="w-8 h-8 flex items-center justify-center rounded border border-primary bg-primary text-on-primary font-bold text-label-sm transition-colors">1</button>
-<button class="w-8 h-8 flex items-center justify-center rounded border border-outline-variant text-on-surface-variant hover:bg-white transition-colors font-bold text-label-sm">2</button>
-<button class="w-8 h-8 flex items-center justify-center rounded border border-outline-variant text-on-surface-variant hover:bg-white transition-colors font-bold text-label-sm">3</button>
-<button class="w-8 h-8 flex items-center justify-center rounded border border-outline-variant text-on-surface-variant hover:bg-white transition-colors"><span class="material-symbols-outlined text-[18px]">chevron_right</span></button>
+<button class="w-8 h-8 flex items-center justify-center rounded border border-outline-variant text-on-surface-variant hover:bg-white transition-colors disabled:opacity-50" disabled=""><span class="material-symbols-outlined text-[18px]">chevron_right</span></button>
 </div>
 </div>
 </div>
