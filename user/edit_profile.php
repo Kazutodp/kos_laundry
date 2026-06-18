@@ -41,8 +41,48 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                 $foto_path = null;
             }
             
-            // Proses upload foto profil baru
-            if (isset($_FILES['foto_profil']) && $_FILES['foto_profil']['error'] === UPLOAD_ERR_OK) {
+            // Proses upload foto profil baru (baik via Cropped Base64 atau Fallback File Upload)
+            $cropped_data = $_POST['cropped_image_data'] ?? '';
+            if (!empty($cropped_data)) {
+                if (preg_match('/^data:image\/(\w+);base64,/', $cropped_data, $type)) {
+                    $data = substr($cropped_data, strpos($cropped_data, ',') + 1);
+                    $type = strtolower($type[1]); // png, jpeg, etc.
+                    
+                    if (in_array($type, ['jpg', 'jpeg', 'png'])) {
+                        $data = base64_decode($data);
+                        
+                        if ($data !== false) {
+                            $upload_dir = '../uploads/';
+                            if (!is_dir($upload_dir)) {
+                                mkdir($upload_dir, 0777, true);
+                            }
+                            
+                            $new_file_name = 'avatar_' . $user_id . '_' . time() . '.' . $type;
+                            $dest_path = $upload_dir . $new_file_name;
+                            
+                            if (file_put_contents($dest_path, $data)) {
+                                // Hapus file lama jika ada
+                                if (!empty($user_current['foto_profil'])) {
+                                    $old_file = '../' . $user_current['foto_profil'];
+                                    if (file_exists($old_file)) {
+                                        unlink($old_file);
+                                    }
+                                }
+                                $foto_path = 'uploads/' . $new_file_name;
+                            } else {
+                                $error = 'Gagal menyimpan gambar hasil potong ke server.';
+                            }
+                        } else {
+                            $error = 'Dekode base64 gambar gagal.';
+                        }
+                    } else {
+                        $error = 'Format gambar hasil potong tidak didukung. Hanya JPG, JPEG, dan PNG.';
+                    }
+                } else {
+                    $error = 'Format data gambar hasil potong tidak valid.';
+                }
+            } elseif (isset($_FILES['foto_profil']) && $_FILES['foto_profil']['error'] === UPLOAD_ERR_OK) {
+                // Fallback jika JavaScript cropper bermasalah (normal upload)
                 $file_tmp = $_FILES['foto_profil']['tmp_name'];
                 $file_name = $_FILES['foto_profil']['name'];
                 $file_size = $_FILES['foto_profil']['size'];
@@ -55,25 +95,21 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                 } elseif ($file_size > 2 * 1024 * 1024) {
                     $error = 'Ukuran file terlalu besar. Maksimal 2MB.';
                 } else {
-                    // Buat folder uploads jika belum ada
                     $upload_dir = '../uploads/';
                     if (!is_dir($upload_dir)) {
                         mkdir($upload_dir, 0777, true);
                     }
                     
-                    // Buat nama file unik
                     $new_file_name = 'avatar_' . $user_id . '_' . time() . '.' . $file_ext;
                     $dest_path = $upload_dir . $new_file_name;
                     
                     if (move_uploaded_file($file_tmp, $dest_path)) {
-                        // Hapus file lama jika ada dan bukan URL eksternal
                         if (!empty($user_current['foto_profil'])) {
                             $old_file = '../' . $user_current['foto_profil'];
                             if (file_exists($old_file)) {
                                 unlink($old_file);
                             }
                         }
-                        // Path relatif untuk disimpan di DB dan session
                         $foto_path = 'uploads/' . $new_file_name;
                     } else {
                         $error = 'Gagal mengunggah gambar ke server.';
@@ -120,6 +156,9 @@ try {
     <script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&amp;display=swap" rel="stylesheet">
     <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet">
+    <!-- Cropper.js CSS & JS -->
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/cropperjs/1.6.1/cropper.min.css" rel="stylesheet">
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/cropperjs/1.6.1/cropper.min.js"></script>
     <script id="tailwind-config">
       tailwind.config = {
         darkMode: "class",
@@ -286,6 +325,7 @@ try {
 <form class="space-y-10" action="edit_profile.php" method="POST" enctype="multipart/form-data">
 <!-- Hidden deletion input -->
 <input type="hidden" id="hapus-foto-input" name="hapus_foto" value="0">
+<input type="hidden" id="cropped-image-data" name="cropped_image_data" value="">
 
 <!-- Avatar Upload Section -->
 <div class="flex flex-col items-center sm:flex-row sm:items-end space-y-4 sm:space-y-0 sm:space-x-8">
@@ -399,15 +439,69 @@ try {
             }
         }
 
+        let cropper;
+
         function previewImage(event) {
             const input = event.target;
             if (input.files && input.files[0]) {
                 const reader = new FileReader();
                 reader.onload = function(e) {
-                    const container = document.getElementById('avatar-container');
-                    container.innerHTML = `<img alt="User Avatar" id="avatar-img" class="w-full h-full object-cover" src="${e.target.result}">`;
+                    const modal = document.getElementById('cropper-modal');
+                    const image = document.getElementById('cropper-image');
+                    image.src = e.target.result;
+                    
+                    modal.classList.remove('hidden');
+                    
+                    if (cropper) {
+                        cropper.destroy();
+                    }
+                    
+                    setTimeout(() => {
+                        cropper = new Cropper(image, {
+                            aspectRatio: 1,
+                            viewMode: 1,
+                            dragMode: 'move',
+                            autoCropArea: 0.8,
+                            restore: false,
+                            guides: true,
+                            center: true,
+                            highlight: false,
+                            cropBoxMovable: true,
+                            cropBoxResizable: true,
+                            toggleDragModeOnDblclick: false,
+                        });
+                    }, 100);
                 }
                 reader.readAsDataURL(input.files[0]);
+            }
+        }
+
+        function closeCropperModal() {
+            document.getElementById('cropper-modal').classList.add('hidden');
+            document.getElementById('foto-profil-input').value = ""; // Clear input to trigger event next time
+            if (cropper) {
+                cropper.destroy();
+                cropper = null;
+            }
+        }
+
+        function applyCrop() {
+            if (cropper) {
+                const canvas = cropper.getCroppedCanvas({
+                    width: 300,
+                    height: 300
+                });
+                const dataURL = canvas.toDataURL('image/jpeg', 0.9);
+                
+                // Set the hidden input value
+                document.getElementById('cropped-image-data').value = dataURL;
+                
+                // Update avatar container preview
+                const container = document.getElementById('avatar-container');
+                container.innerHTML = `<img alt="User Avatar" id="avatar-img" class="w-full h-full object-cover" src="${dataURL}">`;
+                
+                // Close modal
+                closeCropperModal();
             }
         }
 
@@ -422,5 +516,39 @@ try {
             });
         });
     </script>
+
+    <!-- Modal Cropper -->
+    <div id="cropper-modal" class="fixed inset-0 z-50 flex items-center justify-center bg-black/70 backdrop-blur-sm hidden animate-fade-in">
+        <div class="bg-surface-container-lowest border border-outline-variant/30 rounded-2xl p-6 max-w-lg w-full mx-4 shadow-2xl space-y-4">
+            <div class="flex justify-between items-center border-b border-outline-variant/20 pb-2">
+                <h3 class="text-headline-sm font-bold text-on-surface">Sesuaikan & Potong Foto</h3>
+                <button onclick="closeCropperModal()" class="text-on-surface-variant hover:text-error transition-colors" type="button">
+                    <span class="material-symbols-outlined">close</span>
+                </button>
+            </div>
+            <div class="w-full h-80 bg-slate-900 rounded-xl overflow-hidden flex items-center justify-center relative">
+                <img id="cropper-image" src="" alt="Source Image" class="max-w-full max-h-full block">
+            </div>
+            <!-- Cropper Controls -->
+            <div class="flex justify-center items-center gap-4 py-2 text-on-surface-variant">
+                <button onclick="cropper.zoom(0.1)" class="w-10 h-10 rounded-full bg-surface-container-high hover:bg-primary hover:text-white transition-colors flex items-center justify-center" type="button" title="Perbesar">
+                    <span class="material-symbols-outlined text-lg">zoom_in</span>
+                </button>
+                <button onclick="cropper.zoom(-0.1)" class="w-10 h-10 rounded-full bg-surface-container-high hover:bg-primary hover:text-white transition-colors flex items-center justify-center" type="button" title="Perkecil">
+                    <span class="material-symbols-outlined text-lg">zoom_out</span>
+                </button>
+                <button onclick="cropper.rotate(-90)" class="w-10 h-10 rounded-full bg-surface-container-high hover:bg-primary hover:text-white transition-colors flex items-center justify-center" type="button" title="Putar Kiri">
+                    <span class="material-symbols-outlined text-lg">rotate_left</span>
+                </button>
+                <button onclick="cropper.rotate(90)" class="w-10 h-10 rounded-full bg-surface-container-high hover:bg-primary hover:text-white transition-colors flex items-center justify-center" type="button" title="Putar Kanan">
+                    <span class="material-symbols-outlined text-lg">rotate_right</span>
+                </button>
+            </div>
+            <div class="flex justify-end items-center space-x-3 pt-4 border-t border-outline-variant/20">
+                <button onclick="closeCropperModal()" class="px-4 py-2 rounded-xl text-label-md font-bold text-on-surface-variant hover:bg-surface-container transition-colors" type="button">Batal</button>
+                <button onclick="applyCrop()" class="px-6 py-2 rounded-xl bg-primary text-white text-label-md font-bold hover:bg-primary-container transition-colors" type="button">Potong & Terapkan</button>
+            </div>
+        </div>
+    </div>
 </body>
 </html>
