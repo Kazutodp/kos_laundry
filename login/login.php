@@ -267,9 +267,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                     <div class="flex-grow border-t border-outline-variant"></div>
                 </div>
                 <!-- Social Login Container -->
-                <div class="w-full flex justify-center">
-                    <div class="w-full" id="google-login-btn-container"></div>
-                </div>
+                <div class="w-full flex justify-center" id="google-login-btn-container"></div>
             </form>
             <footer class="mt-xl text-center space-y-md">
                 <p class="font-label-md text-label-md text-on-surface-variant">
@@ -315,9 +313,14 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             client_id: "615380191081-lpbn8t1lfb9r675qh34i82nmgou3l5l4.apps.googleusercontent.com",
             callback: handleCredentialResponse
         });
+        
+        const container = document.getElementById("google-login-btn-container");
+        const formWidth = container ? container.offsetWidth : 400;
+        const btnWidth = Math.max(250, Math.min(formWidth || 400, 400));
+
         google.accounts.id.renderButton(
-            document.getElementById("google-login-btn-container"),
-            { theme: "outline", size: "large", width: "100%", shape: "rectangular" }
+            container,
+            { theme: "outline", size: "large", width: btnWidth, shape: "rectangular" }
         );
     }
 
