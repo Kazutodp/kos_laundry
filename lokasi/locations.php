@@ -177,10 +177,10 @@ try {
         <div class="flex items-center space-x-md">
             <!-- Desktop Nav -->
             <div class="hidden md:flex space-x-lg items-center mr-lg">
-                <a class="text-on-surface-variant hover:text-primary transition-colors font-label-md" href="../index.php">Home</a>
-                <a class="text-on-surface-variant hover:text-primary transition-colors font-label-md" href="../index.php#services">Services</a>
-                <a class="text-primary font-bold border-b-2 border-primary pb-1 font-label-md" href="#">Locations</a>
-                <a class="text-on-surface-variant hover:text-primary transition-colors font-label-md" href="../index.php#support">Support</a>
+                <a class="text-on-surface-variant hover:text-primary transition-colors font-label-md" href="../index.php">Beranda</a>
+                <a class="text-on-surface-variant hover:text-primary transition-colors font-label-md" href="../index.php#services">Layanan</a>
+                <a class="text-primary font-bold border-b-2 border-primary pb-1 font-label-md" href="#">Lokasi</a>
+                <a class="text-on-surface-variant hover:text-primary transition-colors font-label-md" href="../index.php#support">Bantuan</a>
             </div>
             <?php if ($is_logged_in): ?>
                 <div class="relative group" id="profile-dropdown-container">

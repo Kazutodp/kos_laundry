@@ -143,10 +143,10 @@ $login_url = "login/login.php";
         <div class="flex items-center space-x-md">
             <!-- Desktop Nav moved to right -->
             <div class="hidden md:flex space-x-lg items-center mr-lg">
-                <a class="text-primary font-bold border-b-2 border-primary pb-1 font-label-md" href="#">Home</a>
-                <a class="text-on-surface-variant hover:text-primary transition-colors font-label-md" href="#">Services</a>
-                <a class="text-on-surface-variant hover:text-primary transition-colors font-label-md" href="lokasi/locations.php">Locations</a>
-                <a class="text-on-surface-variant hover:text-primary transition-colors font-label-md" href="#">Support</a>
+                <a class="text-primary font-bold border-b-2 border-primary pb-1 font-label-md" href="#">Beranda</a>
+                <a class="text-on-surface-variant hover:text-primary transition-colors font-label-md" href="#">Layanan</a>
+                <a class="text-on-surface-variant hover:text-primary transition-colors font-label-md" href="lokasi/locations.php">Lokasi</a>
+                <a class="text-on-surface-variant hover:text-primary transition-colors font-label-md" href="#">Bantuan</a>
             </div>
             <?php if ($is_logged_in): ?>
                 <!-- Profile Indicator with Hover Dropdown -->
@@ -437,7 +437,7 @@ $login_url = "login/login.php";
         </ul>
     </div>
     <div class="space-y-md">
-        <h5 class="font-bold text-on-surface font-label-md">Services</h5>
+        <h5 class="font-bold text-on-surface font-label-md">Layanan</h5>
         <ul class="space-y-xs">
             <li class=""><a class="text-on-surface-variant hover:text-primary transition-colors font-label-sm" href="#">Laundry Kiloan</a></li>
             <li class=""><a class="text-on-surface-variant hover:text-primary transition-colors font-label-sm" href="#">Laundry Satuan</a></li>
