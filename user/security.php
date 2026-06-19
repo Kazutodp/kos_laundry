@@ -254,6 +254,16 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 <span class="material-symbols-outlined text-[20px]">visibility</span>
 </button>
 </div>
+<!-- Password Strength Meter Container -->
+<div id="password-strength-container" class="hidden space-y-1.5 mt-2">
+  <div class="flex justify-between items-center text-xs">
+    <span class="font-medium text-on-surface-variant">Kekuatan Kata Sandi:</span>
+    <span id="password-strength-text" class="font-bold text-error">Lemah 🔴</span>
+  </div>
+  <div class="h-1.5 w-full bg-surface-container-high rounded-full overflow-hidden">
+    <div id="password-strength-bar" class="h-full w-0 bg-error transition-all duration-300"></div>
+  </div>
+</div>
 <p class="text-label-sm text-on-surface-variant opacity-70">Gunakan minimal 6 karakter dengan kombinasi angka dan simbol.</p>
 </div>
 <div class="space-y-2">
@@ -290,11 +300,62 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                             </button>
 </div>
 </form>
+
+<!-- Danger Zone Section -->
+<div class="pt-10 border-t border-outline-variant/30">
+    <div class="bg-error-container/10 border border-error/20 rounded-2xl p-6 flex flex-col md:flex-row justify-between items-start md:items-center gap-6">
+        <div class="space-y-2">
+            <h3 class="text-body-md font-bold text-on-surface">Hapus Akun Anda</h3>
+            <p class="text-label-sm text-on-surface-variant max-w-xl leading-relaxed">Setelah Anda menghapus akun, semua data profil, transaksi, dan foto profil Anda akan dihapus secara permanen. Tindakan ini tidak dapat dibatalkan.</p>
+        </div>
+        <button onclick="openDeleteModal()" class="w-full md:w-auto px-6 py-3 rounded-xl bg-error text-white text-label-md font-bold custom-shadow hover:bg-red-700 hover:scale-[1.02] active:scale-95 transition-standard flex items-center justify-center gap-2" type="button">
+            <span class="material-symbols-outlined text-[20px]">delete_forever</span>
+            <span>Hapus Akun Saya</span>
+        </button>
+    </div>
+</div>
+
 </div>
 </div>
 </section>
 </div>
 </main>
+
+<!-- Modal Konfirmasi Hapus Akun (Option B: Countdown Timer) -->
+<div id="delete-modal" class="fixed inset-0 z-50 flex items-center justify-center bg-black/70 backdrop-blur-sm hidden animate-fade-in">
+    <div class="bg-surface-container-lowest border border-outline-variant/30 rounded-2xl p-6 max-w-md w-full mx-4 shadow-2xl space-y-6">
+        <div class="flex items-center space-x-3 text-error border-b border-outline-variant/20 pb-3">
+            <span class="material-symbols-outlined text-3xl">warning</span>
+            <h3 class="text-headline-sm font-bold text-on-surface">Hapus Akun Permanen?</h3>
+        </div>
+        
+        <div class="space-y-4">
+            <p class="text-body-md text-on-surface-variant leading-relaxed">
+                Tindakan ini akan menghapus akun **KosanLaundry** Anda secara permanen. Semua data pesanan, alamat, dan foto profil Anda akan dihapus dan tidak bisa dikembalikan.
+            </p>
+            
+            <div class="bg-error-container text-on-error-container p-4 rounded-xl flex gap-3 border border-error/20">
+                <span class="material-symbols-outlined text-error flex-shrink-0">info</span>
+                <p class="text-label-sm leading-relaxed">
+                    Sesi Anda akan segera diakhiri setelah proses penghapusan berhasil diselesaikan di server kami.
+                </p>
+            </div>
+        </div>
+
+        <form action="delete_account.php" method="POST" id="delete-account-form">
+            <div class="flex justify-end items-center space-x-3 pt-4 border-t border-outline-variant/20">
+                <button onclick="closeDeleteModal()" class="px-5 py-2.5 rounded-xl text-label-md font-bold text-on-surface-variant hover:bg-surface-container transition-colors" type="button">
+                    Batal
+                </button>
+                <button id="confirm-delete-btn" disabled class="px-6 py-2.5 rounded-xl bg-error/50 text-white text-label-md font-bold cursor-not-allowed transition-all duration-300 flex items-center gap-2" type="submit">
+                    <span class="material-symbols-outlined text-[18px]">delete</span>
+                    <span id="confirm-delete-text">Ya, Hapus Akun (3)</span>
+                </button>
+            </div>
+        </form>
+    </div>
+</div>
+
 <script>
         function togglePassword(inputId) {
             const input = document.getElementById(inputId);
@@ -317,6 +378,121 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             input.addEventListener('blur', () => {
                 input.parentElement.querySelector('.material-symbols-outlined')?.classList.remove('text-primary');
             });
+        });
+
+        // Password Strength Meter
+        const newPasswordInput = document.getElementById('new-password');
+        const strengthContainer = document.getElementById('password-strength-container');
+        const strengthText = document.getElementById('password-strength-text');
+        const strengthBar = document.getElementById('password-strength-bar');
+
+        newPasswordInput.addEventListener('input', () => {
+            const val = newPasswordInput.value;
+            if (val.length === 0) {
+                strengthContainer.classList.add('hidden');
+                return;
+            }
+            
+            strengthContainer.classList.remove('hidden');
+            let score = 0;
+            
+            // Length evaluation
+            if (val.length >= 10) {
+                score += 3;
+            } else if (val.length >= 6) {
+                score += 2;
+            } else {
+                score += 1;
+            }
+            
+            // Character types check
+            if (/[a-z]/.test(val)) score += 1;
+            if (/[A-Z]/.test(val)) score += 1;
+            if (/[0-9]/.test(val)) score += 1;
+            if (/[^A-Za-z0-9]/.test(val)) score += 1;
+            
+            // Determine strength based on length check first
+            if (val.length < 6) {
+                strengthText.innerText = "Lemah 🔴";
+                strengthText.className = "font-bold text-error text-xs";
+                strengthBar.className = "h-full bg-error transition-all duration-300";
+                strengthBar.style.width = "25%";
+            } else {
+                // Safe length, check score
+                if (score <= 4) {
+                    strengthText.innerText = "Lemah 🔴";
+                    strengthText.className = "font-bold text-error text-xs";
+                    strengthBar.className = "h-full bg-error transition-all duration-300";
+                    strengthBar.style.width = "35%";
+                } else if (score <= 5) {
+                    strengthText.innerText = "Sedang 🟡";
+                    strengthText.className = "font-bold text-amber-500 text-xs";
+                    strengthBar.className = "h-full bg-amber-500 transition-all duration-300";
+                    strengthBar.style.width = "65%";
+                } else {
+                    strengthText.innerText = "Kuat 🟢";
+                    strengthText.className = "font-bold text-secondary text-xs";
+                    strengthBar.className = "h-full bg-secondary transition-all duration-300";
+                    strengthBar.style.width = "100%";
+                }
+            }
+        });
+
+        // Delete Account Modal Control (Option B: Countdown Timer)
+        let countdownInterval;
+
+        function openDeleteModal() {
+            const modal = document.getElementById('delete-modal');
+            const confirmBtn = document.getElementById('confirm-delete-btn');
+            const confirmText = document.getElementById('confirm-delete-text');
+            
+            modal.classList.remove('hidden');
+            
+            // Reset countdown
+            let secondsLeft = 3;
+            confirmBtn.disabled = true;
+            confirmBtn.className = "px-6 py-2.5 rounded-xl bg-error/50 text-white text-label-md font-bold cursor-not-allowed transition-all duration-300 flex items-center gap-2";
+            confirmText.innerText = `Ya, Hapus Akun (${secondsLeft})`;
+            
+            // Clear any existing interval
+            if (countdownInterval) {
+                clearInterval(countdownInterval);
+            }
+            
+            countdownInterval = setInterval(() => {
+                secondsLeft--;
+                if (secondsLeft > 0) {
+                    confirmText.innerText = `Ya, Hapus Akun (${secondsLeft})`;
+                } else {
+                    clearInterval(countdownInterval);
+                    confirmText.innerText = "Ya, Hapus Akun Permanen";
+                    confirmBtn.disabled = false;
+                    confirmBtn.className = "px-6 py-2.5 rounded-xl bg-error text-white text-label-md font-bold hover:bg-red-700 hover:scale-[1.02] active:scale-95 transition-all duration-300 flex items-center gap-2 cursor-pointer shadow-md";
+                }
+            }, 1000);
+        }
+
+        function closeDeleteModal() {
+            const modal = document.getElementById('delete-modal');
+            modal.classList.add('hidden');
+            if (countdownInterval) {
+                clearInterval(countdownInterval);
+            }
+        }
+
+        // Close delete modal when clicking outside of it
+        window.addEventListener('click', (event) => {
+            const modal = document.getElementById('delete-modal');
+            if (event.target === modal) {
+                closeDeleteModal();
+            }
+        });
+
+        // Close delete modal on ESC key
+        window.addEventListener('keydown', (event) => {
+            if (event.key === 'Escape') {
+                closeDeleteModal();
+            }
         });
     </script>
 </body>

@@ -180,7 +180,10 @@ $login_url = "login/login.php";
                     </div>
                 </div>
             <?php else: ?>
-                <button onclick="window.location.href='<?= $login_url; ?>'" class="px-lg py-xs rounded-xl bg-primary text-on-primary font-bold hover:bg-primary-container transition-colors active:scale-95 duration-150">Login</button>
+                <div class="flex items-center space-x-xs sm:space-x-sm">
+                    <button onclick="window.location.href='<?= $login_url; ?>'" class="px-lg py-xs border-2 border-primary text-primary rounded-xl font-bold hover:bg-primary-fixed transition-all active:scale-95 duration-150 text-sm">Masuk</button>
+                    <button onclick="window.location.href='login/daftar.php'" class="px-lg py-xs bg-primary text-on-primary rounded-xl font-bold hover:bg-primary-container transition-all active:scale-95 duration-150 text-sm shadow-sm">Daftar</button>
+                </div>
             <?php endif; ?>
             <button class="md:hidden flex items-center">
                 <span class="material-symbols-outlined">menu</span>

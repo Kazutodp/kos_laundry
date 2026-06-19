@@ -366,14 +366,33 @@ try {
 </div>
 </div>
 <div class="space-y-2">
-<label class="text-label-md font-bold text-on-surface-variant">Email</label>
+<label class="text-label-md font-bold text-on-surface-variant flex items-center justify-between w-full">
+    <span>Email</span>
+    <span class="inline-flex items-center gap-0.5 bg-secondary-container/20 text-secondary text-[11px] font-bold px-2 py-0.5 rounded-full select-none">
+        <span class="material-symbols-outlined text-[14px]" style="font-variation-settings: 'FILL' 1;">verified</span>
+        Terverifikasi <?= !empty($user['google_id']) ? '(Google)' : '' ?>
+    </span>
+</label>
 <div class="relative">
 <span class="material-symbols-outlined absolute left-3 top-1/2 -translate-y-1/2 text-on-surface-variant">mail</span>
 <input class="w-full pl-10 pr-4 py-3 rounded-xl border border-outline-variant bg-surface-container-high text-on-surface-variant/70 cursor-not-allowed text-body-md" disabled="" type="email" value="<?= htmlspecialchars($user['email']); ?>">
 </div>
 </div>
 <div class="space-y-2">
-<label class="text-label-md font-bold text-on-surface-variant">Nomor Telepon</label>
+<label class="text-label-md font-bold text-on-surface-variant flex items-center justify-between w-full">
+    <span>Nomor Telepon</span>
+    <?php if (!empty($user['no_telp'])): ?>
+    <span class="inline-flex items-center gap-0.5 bg-secondary-container/20 text-secondary text-[11px] font-bold px-2 py-0.5 rounded-full select-none">
+        <span class="material-symbols-outlined text-[14px]" style="font-variation-settings: 'FILL' 1;">verified</span>
+        Terverifikasi
+    </span>
+    <?php else: ?>
+    <span class="inline-flex items-center gap-0.5 bg-surface-container-high text-outline text-[11px] font-bold px-2 py-0.5 rounded-full select-none">
+        <span class="material-symbols-outlined text-[14px]">error</span>
+        Belum Diisi
+    </span>
+    <?php endif; ?>
+</label>
 <div class="relative">
 <span class="material-symbols-outlined absolute left-3 top-1/2 -translate-y-1/2 text-on-surface-variant">call</span>
 <input class="w-full pl-10 pr-4 py-3 rounded-xl border border-outline-variant bg-surface focus:ring-2 focus:ring-primary focus:border-primary outline-none transition-standard text-body-md" type="tel" name="telp" value="<?= htmlspecialchars($user['no_telp'] ?? ''); ?>">
