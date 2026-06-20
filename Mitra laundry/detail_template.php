@@ -60,17 +60,21 @@ if (!file_exists('../' . $foto_toko) && !file_exists($foto_toko_path)) {
     $foto_toko_path = '../uploads/mitra_1.png';
 }
 
-// Calculate service pricing based on base harga_per_kg
-$harga_lipat_reguler = $harga_per_kg;
-$harga_setrika_reguler = $harga_per_kg + 2000;
-$harga_setrika_saja = $harga_per_kg - 2000;
-if ($harga_setrika_saja < 3000) {
+// Calculate service pricing based on base harga_per_kg (allow custom override)
+$harga_lipat_reguler = isset($custom_harga_lipat_reguler) ? $custom_harga_lipat_reguler : $harga_per_kg;
+$harga_setrika_reguler = isset($custom_harga_setrika_reguler) ? $custom_harga_setrika_reguler : $harga_per_kg + 2000;
+$harga_setrika_saja = isset($custom_harga_setrika_saja) ? $custom_harga_setrika_saja : $harga_per_kg - 2000;
+if (!isset($custom_harga_setrika_saja) && $harga_setrika_saja < 3000) {
     $harga_setrika_saja = 3000;
 }
 
 // Express pricing
-$harga_express_lipat = $harga_per_kg + 4000;
-$harga_express_setrika = $harga_per_kg + 6000;
+$harga_express_lipat = isset($custom_harga_express_lipat) ? $custom_harga_express_lipat : $harga_per_kg + 4000;
+$harga_express_setrika = isset($custom_harga_express_setrika) ? $custom_harga_express_setrika : $harga_per_kg + 6000;
+
+// Delivery options text overrides
+$delivery_label = isset($custom_delivery_label) ? $custom_delivery_label : ($is_self_service ? 'Layanan Mandiri' : 'Jemput-Antar');
+$delivery_advice = isset($custom_delivery_advice) ? $custom_delivery_advice : ($is_self_service ? 'Cuci Mandiri di Toko' : 'Gratis ongkir < 2km');
 
 // Satuan pricing
 $harga_satuan_jaket = 15000;
@@ -360,14 +364,14 @@ $logo_url = $partner_logos[$id_mitra] ?? $partner_logos[1];
             </div>
             <div>
                 <div class="flex items-center gap-sm mb-xs">
-                    <p class="font-label-md text-on-surface-variant uppercase tracking-wider"><?= $is_self_service ? 'Layanan Mandiri' : 'Jemput-Antar'; ?></p>
+                    <p class="font-label-md text-on-surface-variant uppercase tracking-wider"><?= htmlspecialchars($delivery_label); ?></p>
                     <?php if ($is_self_service): ?>
                         <span class="bg-amber-100 text-amber-800 px-xs py-[2px] rounded text-[10px] font-bold">Self-Service</span>
                     <?php else: ?>
                         <span class="bg-secondary-container text-on-secondary-container px-xs py-[2px] rounded text-[10px] font-bold">Tersedia</span>
                     <?php endif; ?>
                 </div>
-                <p class="font-headline-md text-on-surface"><?= $is_self_service ? 'Cuci Mandiri di Toko' : 'Gratis ongkir < 2km'; ?></p>
+                <p class="font-headline-md text-on-surface"><?= htmlspecialchars($delivery_advice); ?></p>
             </div>
         </div>
         <div class="bg-surface-container-lowest p-md rounded-xl border border-outline-variant flex items-center gap-md shadow-sm">
@@ -388,7 +392,11 @@ $logo_url = $partner_logos[$id_mitra] ?? $partner_logos[1];
                 <h2 class="font-headline-md text-on-surface mb-md">Menu Layanan</h2>
                 <!-- Tabs -->
                 <div class="flex gap-md border-b border-outline-variant mb-lg overflow-x-auto pb-1">
-                    <?php if ($is_self_service): ?>
+                    <?php if (isset($custom_tabs) && is_array($custom_tabs)): ?>
+                        <?php $first = true; foreach ($custom_tabs as $tab_id => $tab_label): ?>
+                            <button id="tab-<?= $tab_id; ?>" onclick="switchTab('<?= $tab_id; ?>')" class="tab-btn px-md py-sm border-b-2 border-transparent text-on-surface-variant hover:text-primary transition-colors whitespace-nowrap <?= $first ? 'active' : ''; ?>"><?= htmlspecialchars($tab_label); ?></button>
+                        <?php $first = false; endforeach; ?>
+                    <?php elseif ($is_self_service): ?>
                         <button id="tab-self" onclick="switchTab('self')" class="tab-btn px-md py-sm border-b-2 border-transparent text-on-surface-variant hover:text-primary transition-colors whitespace-nowrap active">Self Service</button>
                         <button id="tab-facility" onclick="switchTab('facility')" class="tab-btn px-md py-sm border-b-2 border-transparent text-on-surface-variant hover:text-primary transition-colors whitespace-nowrap">Fasilitas & Keunggulan</button>
                     <?php else: ?>
@@ -399,7 +407,9 @@ $logo_url = $partner_logos[$id_mitra] ?? $partner_logos[1];
                 </div>
                 
                 <!-- Items Grid -->
-                <?php if ($is_self_service): ?>
+                <?php if (isset($custom_grids_html)): ?>
+                    <?= $custom_grids_html; ?>
+                <?php elseif ($is_self_service): ?>
                     <!-- Grid: Self Service -->
                     <div id="grid-self" class="grid-content grid grid-cols-1 md:grid-cols-2 gap-md">
                         <!-- Item 1 -->
@@ -513,6 +523,21 @@ $logo_url = $partner_logos[$id_mitra] ?? $partner_logos[1];
                                 <span class="material-symbols-outlined text-[20px]">shopping_cart_checkout</span> Pesan Sekarang
                             </button>
                         </div>
+                        <?php if (isset($custom_harga_pengeringan)): ?>
+                            <!-- Item 4: Pengeringan -->
+                            <div class="bg-surface-container-lowest p-lg rounded-xl border border-outline-variant hover:shadow-md transition-shadow flex flex-col justify-between">
+                                <div>
+                                    <div class="flex justify-between items-start mb-sm">
+                                        <h3 class="font-headline-md text-[20px] text-on-surface">Pengeringan</h3>
+                                        <span class="text-primary font-bold text-lg">Rp <?= number_format($custom_harga_pengeringan, 0, ',', '.'); ?>/kg</span>
+                                    </div>
+                                    <p class="text-on-surface-variant text-body-md mb-lg">Layanan pengeringan pakaian basah menggunakan mesin pengering komersial.</p>
+                                </div>
+                                <button onclick="openOrderModal('Pengeringan', <?= $custom_harga_pengeringan; ?>, 'kg')" class="w-full bg-primary text-on-primary py-sm rounded-xl font-bold flex items-center justify-center gap-sm active:scale-[0.98] transition-transform">
+                                    <span class="material-symbols-outlined text-[20px]">shopping_cart_checkout</span> Pesan Sekarang
+                                </button>
+                            </div>
+                        <?php endif; ?>
                     </div>
 
                     <!-- Grid 2: Satuan -->

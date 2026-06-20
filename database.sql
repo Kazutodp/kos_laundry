@@ -37,6 +37,8 @@ INSERT IGNORE INTO `mitra_laundry` (`id`, `nama_mitra`, `foto_toko`, `latitude`,
 (3, 'Sahabat Kos Laundry', 'uploads/mitra_1.png', -8.58300000, 116.09500000, 'Jl. Airlangga No. 8, Mataram', '081234567892', 4.5, 6000, 'Open until 20:00', 1, 'kiloan'),
 (4, 'EcoWash Pure', 'uploads/mitra_2.png', -8.60150000, 116.11300000, 'Jl. Bung Karno, Pagutan, Mataram', '081234567893', 4.8, 8500, 'Open until 22:00', 1, 'eco'),
 (5, 'FreshClean Laundry', 'uploads/mitra_1.png', -8.56200000, 116.07700000, 'Jl. Saleh Sungkar, Ampenan, Mataram', '081234567894', 4.6, 7500, 'Open until 21:30', 1, 'satuan'),
-(6, 'WashTra Laundry Ekspress', 'uploads/mitra_washtra.png', -8.59059420, 116.09259180, 'Jl. Majapahit No.88C, Kekalik Jaya, Kec. Sekarbela, Kota Mataram, Nusa Tenggara Bar. 83127', '082341961954', 4.8, 15000, 'Senin - Minggu 07:00 - 22:00', 1, 'express');
+(6, 'WashTra Laundry Ekspress', 'uploads/mitra_washtra.png', -8.59059420, 116.09259180, 'Jl. Majapahit No.88C, Kekalik Jaya, Kec. Sekarbela, Kota Mataram, Nusa Tenggara Bar. 83127', '082341961954', 4.8, 15000, 'Senin - Minggu 07:00 - 22:00', 1, 'express'),
+(7, 'LAUNDRY LOMBOK', 'uploads/laundry_lombok.png', -8.59210790, 116.08926740, 'Jl. Swasembada No.26, Kekalik Jaya, Kec. Sekarbela, Kota Mataram', '085941306413', 5.0, 7000, 'Senin - Minggu 07:00 - 21:00', 1, 'kiloan'),
+(8, 'MAULaundry Mataram', 'uploads/mitra_maulaundry_storefront.png', -8.59282220, 116.08937300, 'Jl. Swasembada No.37, Kekalik Jaya, Kec. Sekarbela, Kota Mataram', '087736861615', 4.8, 25000, 'Senin - Minggu 08:00 - 22:00', 1, 'express');
 
 
