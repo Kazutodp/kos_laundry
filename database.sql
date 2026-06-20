@@ -36,5 +36,7 @@ INSERT IGNORE INTO `mitra_laundry` (`id`, `nama_mitra`, `foto_toko`, `latitude`,
 (2, 'Express Shine', 'uploads/mitra_2.png', -8.59020000, 116.11540000, 'Jl. Panca Usaha No. 45, Cilinaya, Mataram', '081234567891', 4.7, 9500, 'Open 24 Hours', 1, 'express'),
 (3, 'Sahabat Kos Laundry', 'uploads/mitra_1.png', -8.58300000, 116.09500000, 'Jl. Airlangga No. 8, Mataram', '081234567892', 4.5, 6000, 'Open until 20:00', 1, 'kiloan'),
 (4, 'EcoWash Pure', 'uploads/mitra_2.png', -8.60150000, 116.11300000, 'Jl. Bung Karno, Pagutan, Mataram', '081234567893', 4.8, 8500, 'Open until 22:00', 1, 'eco'),
-(5, 'FreshClean Laundry', 'uploads/mitra_1.png', -8.56200000, 116.07700000, 'Jl. Saleh Sungkar, Ampenan, Mataram', '081234567894', 4.6, 7500, 'Open until 21:30', 1, 'satuan');
+(5, 'FreshClean Laundry', 'uploads/mitra_1.png', -8.56200000, 116.07700000, 'Jl. Saleh Sungkar, Ampenan, Mataram', '081234567894', 4.6, 7500, 'Open until 21:30', 1, 'satuan'),
+(6, 'WashTra Laundry Ekspress', 'uploads/mitra_washtra.png', -8.59059420, 116.09259180, 'Jl. Majapahit No.88C, Kekalik Jaya, Kec. Sekarbela, Kota Mataram, Nusa Tenggara Bar. 83127', '082341961954', 4.8, 15000, 'Senin - Minggu 07:00 - 22:00', 1, 'express');
+
 

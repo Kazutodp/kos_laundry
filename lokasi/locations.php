@@ -7,10 +7,18 @@ $is_logged_in = isset($_SESSION['user_id']);
 $dashboard_url = "../dashboard.php";
 $login_url = "../login/login.php";
 
-// Fetch mitra laundry from DB
+// Fetch mitra laundry from DB whose profile files exist
 try {
     $stmt = $pdo->query("SELECT * FROM mitra_laundry ORDER BY rating DESC");
-    $mitra_list = $stmt->fetchAll();
+    $all_mitra = $stmt->fetchAll();
+    
+    $mitra_list = [];
+    foreach ($all_mitra as $mitra) {
+        $file_name = str_replace(' ', '_', $mitra['nama_mitra']) . '.php';
+        if (file_exists('../Mitra laundry/' . $file_name)) {
+            $mitra_list[] = $mitra;
+        }
+    }
 } catch (PDOException $e) {
     $mitra_list = [];
 }
@@ -292,7 +300,11 @@ try {
 
                             <!-- Bottom Info row -->
                             <div class="pt-xs border-t border-outline-variant/40 flex justify-between items-center mt-sm">
-                                <span class="text-tertiary font-bold text-[12px]">Rp <?= number_format($mitra['harga_per_kg'], 0, ',', '.'); ?>/kg</span>
+                                <?php if (strpos(strtolower($mitra['nama_mitra']), 'washtra') !== false): ?>
+                                    <span class="text-tertiary font-bold text-[12px]">Rp <?= number_format($mitra['harga_per_kg'], 0, ',', '.'); ?> Flat</span>
+                                <?php else: ?>
+                                    <span class="text-tertiary font-bold text-[12px]">Rp <?= number_format($mitra['harga_per_kg'], 0, ',', '.'); ?>/kg</span>
+                                <?php endif; ?>
                                 <div class="flex items-center gap-xs">
                                     <span class="w-1.5 h-1.5 rounded-full <?= $mitra['status_buka'] ? 'bg-secondary' : 'bg-outline' ?>"></span>
                                     <span class="text-[11px] font-semibold text-on-surface-variant"><?= htmlspecialchars($mitra['jam_buka']); ?></span>
@@ -325,10 +337,17 @@ try {
     // Load mitra list from PHP to Javascript
     const mitras = <?= json_encode($mitra_list); ?>;
     
-    // Initialize Map centered at Mataram (City Center)
+    // Initialize Map centering dynamically
+    let mapCenter = [-8.5830, 116.1075]; // default Mataram City Center
+    let mapZoom = 13;
+    if (mitras.length === 1) {
+        mapCenter = [parseFloat(mitras[0].latitude), parseFloat(mitras[0].longitude)];
+        mapZoom = 15;
+    }
+    
     const map = L.map('map', {
         zoomControl: false // Custom placement later
-    }).setView([-8.5830, 116.1075], 13);
+    }).setView(mapCenter, mapZoom);
     
     // Custom zoom control placement
     L.control.zoom({
@@ -407,7 +426,9 @@ try {
                 <div class="border-t border-slate-100 my-xs"></div>
                 <p class="text-[11px] text-on-surface-variant leading-relaxed"><span class="font-bold">Alamat:</span> ${mitra.alamat}</p>
                 <div class="flex justify-between items-center pt-xs">
-                    <span class="text-xs font-bold text-primary bg-primary-container/10 px-xs py-[2px] rounded-md">Rp ${parseInt(mitra.harga_per_kg).toLocaleString('id-ID')}/kg</span>
+                    <span class="text-xs font-bold text-primary bg-primary-container/10 px-xs py-[2px] rounded-md">
+                        ${mitra.nama_mitra.toLowerCase().includes('washtra') ? `Rp ${parseInt(mitra.harga_per_kg).toLocaleString('id-ID')} Flat` : `Rp ${parseInt(mitra.harga_per_kg).toLocaleString('id-ID')}/kg`}
+                    </span>
                     <span class="text-[10px] ${mitra.status_buka == 1 ? 'text-green-600' : 'text-slate-500'} font-bold">${mitra.jam_buka}</span>
                 </div>
                 <div class="pt-sm">

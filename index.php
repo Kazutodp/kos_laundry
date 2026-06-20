@@ -1,9 +1,27 @@
 <?php
 // index.php
 session_start();
+require_once 'db_connect.php';
+
 $is_logged_in = isset($_SESSION['user_id']);
 $dashboard_url = "dashboard.php";
 $login_url = "login/login.php";
+
+// Fetch mitra laundry whose profile files exist
+try {
+    $stmt = $pdo->query("SELECT * FROM mitra_laundry ORDER BY rating DESC");
+    $all_mitra = $stmt->fetchAll();
+    
+    $mitra_list = [];
+    foreach ($all_mitra as $mitra) {
+        $file_name = str_replace(' ', '_', $mitra['nama_mitra']) . '.php';
+        if (file_exists('Mitra laundry/' . $file_name)) {
+            $mitra_list[] = $mitra;
+        }
+    }
+} catch (PDOException $e) {
+    $mitra_list = [];
+}
 ?>
 <!DOCTYPE html>
 <html lang="id">
@@ -276,131 +294,50 @@ $login_url = "login/login.php";
             </a>
         </div>
         <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-lg">
-            <!-- Shop Card 1 -->
-            <div class="group bg-surface rounded-xl overflow-hidden shadow-sm border border-outline-variant hover:shadow-md transition-all">
-                <div class="h-48 bg-primary-container/20 flex items-center justify-center relative">
-                    <span class="material-symbols-outlined text-primary text-[64px]">local_laundry_service</span>
-                    <div class="absolute top-md right-md bg-secondary-fixed text-on-secondary-fixed px-sm py-[2px] rounded-full text-label-sm font-bold">Terpopuler</div>
-                </div>
-                <div class="p-md space-y-md">
-                    <div class="flex justify-between items-start">
-                        <h4 class="font-headline-md text-on-surface text-base">KosanFresh Laundry</h4>
-                        <div class="flex items-center text-tertiary font-bold">
-                            <span class="material-symbols-outlined text-[18px] mr-1" style="font-variation-settings: 'FILL' 1;">star</span>
-                            <span class="text-label-md">4.9</span>
-                        </div>
+            <?php foreach ($mitra_list as $mitra): ?>
+                <?php
+                $is_washtra = strpos(strtolower($mitra['nama_mitra']), 'washtra') !== false;
+                $slug = str_replace(' ', '_', $mitra['nama_mitra']) . '.php';
+                $foto = !empty($mitra['foto_toko']) ? $mitra['foto_toko'] : 'uploads/mitra_1.png';
+                $jarak = $is_washtra ? '1.5 km' : '1.2 km';
+                ?>
+                <!-- Shop Card -->
+                <div class="group bg-surface rounded-xl overflow-hidden shadow-sm border border-outline-variant hover:shadow-md transition-all">
+                    <div class="h-48 relative overflow-hidden bg-slate-100 flex items-center justify-center">
+                        <img src="<?= htmlspecialchars($foto); ?>" alt="<?= htmlspecialchars($mitra['nama_mitra']); ?>" class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300">
+                        <?php if ($is_washtra): ?>
+                            <div class="absolute top-md right-md bg-secondary-fixed text-on-secondary-fixed px-sm py-[2px] rounded-full text-label-sm font-bold shadow-sm">Self Service</div>
+                        <?php endif; ?>
                     </div>
-                    <div class="flex items-center space-x-md text-on-surface-variant text-label-sm">
-                        <div class="flex items-center">
-                            <span class="material-symbols-outlined text-[16px] mr-1">location_on</span>
-                            <span class="">0.4 km</span>
+                    <div class="p-md space-y-md">
+                        <div class="flex justify-between items-start">
+                            <h4 class="font-headline-md text-on-surface text-base"><?= htmlspecialchars($mitra['nama_mitra']); ?></h4>
+                            <div class="flex items-center text-tertiary font-bold">
+                                <span class="material-symbols-outlined text-[18px] mr-1" style="font-variation-settings: 'FILL' 1;">star</span>
+                                <span class="text-label-md"><?= htmlspecialchars($mitra['rating']); ?></span>
+                            </div>
                         </div>
-                        <div class="flex items-center">
-                            <span class="material-symbols-outlined text-[16px] mr-1">schedule</span>
-                            <span class="">Open until 21:00</span>
+                        <div class="flex items-center space-x-md text-on-surface-variant text-label-sm">
+                            <div class="flex items-center">
+                                <span class="material-symbols-outlined text-[16px] mr-1">location_on</span>
+                                <span class=""><?= $jarak; ?></span>
+                            </div>
+                            <div class="flex items-center">
+                                <span class="material-symbols-outlined text-[16px] mr-1">schedule</span>
+                                <span class=""><?= htmlspecialchars($mitra['jam_buka']); ?></span>
+                            </div>
                         </div>
-                    </div>
-                    <div class="pt-md border-t border-outline-variant flex justify-between items-center">
-                        <div class="bg-tertiary-container/10 px-md py-xs rounded-full">
-                            <span class="text-tertiary font-bold text-label-md">Rp 7.000/kg</span>
+                        <div class="pt-md border-t border-outline-variant flex justify-between items-center">
+                            <div class="bg-tertiary-container/10 px-md py-xs rounded-full">
+                                <span class="text-tertiary font-bold text-label-md">
+                                    <?= $is_washtra ? 'Rp ' . number_format($mitra['harga_per_kg'], 0, ',', '.') . ' Flat' : 'Rp ' . number_format($mitra['harga_per_kg'], 0, ',', '.') . '/kg'; ?>
+                                </span>
+                            </div>
+                            <button onclick="window.location.href='Mitra laundry/<?= $slug; ?>'" class="text-primary font-bold text-label-md hover:underline">Pilih</button>
                         </div>
-                        <button onclick="window.location.href='<?= $is_logged_in ? $dashboard_url : $login_url; ?>'" class="text-primary font-bold text-label-md hover:underline">Pilih</button>
-                    </div>
-                </div>
-            </div>
-            <!-- Shop Card 2 -->
-            <div class="group bg-surface rounded-xl overflow-hidden shadow-sm border border-outline-variant hover:shadow-md transition-all">
-                <div class="h-48 bg-secondary-container/20 flex items-center justify-center relative">
-                    <span class="material-symbols-outlined text-secondary text-[64px]">dry_cleaning</span>
-                </div>
-                <div class="p-md space-y-md">
-                    <div class="flex justify-between items-start">
-                        <h4 class="font-headline-md text-on-surface text-base">Express Shine</h4>
-                        <div class="flex items-center text-tertiary font-bold">
-                            <span class="material-symbols-outlined text-[18px] mr-1" style="font-variation-settings: 'FILL' 1;">star</span>
-                            <span class="text-label-md">4.7</span>
-                        </div>
-                    </div>
-                    <div class="flex items-center space-x-md text-on-surface-variant text-label-sm">
-                        <div class="flex items-center">
-                            <span class="material-symbols-outlined text-[16px] mr-1">location_on</span>
-                            <span class="">1.2 km</span>
-                        </div>
-                        <div class="flex items-center">
-                            <span class="material-symbols-outlined text-[16px] mr-1">schedule</span>
-                            <span class="">Open 24 Hours</span>
-                        </div>
-                    </div>
-                    <div class="pt-md border-t border-outline-variant flex justify-between items-center">
-                        <div class="bg-tertiary-container/10 px-md py-xs rounded-full">
-                            <span class="text-tertiary font-bold text-label-md">Rp 9.500/kg</span>
-                        </div>
-                        <button onclick="window.location.href='<?= $is_logged_in ? $dashboard_url : $login_url; ?>'" class="text-primary font-bold text-label-md hover:underline">Pilih</button>
                     </div>
                 </div>
-            </div>
-            <!-- Shop Card 3 -->
-            <div class="group bg-surface rounded-xl overflow-hidden shadow-sm border border-outline-variant hover:shadow-md transition-all">
-                <div class="h-48 bg-yellow-500/10 flex items-center justify-center relative">
-                    <span class="material-symbols-outlined text-yellow-600 text-[64px]">iron</span>
-                </div>
-                <div class="p-md space-y-md">
-                    <div class="flex justify-between items-start">
-                        <h4 class="font-headline-md text-on-surface text-base">Sahabat Kos</h4>
-                        <div class="flex items-center text-tertiary font-bold">
-                            <span class="material-symbols-outlined text-[18px] mr-1" style="font-variation-settings: 'FILL' 1;">star</span>
-                            <span class="text-label-md">4.5</span>
-                        </div>
-                    </div>
-                    <div class="flex items-center space-x-md text-on-surface-variant text-label-sm">
-                        <div class="flex items-center">
-                            <span class="material-symbols-outlined text-[16px] mr-1">location_on</span>
-                            <span class="">0.8 km</span>
-                        </div>
-                        <div class="flex items-center">
-                            <span class="material-symbols-outlined text-[16px] mr-1">schedule</span>
-                            <span class="">Open until 20:00</span>
-                        </div>
-                    </div>
-                    <div class="pt-md border-t border-outline-variant flex justify-between items-center">
-                        <div class="bg-tertiary-container/10 px-md py-xs rounded-full">
-                            <span class="text-tertiary font-bold text-label-md">Rp 6.000/kg</span>
-                        </div>
-                        <button onclick="window.location.href='<?= $is_logged_in ? $dashboard_url : $login_url; ?>'" class="text-primary font-bold text-label-md hover:underline">Pilih</button>
-                    </div>
-                </div>
-            </div>
-            <!-- Shop Card 4 -->
-            <div class="group bg-surface rounded-xl overflow-hidden shadow-sm border border-outline-variant hover:shadow-md transition-all">
-                <div class="h-48 bg-green-500/10 flex items-center justify-center relative">
-                    <span class="material-symbols-outlined text-green-600 text-[64px]">eco</span>
-                </div>
-                <div class="p-md space-y-md">
-                    <div class="flex justify-between items-start">
-                        <h4 class="font-headline-md text-on-surface text-base">EcoWash Pure</h4>
-                        <div class="flex items-center text-tertiary font-bold">
-                            <span class="material-symbols-outlined text-[18px] mr-1" style="font-variation-settings: 'FILL' 1;">star</span>
-                            <span class="text-label-md">4.8</span>
-                        </div>
-                    </div>
-                    <div class="flex items-center space-x-md text-on-surface-variant text-label-sm">
-                        <div class="flex items-center">
-                            <span class="material-symbols-outlined text-[16px] mr-1">location_on</span>
-                            <span class="">2.1 km</span>
-                        </div>
-                        <div class="flex items-center">
-                            <span class="material-symbols-outlined text-[16px] mr-1">schedule</span>
-                            <span class="">Open until 22:00</span>
-                        </div>
-                    </div>
-                    <div class="pt-md border-t border-outline-variant flex justify-between items-center">
-                        <div class="bg-tertiary-container/10 px-md py-xs rounded-full">
-                            <span class="text-tertiary font-bold text-label-md">Rp 8.500/kg</span>
-                        </div>
-                        <button onclick="window.location.href='<?= $is_logged_in ? $dashboard_url : $login_url; ?>'" class="text-primary font-bold text-label-md hover:underline">Pilih</button>
-                    </div>
-                </div>
-            </div>
+            <?php endforeach; ?>
         </div>
     </div>
 </section>
