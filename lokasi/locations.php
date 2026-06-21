@@ -289,9 +289,15 @@ try {
                                         <span class="text-[11px]"><?= htmlspecialchars($mitra['rating']); ?></span>
                                     </div>
                                 </div>
-                                <span class="text-[10px] text-primary bg-primary-container/10 px-sm py-[2px] rounded-full font-bold uppercase tracking-wider inline-block">
-                                    <?= htmlspecialchars($mitra['icon_type']); ?>
-                                </span>
+                                <?php if ($mitra['icon_type'] === 'sepatu'): ?>
+                                    <span class="text-[10px] text-white bg-[#7c3aed] px-sm py-[2px] rounded-full font-bold uppercase tracking-wider inline-block">
+                                        <?= htmlspecialchars($mitra['icon_type']); ?>
+                                    </span>
+                                <?php else: ?>
+                                    <span class="text-[10px] text-primary bg-primary-container/10 px-sm py-[2px] rounded-full font-bold uppercase tracking-wider inline-block">
+                                        <?= htmlspecialchars($mitra['icon_type']); ?>
+                                    </span>
+                                <?php endif; ?>
                                 <p class="text-on-surface-variant text-[12px] leading-relaxed flex items-start gap-xs mt-1">
                                     <span class="material-symbols-outlined text-[14px] text-outline mt-[2px] flex-shrink-0">location_on</span>
                                     <span class="line-clamp-2"><?= htmlspecialchars($mitra['alamat']); ?></span>
@@ -300,7 +306,9 @@ try {
 
                             <!-- Bottom Info row -->
                             <div class="pt-xs border-t border-outline-variant/40 flex justify-between items-center mt-sm">
-                                <?php if (strpos(strtolower($mitra['nama_mitra']), 'washtra') !== false): ?>
+                                <?php if ($mitra['icon_type'] === 'sepatu'): ?>
+                                    <span class="text-tertiary font-bold text-[12px]">Rp 20.000/pasang</span>
+                                <?php elseif (strpos(strtolower($mitra['nama_mitra']), 'washtra') !== false): ?>
                                     <span class="text-tertiary font-bold text-[12px]">Rp <?= number_format($mitra['harga_per_kg'], 0, ',', '.'); ?> Flat</span>
                                 <?php else: ?>
                                     <span class="text-tertiary font-bold text-[12px]">Rp <?= number_format($mitra['harga_per_kg'], 0, ',', '.'); ?>/kg</span>
@@ -369,6 +377,7 @@ try {
         if (type === 'express') color = '#a36700'; // secondary/tertiary container style
         if (type === 'eco') color = '#006b5f'; // green style
         if (type === 'satuan') color = '#825100';
+        if (type === 'sepatu') color = '#7c3aed'; // premium purple for shoe care
 
         // High quality premium CSS-based HTML marker pin
         return L.divIcon({
@@ -390,7 +399,7 @@ try {
                         color: white; 
                         font-size: 16px;
                     ">
-                        ${type === 'express' ? 'bolt' : (type === 'satuan' ? 'dry_cleaning' : (type === 'eco' ? 'eco' : 'local_laundry_service'))}
+                        ${type === 'express' ? 'bolt' : (type === 'satuan' ? 'dry_cleaning' : (type === 'eco' ? 'eco' : (type === 'sepatu' ? 'footprint' : 'local_laundry_service')))}
                     </span>
                 </div>
             `,
@@ -427,7 +436,7 @@ try {
                 <p class="text-[11px] text-on-surface-variant leading-relaxed"><span class="font-bold">Alamat:</span> ${mitra.alamat}</p>
                 <div class="flex justify-between items-center pt-xs">
                     <span class="text-xs font-bold text-primary bg-primary-container/10 px-xs py-[2px] rounded-md">
-                        ${mitra.nama_mitra.toLowerCase().includes('washtra') ? `Rp ${parseInt(mitra.harga_per_kg).toLocaleString('id-ID')} Flat` : `Rp ${parseInt(mitra.harga_per_kg).toLocaleString('id-ID')}/kg`}
+                        ${mitra.icon_type === 'sepatu' ? 'Rp 20.000/pasang' : (mitra.nama_mitra.toLowerCase().includes('washtra') ? `Rp ${parseInt(mitra.harga_per_kg).toLocaleString('id-ID')} Flat` : `Rp ${parseInt(mitra.harga_per_kg).toLocaleString('id-ID')}/kg`)}
                     </span>
                     <span class="text-[10px] ${mitra.status_buka == 1 ? 'text-green-600' : 'text-slate-500'} font-bold">${mitra.jam_buka}</span>
                 </div>

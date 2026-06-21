@@ -39,6 +39,7 @@ INSERT IGNORE INTO `mitra_laundry` (`id`, `nama_mitra`, `foto_toko`, `latitude`,
 (5, 'FreshClean Laundry', 'uploads/mitra_1.png', -8.56200000, 116.07700000, 'Jl. Saleh Sungkar, Ampenan, Mataram', '081234567894', 4.6, 7500, 'Open until 21:30', 1, 'satuan'),
 (6, 'WashTra Laundry Ekspress', 'uploads/mitra_washtra.png', -8.59059420, 116.09259180, 'Jl. Majapahit No.88C, Kekalik Jaya, Kec. Sekarbela, Kota Mataram, Nusa Tenggara Bar. 83127', '082341961954', 4.8, 15000, 'Senin - Minggu 07:00 - 22:00', 1, 'express'),
 (7, 'LAUNDRY LOMBOK', 'uploads/laundry_lombok.png', -8.59210790, 116.08926740, 'Jl. Swasembada No.26, Kekalik Jaya, Kec. Sekarbela, Kota Mataram', '085941306413', 5.0, 7000, 'Senin - Minggu 07:00 - 21:00', 1, 'kiloan'),
-(8, 'MAULaundry Mataram', 'uploads/mitra_maulaundry_storefront.png', -8.59282220, 116.08937300, 'Jl. Swasembada No.37, Kekalik Jaya, Kec. Sekarbela, Kota Mataram', '087736861615', 4.8, 25000, 'Senin - Minggu 08:00 - 22:00', 1, 'express');
+(8, 'MAULaundry Mataram', 'uploads/mitra_maulaundry_storefront.png', -8.59282220, 116.08937300, 'Jl. Swasembada No.37, Kekalik Jaya, Kec. Sekarbela, Kota Mataram', '087736861615', 4.8, 25000, 'Senin - Minggu 08:00 - 22:00', 1, 'express'),
+(9, 'Mate Shoes Care', 'uploads/mitra_mate_shoes_care.png', -8.58840500, 116.08540920, 'Jl. Swakarya Raya, Kekalik Jaya, Kec. Sekarbela, Kota Mataram. dekat Kudeta Barbershop Kekalik', '087898824993', 5.0, 25000, 'Senin - Minggu 09:00 - 21:00', 1, 'sepatu');
 
 

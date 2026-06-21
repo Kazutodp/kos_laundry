@@ -307,6 +307,8 @@ try {
                         <img src="<?= htmlspecialchars($foto); ?>" alt="<?= htmlspecialchars($mitra['nama_mitra']); ?>" class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300">
                         <?php if ($is_washtra): ?>
                             <div class="absolute top-md right-md bg-secondary-fixed text-on-secondary-fixed px-sm py-[2px] rounded-full text-label-sm font-bold shadow-sm">Self Service</div>
+                        <?php elseif ($mitra['icon_type'] === 'sepatu'): ?>
+                            <div class="absolute top-md right-md bg-[#7c3aed] text-white px-sm py-[2px] rounded-full text-label-sm font-bold shadow-sm">Shoe Care</div>
                         <?php endif; ?>
                     </div>
                     <div class="p-md space-y-md">
@@ -330,7 +332,13 @@ try {
                         <div class="pt-md border-t border-outline-variant flex justify-between items-center">
                             <div class="bg-tertiary-container/10 px-md py-xs rounded-full">
                                 <span class="text-tertiary font-bold text-label-md">
-                                    <?= $is_washtra ? 'Rp ' . number_format($mitra['harga_per_kg'], 0, ',', '.') . ' Flat' : 'Rp ' . number_format($mitra['harga_per_kg'], 0, ',', '.') . '/kg'; ?>
+                                    <?php 
+                                    if ($mitra['icon_type'] === 'sepatu') {
+                                        echo 'Rp 20.000/pasang';
+                                    } else {
+                                        echo $is_washtra ? 'Rp ' . number_format($mitra['harga_per_kg'], 0, ',', '.') . ' Flat' : 'Rp ' . number_format($mitra['harga_per_kg'], 0, ',', '.') . '/kg';
+                                    }
+                                    ?>
                                 </span>
                             </div>
                             <button onclick="window.location.href='Mitra laundry/<?= $slug; ?>'" class="text-primary font-bold text-label-md hover:underline">Pilih</button>
