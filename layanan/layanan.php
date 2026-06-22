@@ -462,7 +462,10 @@ try {
 <!-- Footer -->
 <footer class="w-full py-xl px-gutter grid grid-cols-1 md:grid-cols-4 gap-lg bg-surface-container-highest">
     <div class="space-y-md">
-        <div class="text-headline-sm font-headline-md font-bold text-primary">KosanLaundry</div>
+        <div class="flex items-center gap-xs">
+            <img alt="KosanLaundry Logo" class="h-8 w-8 object-contain" src="../logo.png?v=3">
+            <span class="text-headline-sm font-headline-md font-bold text-primary">KosanLaundry</span>
+        </div>
         <p class="text-on-surface-variant font-body-md">Freshness delivered to your doorstep. Laundry solusi cerdas untuk hidup lebih produktif.</p>
     </div>
     <div class="space-y-md">
