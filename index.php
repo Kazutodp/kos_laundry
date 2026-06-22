@@ -162,7 +162,7 @@ try {
             <!-- Desktop Nav moved to right -->
             <div class="hidden md:flex space-x-lg items-center mr-lg">
                 <a class="text-primary font-bold border-b-2 border-primary pb-1 font-label-md" href="#">Beranda</a>
-                <a class="text-on-surface-variant hover:text-primary transition-colors font-label-md" href="#">Layanan</a>
+                <a class="text-on-surface-variant hover:text-primary transition-colors font-label-md" href="layanan/layanan.php">Layanan</a>
                 <a class="text-on-surface-variant hover:text-primary transition-colors font-label-md" href="lokasi/locations.php">Lokasi</a>
                 <a class="text-on-surface-variant hover:text-primary transition-colors font-label-md" href="#">Bantuan</a>
             </div>
@@ -233,7 +233,7 @@ try {
                 <button onclick="window.location.href='<?= $is_logged_in ? $dashboard_url : 'login/daftar.php'; ?>'" class="px-xl py-md bg-primary text-on-primary rounded-xl font-bold text-body-md shadow-lg hover:shadow-primary/20 transition-all active:scale-95">
                     Pesan Sekarang
                 </button>
-                <button class="px-xl py-md border-2 border-primary text-primary rounded-xl font-bold text-body-md hover:bg-primary-fixed transition-all">
+                <button onclick="window.location.href='layanan/layanan.php'" class="px-xl py-md border-2 border-primary text-primary rounded-xl font-bold text-body-md hover:bg-primary-fixed transition-all">
                     Lihat Menu &amp; Harga
                 </button>
             </div>
@@ -288,7 +288,7 @@ try {
                 <h2 class="text-headline-lg font-headline-lg text-on-surface">Rekomendasi Laundry Terdekat</h2>
                 <p class="text-on-surface-variant font-body-md">Mitra terpercaya di sekitar area kosan Anda.</p>
             </div>
-            <a class="text-primary font-bold flex items-center space-x-xs group" href="#">
+            <a class="text-primary font-bold flex items-center space-x-xs group" href="layanan/layanan.php">
                 <span class="">Lihat Semua Toko</span>
                 <span class="material-symbols-outlined group-hover:translate-x-1 transition-transform">arrow_forward</span>
             </a>
