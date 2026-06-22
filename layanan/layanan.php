@@ -373,6 +373,8 @@ try {
                     <p class="text-on-surface-variant font-bold">Tidak ada mitra laundry yang cocok untuk pencarian ini.</p>
                 </div>
             </div>
+            <!-- Pagination Controls -->
+            <div id="pagination-container" class="flex justify-center items-center gap-xs mt-xl pt-lg border-t border-outline-variant/30"></div>
         </div>
     </section>
 
@@ -421,13 +423,21 @@ try {
 </footer>
 
 <script>
-    // Filtering Logic for Mitra List
-    function applyFilters() {
+    // Filtering & Pagination Logic for Mitra List
+    let currentPage = 1;
+    const itemsPerPage = 4; // Menampilkan 4 mitra per halaman
+
+    function applyFilters(resetPage = true) {
+        if (resetPage) {
+            currentPage = 1;
+        }
+
         const locationVal = document.getElementById('filter-location').value.toLowerCase();
         const serviceVal = document.getElementById('filter-service').value;
         
         const items = document.querySelectorAll('.mitra-item');
         let visibleCount = 0;
+        let matchedItems = [];
         
         // Define title and description updates
         const titleEl = document.getElementById('section-title');
@@ -479,19 +489,34 @@ try {
             
             // Combine checks
             if (matchService && matchLocation) {
+                matchedItems.push(item);
+                visibleCount++;
+            } else {
+                item.style.opacity = '0';
+                item.style.transform = 'scale(0.95)';
+                item.style.display = 'none';
+            }
+        });
+
+        // Paginate matched items
+        const totalPages = Math.ceil(matchedItems.length / itemsPerPage);
+        if (currentPage > totalPages) currentPage = totalPages;
+        if (currentPage < 1) currentPage = 1;
+
+        matchedItems.forEach((item, index) => {
+            const startIdx = (currentPage - 1) * itemsPerPage;
+            const endIdx = currentPage * itemsPerPage - 1;
+            if (index >= startIdx && index <= endIdx) {
                 item.style.display = 'flex';
                 // Trigger transition
                 setTimeout(() => {
                     item.style.opacity = '1';
                     item.style.transform = 'scale(1)';
                 }, 50);
-                visibleCount++;
             } else {
                 item.style.opacity = '0';
                 item.style.transform = 'scale(0.95)';
-                setTimeout(() => {
-                    item.style.display = 'none';
-                }, 200);
+                item.style.display = 'none';
             }
         });
 
@@ -507,6 +532,55 @@ try {
 
         // Update count label
         document.getElementById('mitra-count').innerText = "Jumlah: " + visibleCount + " Mitra";
+
+        // Render Pagination Controls
+        renderPaginationControls(totalPages);
+    }
+
+    function renderPaginationControls(totalPages) {
+        const container = document.getElementById('pagination-container');
+        if (!container) return;
+
+        if (totalPages <= 1) {
+            container.innerHTML = '';
+            container.classList.add('hidden');
+            return;
+        }
+
+        container.classList.remove('hidden');
+        let html = '';
+
+        // Previous Button
+        if (currentPage > 1) {
+            html += `<button type="button" onclick="changePage(${currentPage - 1})" class="w-10 h-10 flex items-center justify-center rounded-xl border border-outline-variant text-on-surface-variant hover:bg-surface-container transition-all cursor-pointer"><span class="material-symbols-outlined text-[20px]">chevron_left</span></button>`;
+        } else {
+            html += `<button type="button" class="w-10 h-10 flex items-center justify-center rounded-xl border border-outline-variant/30 text-outline-variant/40 cursor-not-allowed" disabled><span class="material-symbols-outlined text-[20px] opacity-40">chevron_left</span></button>`;
+        }
+
+        // Page Numbers
+        for (let i = 1; i <= totalPages; i++) {
+            if (i === currentPage) {
+                html += `<button type="button" class="w-10 h-10 flex items-center justify-center rounded-xl border border-primary bg-primary text-white font-bold transition-all">${i}</button>`;
+            } else {
+                html += `<button type="button" onclick="changePage(${i})" class="w-10 h-10 flex items-center justify-center rounded-xl border border-outline-variant text-on-surface-variant hover:bg-surface-container transition-all cursor-pointer">${i}</button>`;
+            }
+        }
+
+        // Next Button
+        if (currentPage < totalPages) {
+            html += `<button type="button" onclick="changePage(${currentPage + 1})" class="w-10 h-10 flex items-center justify-center rounded-xl border border-outline-variant text-on-surface-variant hover:bg-surface-container transition-all cursor-pointer"><span class="material-symbols-outlined text-[20px]">chevron_right</span></button>`;
+        } else {
+            html += `<button type="button" class="w-10 h-10 flex items-center justify-center rounded-xl border border-outline-variant/30 text-outline-variant/40 cursor-not-allowed" disabled><span class="material-symbols-outlined text-[20px] opacity-40">chevron_right</span></button>`;
+        }
+
+        container.innerHTML = html;
+    }
+
+    function changePage(page) {
+        currentPage = page;
+        applyFilters(false);
+        // Scroll to grid top smoothly
+        document.getElementById('rekomendasi-mitra-section').scrollIntoView({ behavior: 'smooth', block: 'start' });
     }
 
     // Helper function for footer links to trigger filtering
@@ -517,7 +591,10 @@ try {
         document.getElementById('filter-location').scrollIntoView({ behavior: 'smooth' });
     }
 
-
+    // Initial load filtering & pagination
+    document.addEventListener('DOMContentLoaded', () => {
+        applyFilters(true);
+    });
 
     // Mobile Navbar Menu Toggle
     const mobileMenuBtn = document.getElementById('mobile-menu-btn');
