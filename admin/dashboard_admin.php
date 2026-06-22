@@ -288,10 +288,6 @@ try {
 <h1 class="text-headline-lg font-headline-lg text-on-surface">Pusat Kendali Kemitraan Provinsi</h1>
 <p class="text-body-lg text-on-surface-variant">Monitor performa dan sebaran mitra di wilayah Mataram dan sekitarnya.</p>
 </div>
-<a href="tambah_mitra.php" class="bg-primary text-on-primary px-lg py-sm rounded-xl font-bold flex items-center gap-sm shadow-md hover:brightness-110 active:scale-95 transition-all">
-    <span class="material-symbols-outlined">person_add</span>
-    Tambah Mitra Baru
-</a>
 </div>
 <!-- Stats Grid -->
 <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-lg">
