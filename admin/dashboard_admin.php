@@ -10,7 +10,16 @@ require_once '../db_connect.php';
 // Fetch all partners
 try {
     $stmt = $pdo->query("SELECT * FROM mitra_laundry ORDER BY created_at DESC");
-    $all_mitras = $stmt->fetchAll();
+    $raw_mitras = $stmt->fetchAll();
+    
+    // Filter to only include partners whose profile/template files exist (synchronizing with index.php)
+    $all_mitras = [];
+    foreach ($raw_mitras as $mitra) {
+        $file_name = str_replace(' ', '_', $mitra['nama_mitra']) . '.php';
+        if (file_exists('../Mitra laundry/' . $file_name)) {
+            $all_mitras[] = $mitra;
+        }
+    }
     
     // Count active partners (status_buka = 1 AND detail template file exists)
     $active_mitras_count = 0;
