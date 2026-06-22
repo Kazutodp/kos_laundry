@@ -235,54 +235,9 @@ $login_url = "../login/login.php";
         <div class="absolute -bottom-40 -right-40 w-80 h-80 bg-secondary-fixed-dim/15 rounded-full blur-3xl opacity-55"></div>
     </section>
 
-    <!-- Help Categories Grid -->
+
+
     <section class="py-16 px-container-margin max-w-7xl mx-auto">
-        <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-lg mb-20" id="categories-container">
-            <!-- Category 1 -->
-            <div class="bento-card p-xl bg-surface-container-lowest rounded-2xl border border-outline-variant/60 text-center space-y-md cursor-pointer hover:border-primary/50" onclick="scrollToSection('faq-pesanan')">
-                <div class="w-14 h-14 bg-primary/10 text-primary rounded-2xl flex items-center justify-center mx-auto">
-                    <span class="material-symbols-outlined text-3xl">receipt_long</span>
-                </div>
-                <div>
-                    <h3 class="font-bold text-on-surface text-base">Pesanan &amp; Pembayaran</h3>
-                    <p class="text-xs text-on-surface-variant mt-1 leading-relaxed">Cara memesan, status cucian, metode pembayaran QRIS/E-Wallet.</p>
-                </div>
-            </div>
-
-            <!-- Category 2 -->
-            <div class="bento-card p-xl bg-surface-container-lowest rounded-2xl border border-outline-variant/60 text-center space-y-md cursor-pointer hover:border-primary/50" onclick="scrollToSection('faq-akun')">
-                <div class="w-14 h-14 bg-secondary/10 text-secondary rounded-2xl flex items-center justify-center mx-auto">
-                    <span class="material-symbols-outlined text-3xl">manage_accounts</span>
-                </div>
-                <div>
-                    <h3 class="font-bold text-on-surface text-base">Akun &amp; Keamanan</h3>
-                    <p class="text-xs text-on-surface-variant mt-1 leading-relaxed">Lupa kata sandi, mengubah data profil, atau menghapus akun.</p>
-                </div>
-            </div>
-
-            <!-- Category 3 -->
-            <div class="bento-card p-xl bg-surface-container-lowest rounded-2xl border border-outline-variant/60 text-center space-y-md cursor-pointer hover:border-primary/50" onclick="scrollToSection('faq-pengiriman')">
-                <div class="w-14 h-14 bg-[#7c3aed]/10 text-[#7c3aed] rounded-2xl flex items-center justify-center mx-auto">
-                    <span class="material-symbols-outlined text-3xl">local_shipping</span>
-                </div>
-                <div>
-                    <h3 class="font-bold text-on-surface text-base">Antar-Jemput</h3>
-                    <p class="text-xs text-on-surface-variant mt-1 leading-relaxed">Ketentuan radius ongkir gratis &amp; proses pengantaran kurir.</p>
-                </div>
-            </div>
-
-            <!-- Category 4 -->
-            <div class="bento-card p-xl bg-surface-container-lowest rounded-2xl border border-outline-variant/60 text-center space-y-md cursor-pointer hover:border-primary/50" onclick="scrollToSection('faq-mitra')">
-                <div class="w-14 h-14 bg-amber-600/10 text-amber-600 rounded-2xl flex items-center justify-center mx-auto">
-                    <span class="material-symbols-outlined text-3xl">handshake</span>
-                </div>
-                <div>
-                    <h3 class="font-bold text-on-surface text-base">Kemitraan Laundry</h3>
-                    <p class="text-xs text-on-surface-variant mt-1 leading-relaxed">Cara pendaftaran outlet laundry baru sebagai mitra KosanLaundry.</p>
-                </div>
-            </div>
-        </div>
-
         <div class="grid lg:grid-cols-3 gap-xl items-start">
             
             <!-- Left 2 Columns: Popular Guides & FAQs -->
@@ -544,9 +499,9 @@ $login_url = "../login/login.php";
 
         if (query.length > 0) {
             // Hide category grid when searching to make it look clean
-            categoriesContainer.classList.add('hidden');
+            if (categoriesContainer) categoriesContainer.classList.add('hidden');
         } else {
-            categoriesContainer.classList.remove('hidden');
+            if (categoriesContainer) categoriesContainer.classList.remove('hidden');
             // Show all items
             guideItems.forEach(i => i.style.display = 'block');
             faqBoxes.forEach(i => i.style.display = 'block');
