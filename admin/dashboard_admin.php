@@ -12,13 +12,16 @@ try {
     $stmt = $pdo->query("SELECT * FROM mitra_laundry ORDER BY created_at DESC");
     $all_mitras = $stmt->fetchAll();
     
-    // Count active partners (status_buka = 1)
+    // Count active partners (status_buka = 1 AND detail template file exists)
     $active_mitras_count = 0;
     $total_rating = 0;
     $rating_count = 0;
     
     foreach ($all_mitras as $mitra) {
-        if ($mitra['status_buka'] == 1) {
+        $file_name = str_replace(' ', '_', $mitra['nama_mitra']) . '.php';
+        $has_file = file_exists('../Mitra laundry/' . $file_name);
+        
+        if ($mitra['status_buka'] == 1 && $has_file) {
             $active_mitras_count++;
         }
         if ($mitra['rating'] > 0) {
@@ -385,6 +388,9 @@ if (empty($city)) {
 if (strlen($city) > 18) {
     $city = substr($city, 0, 15) . '...';
 }
+
+$file_name = str_replace(' ', '_', $mitra['nama_mitra']) . '.php';
+$has_file = file_exists('../Mitra laundry/' . $file_name);
 ?>
 <tr class="hover:bg-surface-container-low transition-colors">
 <td class="px-lg py-md text-body-md font-bold text-on-surface"><?= htmlspecialchars($mitra['nama_mitra']); ?></td>
@@ -399,8 +405,10 @@ if (strlen($city) > 18) {
     ?>
 </td>
 <td class="px-lg py-md">
-    <?php if ($mitra['status_buka'] == 1): ?>
+    <?php if ($mitra['status_buka'] == 1 && $has_file): ?>
         <span class="px-sm py-xs bg-emerald-50 text-emerald-700 rounded-full font-bold text-label-sm">Aktif / Buka</span>
+    <?php elseif (!$has_file): ?>
+        <span class="px-sm py-xs bg-amber-50 text-amber-700 rounded-full font-bold text-label-sm">Draft / Belum Rilis</span>
     <?php else: ?>
         <span class="px-sm py-xs bg-slate-100 text-slate-500 rounded-full font-bold text-label-sm">Tutup</span>
     <?php endif; ?>
