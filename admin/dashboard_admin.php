@@ -221,7 +221,7 @@ try {
 <span class="material-symbols-outlined">group</span>
 <span class="text-label-md font-label-md">Manajemen Mitra</span>
 </a>
-<a class="flex items-center gap-sm px-md py-sm text-on-surface-variant hover:bg-surface-container-high rounded-lg transition-all" href="#">
+<a class="flex items-center gap-sm px-md py-sm text-on-surface-variant hover:bg-surface-container-high rounded-lg transition-all" href="operational_area.php">
 <span class="material-symbols-outlined">map</span>
 <span class="text-label-md font-label-md">Wilayah Operasional</span>
 </a>
