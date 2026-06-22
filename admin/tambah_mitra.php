@@ -575,10 +575,20 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             mapsLinkInput.addEventListener('input', function() {
                 const url = this.value.trim();
                 if (!url) {
+                    latInput.readOnly = false;
+                    lngInput.readOnly = false;
+                    latInput.classList.remove('bg-slate-100');
+                    lngInput.classList.remove('bg-slate-100');
                     linkInfo.textContent = 'Tempel link Google Maps di sini untuk mengisi koordinat secara otomatis.';
                     linkInfo.className = 'text-[11px] font-semibold text-outline';
                     return;
                 }
+                
+                // Set to readonly to indicate auto-calculated values
+                latInput.readOnly = true;
+                lngInput.readOnly = true;
+                latInput.classList.add('bg-slate-100');
+                lngInput.classList.add('bg-slate-100');
                 
                 // Regex for @lat,lng
                 let match = url.match(/@(-?\d+\.\d+),(-?\d+\.\d+)/);
@@ -607,6 +617,11 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                     return;
                 }
                 
+                // If unrecognized format, allow manual edits as fallback
+                latInput.readOnly = false;
+                lngInput.readOnly = false;
+                latInput.classList.remove('bg-slate-100');
+                lngInput.classList.remove('bg-slate-100');
                 linkInfo.className = 'text-[11px] font-bold text-error flex items-center gap-xs mt-xs';
                 linkInfo.innerHTML = '<span class="material-symbols-outlined text-[14px]">error</span> Format link tidak dikenali. Silakan isi koordinat secara manual.';
             });
