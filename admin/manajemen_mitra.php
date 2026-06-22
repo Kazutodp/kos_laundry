@@ -192,7 +192,7 @@ try {
                 <span class="material-symbols-outlined">analytics</span>
                 <span class="text-label-md font-label-md">Analitik Kemitraan</span>
             </a>
-            <a class="flex items-center gap-sm px-md py-sm text-on-surface-variant hover:bg-surface-container-high rounded-lg transition-all" href="#">
+            <a class="flex items-center gap-sm px-md py-sm text-on-surface-variant hover:bg-surface-container-high rounded-lg transition-all" href="financial_statements.php">
                 <span class="material-symbols-outlined">payments</span>
                 <span class="text-label-md font-label-md">Laporan Keuangan</span>
             </a>
