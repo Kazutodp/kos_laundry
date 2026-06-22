@@ -247,7 +247,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                 <span class="material-symbols-outlined">dashboard</span>
                 <span class="text-label-md font-label-md">Dashboard</span>
             </a>
-            <a class="flex items-center gap-sm px-md py-sm bg-primary-container text-on-primary-container rounded-lg font-bold translate-x-1 transition-transform" href="#">
+            <a class="flex items-center gap-sm px-md py-sm bg-primary-container text-on-primary-container rounded-lg font-bold translate-x-1 transition-transform" href="manajemen_mitra.php">
                 <span class="material-symbols-outlined" style="font-variation-settings: 'FILL' 1;">group</span>
                 <span class="text-label-md font-label-md">Manajemen Mitra</span>
             </a>
@@ -289,7 +289,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                 <div class="lg:hidden">
                     <span class="material-symbols-outlined text-on-surface-variant">menu</span>
                 </div>
-                <div class="text-headline-sm font-bold text-on-surface">Manajemen Mitra</div>
+                <div class="text-headline-sm font-bold text-on-surface">Tambah Mitra Baru</div>
             </div>
             <div class="flex items-center gap-md">
                 <div class="flex items-center gap-sm">
@@ -304,9 +304,9 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             <div class="max-w-5xl mx-auto space-y-lg">
                 <!-- Back link & title -->
                 <div class="flex items-center gap-xs">
-                    <a href="dashboard_admin.php" class="text-primary hover:underline flex items-center font-bold text-label-md gap-base">
+                    <a href="manajemen_mitra.php" class="text-primary hover:underline flex items-center font-bold text-label-md gap-base">
                         <span class="material-symbols-outlined text-[18px]">arrow_back</span>
-                        <span>Kembali ke Dashboard</span>
+                        <span>Kembali ke Manajemen Mitra</span>
                     </a>
                 </div>
                 <div>

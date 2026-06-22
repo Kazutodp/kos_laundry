@@ -213,11 +213,11 @@ try {
 </div>
 <div class="flex flex-col gap-xs py-md border-b border-outline-variant">
 <p class="px-md text-label-sm text-outline uppercase tracking-widest">Main Menu</p>
-<a class="flex items-center gap-sm px-md py-sm bg-primary-container text-on-primary-container rounded-lg font-bold translate-x-1 transition-transform" href="#">
+<a class="flex items-center gap-sm px-md py-sm bg-primary-container text-on-primary-container rounded-lg font-bold translate-x-1 transition-transform" href="dashboard_admin.php">
 <span class="material-symbols-outlined" style="font-variation-settings: 'FILL' 1;">dashboard</span>
 <span class="text-label-md font-label-md">Dashboard</span>
 </a>
-<a class="flex items-center gap-sm px-md py-sm text-on-surface-variant hover:bg-surface-container-high rounded-lg transition-all" href="#">
+<a class="flex items-center gap-sm px-md py-sm text-on-surface-variant hover:bg-surface-container-high rounded-lg transition-all" href="manajemen_mitra.php">
 <span class="material-symbols-outlined">group</span>
 <span class="text-label-md font-label-md">Manajemen Mitra</span>
 </a>
