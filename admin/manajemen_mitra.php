@@ -42,6 +42,8 @@ if (isset($_GET['action']) && $_GET['action'] === 'delete' && isset($_GET['id'])
 
 if (isset($_GET['status']) && $_GET['status'] === 'deleted') {
     $success_message = 'Mitra laundry berhasil dihapus dari sistem.';
+} elseif (isset($_GET['status']) && $_GET['status'] === 'updated') {
+    $success_message = 'Data mitra laundry berhasil diperbarui!';
 }
 
 // Fetch all partners
@@ -359,10 +361,16 @@ try {
                                             </td>
                                             <!-- Column 5: Actions -->
                                             <td class="px-lg py-md text-center">
-                                                <button onclick="confirmDelete(<?= $mitra['id']; ?>, '<?= htmlspecialchars($mitra['nama_mitra'], ENT_QUOTES); ?>')" class="px-sm py-xs border border-error text-error rounded-xl font-bold text-label-sm hover:bg-error-container/20 transition-all active:scale-95 inline-flex items-center gap-xs">
-                                                    <span class="material-symbols-outlined text-[18px]">delete</span>
-                                                    Hapus
-                                                </button>
+                                                <div class="flex items-center justify-center gap-xs">
+                                                    <a href="edit_mitra.php?id=<?= $mitra['id']; ?>" class="px-sm py-xs border border-primary text-primary rounded-xl font-bold text-label-sm hover:bg-primary-fixed/30 transition-all active:scale-95 inline-flex items-center gap-xs">
+                                                        <span class="material-symbols-outlined text-[18px]">edit</span>
+                                                        Edit
+                                                    </a>
+                                                    <button onclick="confirmDelete(<?= $mitra['id']; ?>, '<?= htmlspecialchars($mitra['nama_mitra'], ENT_QUOTES); ?>')" class="px-sm py-xs border border-error text-error rounded-xl font-bold text-label-sm hover:bg-error-container/20 transition-all active:scale-95 inline-flex items-center gap-xs">
+                                                        <span class="material-symbols-outlined text-[18px]">delete</span>
+                                                        Hapus
+                                                    </button>
+                                                </div>
                                             </td>
                                         </tr>
                                     <?php endforeach; ?>
