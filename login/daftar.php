@@ -200,7 +200,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             <div class="grid grid-cols-2 gap-md text-left">
                 <div class="p-md glass-card rounded-xl">
                     <span class="material-symbols-outlined text-white mb-xs">local_shipping</span>
-                    <p class="font-label-md text-label-md text-white">Jemput Antar Gratis</p>
+                    <p class="font-label-md text-label-md text-white">Jemput Antar Murah</p>
                 </div>
                 <div class="p-md glass-card rounded-xl">
                     <span class="material-symbols-outlined text-white mb-xs">sell</span>

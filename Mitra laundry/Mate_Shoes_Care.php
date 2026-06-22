@@ -7,7 +7,7 @@ $jam_operasional_html = '
 </div>';
 
 $custom_delivery_label = "Antar-Jemput";
-$custom_delivery_advice = "Gratis ongkir < 2km";
+$custom_delivery_advice = "Biaya antar-jemput Rp 1.500";
 
 $custom_tabs = [
     'kiloan' => 'Cuci Sepatu',
@@ -121,7 +121,7 @@ $custom_grids_html = '
             </li>
             <li class="flex items-start gap-md">
                 <span class="material-symbols-outlined text-secondary mt-[2px]">check_circle</span>
-                <span><strong>Antar-Jemput Gratis (Sekitar Kekalik):</strong> Cukup pesan dari kosan, kami jemput dan antarkan kembali sepatu bersih Anda tanpa tambahan biaya ongkir untuk radius 2 km.</span>
+                <span><strong>Layanan Antar-Jemput Murah:</strong> Cukup pesan dari kosan, kami jemput dan antarkan kembali sepatu bersih Anda dengan biaya ongkir flat Rp 1.500 saja.</span>
             </li>
         </ul>
     </div>

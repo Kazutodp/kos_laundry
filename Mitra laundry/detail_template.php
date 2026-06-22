@@ -74,7 +74,7 @@ $harga_express_setrika = isset($custom_harga_express_setrika) ? $custom_harga_ex
 
 // Delivery options text overrides
 $delivery_label = isset($custom_delivery_label) ? $custom_delivery_label : ($is_self_service ? 'Layanan Mandiri' : 'Jemput-Antar');
-$delivery_advice = isset($custom_delivery_advice) ? $custom_delivery_advice : ($is_self_service ? 'Cuci Mandiri di Toko' : 'Gratis ongkir < 2km');
+$delivery_advice = isset($custom_delivery_advice) ? $custom_delivery_advice : ($is_self_service ? 'Cuci Mandiri di Toko' : 'Biaya antar-jemput Rp 1.500');
 
 // Satuan pricing
 $harga_satuan_jaket = 15000;
@@ -914,7 +914,7 @@ $logo_url = $partner_logos[$id_mitra] ?? $partner_logos[1];
                 </div>
                 <div class="flex justify-between text-body-md text-sm">
                     <span><?= $is_self_service ? 'Biaya Reservasi Slot' : 'Biaya Antar-Jemput'; ?></span>
-                    <span id="modal-addon-price" class="<?= $is_self_service ? 'text-primary font-bold' : 'text-secondary font-bold'; ?>"><?= $is_self_service ? 'Rp 1.000' : 'Gratis'; ?></span>
+                    <span id="modal-addon-price" class="<?= $is_self_service ? 'text-primary font-bold' : 'text-secondary font-bold'; ?>"><?= $is_self_service ? 'Rp 1.000' : 'Rp 1.500'; ?></span>
                 </div>
                 <div class="border-t border-outline-variant mt-xs pt-xs flex justify-between font-bold text-primary text-base">
                     <span>Total Pembayaran</span>
@@ -1027,9 +1027,9 @@ $logo_url = $partner_logos[$id_mitra] ?? $partner_logos[1];
     function calculateTotal() {
         const qty = parseFloat(document.getElementById('order-qty').value) || 1;
         const isSelfService = <?= $is_self_service ? 'true' : 'false'; ?>;
-        const reservationFee = isSelfService ? 1000 : 0;
+        const addonFee = isSelfService ? 1000 : 1500;
         
-        const total = (activeServicePrice * qty) + reservationFee;
+        const total = (activeServicePrice * qty) + addonFee;
         document.getElementById('modal-total-price').innerText = formatRupiah(total);
     }
 

@@ -7,7 +7,7 @@ $jam_operasional_html = '
 </div>';
 
 $custom_delivery_label = "Jemput-Antar";
-$custom_delivery_advice = "Gratis ongkir < 3km";
+$custom_delivery_advice = "Biaya antar-jemput Rp 1.500";
 
 $custom_tabs = [
     'self' => 'Self Service',
@@ -156,7 +156,7 @@ $custom_grids_html = '
             </li>
             <li class="flex items-start gap-md">
                 <span class="material-symbols-outlined text-secondary mt-[2px]">check_circle</span>
-                <span><strong>Layanan Antar Jemput Gratis:</strong> Nikmati kemudahan antar jemput cucian GRATIS ongkir untuk radius 3 km dari outlet kami.</span>
+                <span><strong>Layanan Antar Jemput Murah:</strong> Nikmati kemudahan antar jemput cucian dengan tarif flat Rp 1.500 saja.</span>
             </li>
             <li class="flex items-start gap-md">
                 <span class="material-symbols-outlined text-secondary mt-[2px]">check_circle</span>

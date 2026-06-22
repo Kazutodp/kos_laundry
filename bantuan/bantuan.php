@@ -334,12 +334,12 @@ $login_url = "../login/login.php";
 
                         <div class="border border-outline-variant/60 rounded-xl overflow-hidden bg-surface transition-all faq-box">
                             <button class="w-full flex justify-between items-center p-md lg:p-lg text-left font-bold text-on-surface text-sm lg:text-base hover:bg-surface-container-high/40 transition-colors" onclick="toggleFaq(3)">
-                                <span>Berapa batas radius pengantaran untuk gratis ongkir?</span>
+                                <span>Berapa biaya untuk layanan antar-jemput pakaian?</span>
                                 <span class="material-symbols-outlined text-outline transition-transform duration-300" id="faq-icon-3">expand_more</span>
                             </button>
                             <div class="accordion-content max-h-0 overflow-hidden" id="faq-content-3">
                                 <p class="p-lg pt-0 text-xs lg:text-sm text-on-surface-variant leading-relaxed">
-                                    Batas radius pengantaran gratis ongkos kirim adalah 3 km dari lokasi outlet mitra laundry yang Anda pilih. Di atas radius 3 km, tarif pengantaran akan dikenakan biaya tambahan per kilometer secara otomatis.
+                                    Layanan antar-jemput pakaian dikenakan tarif flat terjangkau sebesar Rp 1.500 saja per pesanan untuk memudahkan Anda tanpa perlu keluar kosan.
                                 </p>
                             </div>
                         </div>

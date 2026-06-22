@@ -262,7 +262,7 @@ try {
                 <span class="text-secondary">Kosan Nyaman</span>
             </h1>
             <p class="text-body-lg text-on-surface-variant max-w-lg">
-                Urusan baju kotor serahkan ke kami. Jemput antar gratis, proses cepat, dan hasil wangi segar seperti baru. Fokus pada studi dan karir Anda, biarkan kami yang mencuci.
+                Urusan baju kotor serahkan ke kami. Jemput antar murah (hanya 1.500), proses cepat, dan hasil wangi segar seperti baru. Fokus pada studi dan karir Anda, biarkan kami yang mencuci.
             </p>
             <div class="flex flex-wrap gap-md pt-md">
                 <button onclick="window.location.href='<?= $is_logged_in ? $dashboard_url : 'login/daftar.php'; ?>'" class="px-xl py-md bg-primary text-on-primary rounded-xl font-bold text-body-md shadow-lg hover:shadow-primary/20 transition-all active:scale-95">
