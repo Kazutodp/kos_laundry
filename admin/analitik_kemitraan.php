@@ -57,14 +57,50 @@ try {
         $service_percentages[$key] = $active_count > 0 ? round(($count / $active_count) * 100) : 0;
     }
     
-    // Simulated weekly revenue trend
+    // Calculate actual total revenue (Omset Bulanan) from orders table
+    $total_revenue = 0;
+    try {
+        $rev_stmt = $pdo->query("SELECT COALESCE(SUM(total_harga), 0) as total FROM orders WHERE status_pembayaran = 'success'");
+        $total_revenue = (float)$rev_stmt->fetchColumn();
+    } catch (PDOException $e) {
+        $total_revenue = 0;
+    }
+
+    // Calculate weekly revenue trend from orders table
     $weekly_revenue = [
-        'Minggu 1' => 850000 + ($active_count * 120000),
-        'Minggu 2' => 950000 + ($active_count * 150000),
-        'Minggu 3' => 1100000 + ($active_count * 140000),
-        'Minggu 4' => 1350000 + ($active_count * 180000),
+        'Minggu 1' => 0,
+        'Minggu 2' => 0,
+        'Minggu 3' => 0,
+        'Minggu 4' => 0,
     ];
+    try {
+        $weeks_stmt = $pdo->query("
+            SELECT 
+                CASE 
+                    WHEN DAY(created_at) <= 7 THEN 'Minggu 1'
+                    WHEN DAY(created_at) <= 14 THEN 'Minggu 2'
+                    WHEN DAY(created_at) <= 21 THEN 'Minggu 3'
+                    ELSE 'Minggu 4'
+                END as week_num,
+                COALESCE(SUM(total_harga), 0) as weekly_sum
+            FROM orders
+            WHERE status_pembayaran = 'success'
+              AND MONTH(created_at) = MONTH(CURRENT_DATE())
+              AND YEAR(created_at) = YEAR(CURRENT_DATE())
+            GROUP BY week_num
+        ");
+        
+        while ($row = $weeks_stmt->fetch()) {
+            $weekly_revenue[$row['week_num']] = (float)$row['weekly_sum'];
+        }
+    } catch (PDOException $e) {
+        // Fallback to empty weekly revenue
+    }
+    
     $max_revenue = max($weekly_revenue);
+    if ($max_revenue <= 0) {
+        $max_revenue = 1; // avoid division by zero
+    }
     
 } catch (PDOException $e) {
     $mitra_list = [];
@@ -281,8 +317,8 @@ try {
                             <span class="material-symbols-outlined text-[28px]">payments</span>
                         </div>
                         <div>
-                            <p class="text-label-sm text-on-surface-variant font-medium">Estimasi Omset Bulanan</p>
-                            <p class="text-headline-md font-bold text-on-surface">Rp <?= number_format($active_count * 1500000, 0, ',', '.'); ?></p>
+                            <p class="text-label-sm text-on-surface-variant font-medium">Omset Pendapatan Riil</p>
+                            <p class="text-headline-md font-bold text-on-surface">Rp <?= number_format($total_revenue, 0, ',', '.'); ?></p>
                         </div>
                     </div>
                     <div class="bento-card p-lg rounded-xl flex items-center gap-md">

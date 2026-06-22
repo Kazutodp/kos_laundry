@@ -8,8 +8,15 @@ if (!isset($_SESSION['admin_logged_in'])) {
 require_once '../db_connect.php';
 
 try {
-    // Fetch all active partners (with template files)
-    $stmt = $pdo->query("SELECT * FROM mitra_laundry ORDER BY rating DESC");
+    // Fetch all active partners along with their real order metrics
+    $stmt = $pdo->query("SELECT m.*, 
+                               COUNT(o.id) as real_orders, 
+                               COALESCE(SUM(o.total_harga), 0) as real_gross,
+                               COUNT(CASE WHEN o.status_transfer = 'Proses' THEN 1 END) as pending_transfers
+                        FROM mitra_laundry m
+                        LEFT JOIN orders o ON m.id = o.mitra_id AND o.status_pembayaran = 'success'
+                        GROUP BY m.id
+                        ORDER BY m.rating DESC");
     $raw_mitras = $stmt->fetchAll();
     
     $mitra_list = [];
@@ -19,9 +26,8 @@ try {
     foreach ($raw_mitras as $mitra) {
         $file_name = str_replace(' ', '_', $mitra['nama_mitra']) . '.php';
         if (file_exists('../Mitra laundry/' . $file_name)) {
-            // Determine dynamic simulated orders
-            $orders = ($mitra['id'] * 6) + round($mitra['rating'] * 9);
-            $gross = $orders * $mitra['harga_per_kg'] * 3.2; // 3.2kg avg order weight
+            $orders = (int)$mitra['real_orders'];
+            $gross = (float)$mitra['real_gross'];
             
             $mitra['simulated_orders'] = $orders;
             $mitra['simulated_gross'] = $gross;
@@ -307,7 +313,7 @@ try {
                                 <?php else: ?>
                                     <?php foreach ($mitra_list as $mitra): ?>
                                         <?php 
-                                        $transfer_status = ($mitra['id'] % 2 === 0) ? 'Proses' : 'Selesai';
+                                        $transfer_status = ($mitra['simulated_orders'] > 0 && $mitra['pending_transfers'] > 0) ? 'Proses' : 'Selesai';
                                         $status_badge = $transfer_status === 'Selesai' 
                                             ? 'bg-emerald-50 text-emerald-700 border-emerald-200' 
                                             : 'bg-amber-50 text-amber-700 border-amber-200';

@@ -42,4 +42,19 @@ INSERT IGNORE INTO `mitra_laundry` (`id`, `nama_mitra`, `foto_toko`, `latitude`,
 (8, 'MAULaundry Mataram', 'uploads/mitra_maulaundry_storefront.png', -8.59282220, 116.08937300, 'Jl. Swasembada No.37, Kekalik Jaya, Kec. Sekarbela, Kota Mataram', '087736861615', 4.8, 25000, 'Senin - Minggu 08:00 - 22:00', 1, 'express'),
 (9, 'Mate Shoes Care', 'uploads/mitra_mate_shoes_care.png', -8.58840500, 116.08540920, 'Jl. Swakarya Raya, Kekalik Jaya, Kec. Sekarbela, Kota Mataram. dekat Kudeta Barbershop Kekalik', '087898824993', 5.0, 25000, 'Senin - Minggu 09:00 - 21:00', 1, 'sepatu');
 
+CREATE TABLE IF NOT EXISTS `orders` (
+    `id` INT AUTO_INCREMENT PRIMARY KEY,
+    `mitra_id` INT NOT NULL,
+    `nama_pelanggan` VARCHAR(100) NOT NULL,
+    `layanan` VARCHAR(100) NOT NULL,
+    `berat_atau_qty` DECIMAL(5, 2) NOT NULL,
+    `tarif_per_kg` INT NOT NULL,
+    `biaya_antar_jemput` INT DEFAULT 1500,
+    `total_harga` INT NOT NULL,
+    `status_pembayaran` VARCHAR(20) DEFAULT 'success',
+    `status_transfer` VARCHAR(20) DEFAULT 'Selesai',
+    `created_at` TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    FOREIGN KEY (`mitra_id`) REFERENCES `mitra_laundry`(`id`) ON DELETE CASCADE
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
+
 
