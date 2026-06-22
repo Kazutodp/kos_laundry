@@ -182,7 +182,7 @@ try {
                 <span class="material-symbols-outlined" style="font-variation-settings: 'FILL' 1;">payments</span>
                 <span class="text-label-md font-label-md">Laporan Keuangan</span>
             </a>
-            <a class="flex items-center gap-sm px-md py-sm text-on-surface-variant hover:bg-surface-container-high rounded-lg transition-all" href="#">
+            <a class="flex items-center gap-sm px-md py-sm text-on-surface-variant hover:bg-surface-container-high rounded-lg transition-all" href="settings.php">
                 <span class="material-symbols-outlined">settings</span>
                 <span class="text-label-md font-label-md">Settings</span>
             </a>
