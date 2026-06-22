@@ -314,7 +314,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 
         google.accounts.id.renderButton(
             container,
-            { theme: "outline", size: "large", width: btnWidth, shape: "rectangular" }
+            { theme: "outline", size: "medium", width: btnWidth, shape: "rectangular" }
         );
     }
 
