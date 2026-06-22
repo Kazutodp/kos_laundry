@@ -17,24 +17,54 @@ try {
     $total_rating = 0;
     $rating_count = 0;
     
+    // Calculate active partners by area
+    $sebaran_data = [];
+    
     foreach ($all_mitras as $mitra) {
         $file_name = str_replace(' ', '_', $mitra['nama_mitra']) . '.php';
         $has_file = file_exists('../Mitra laundry/' . $file_name);
         
         if ($mitra['status_buka'] == 1 && $has_file) {
             $active_mitras_count++;
-        }
-        if ($mitra['rating'] > 0) {
-            $total_rating += $mitra['rating'];
-            $rating_count++;
+            
+            if ($mitra['rating'] > 0) {
+                $total_rating += $mitra['rating'];
+                $rating_count++;
+            }
+            
+            // Determine area
+            $alamat_lower = strtolower($mitra['alamat']);
+            if (strpos($alamat_lower, 'sekarbela') !== false || strpos($alamat_lower, 'kekalik') !== false) {
+                $area = 'Sekarbela';
+            } elseif (strpos($alamat_lower, 'ampenan') !== false) {
+                $area = 'Ampenan';
+            } elseif (strpos($alamat_lower, 'pagutan') !== false) {
+                $area = 'Pagutan';
+            } elseif (strpos($alamat_lower, 'cakranegara') !== false || strpos($alamat_lower, 'cilinaya') !== false) {
+                $area = 'Cakranegara';
+            } else {
+                $area = 'Mataram Kota';
+            }
+            
+            if (!isset($sebaran_data[$area])) {
+                $sebaran_data[$area] = 0;
+            }
+            $sebaran_data[$area]++;
         }
     }
     
     $avg_rating = $rating_count > 0 ? number_format($total_rating / $rating_count, 1, '.', '') : '0.0';
+    
+    // Define operational areas to display in the chart
+    $chart_areas = ['Sekarbela', 'Mataram Kota', 'Ampenan', 'Pagutan', 'Cakranegara'];
+    $max_count = !empty($sebaran_data) ? max($sebaran_data) : 0;
 } catch (PDOException $e) {
     $all_mitras = [];
     $active_mitras_count = 0;
     $avg_rating = '0.0';
+    $sebaran_data = [];
+    $chart_areas = ['Sekarbela', 'Mataram Kota', 'Ampenan', 'Pagutan', 'Cakranegara'];
+    $max_count = 0;
 }
 ?>
 <!DOCTYPE html><html lang="en"><head>
@@ -247,7 +277,7 @@ try {
 <div class="flex flex-col md:flex-row md:items-end justify-between gap-md">
 <div>
 <h1 class="text-headline-lg font-headline-lg text-on-surface">Pusat Kendali Kemitraan Provinsi</h1>
-<p class="text-body-lg text-on-surface-variant">Monitor performa dan sebaran mitra di seluruh wilayah Jawa Barat.</p>
+<p class="text-body-lg text-on-surface-variant">Monitor performa dan sebaran mitra di wilayah Mataram dan sekitarnya.</p>
 </div>
 <a href="tambah_mitra.php" class="bg-primary text-on-primary px-lg py-sm rounded-xl font-bold flex items-center gap-sm shadow-md hover:brightness-110 active:scale-95 transition-all">
     <span class="material-symbols-outlined">person_add</span>
@@ -295,56 +325,54 @@ try {
 </div>
 <!-- Performance Section (Bento Layout) -->
 <div class="grid grid-cols-1 lg:grid-cols-3 gap-lg">
-<!-- Regional Performance Bar Chart -->
 <div class="lg:col-span-2 bento-card p-lg rounded-xl flex flex-col">
 <div class="flex justify-between items-center mb-lg">
-<h2 class="text-headline-sm font-bold">Performa Berdasarkan Kota/Kabupaten</h2>
+<h2 class="text-headline-sm font-bold">Mitra Aktif Berdasarkan Wilayah</h2>
 <select class="bg-surface-container-low border-none rounded-lg text-label-sm py-xs pl-sm pr-lg focus:ring-primary">
-<option>Bulan Ini</option>
-<option>Kuartal Ini</option>
+<option>Semua Wilayah</option>
 </select>
 </div>
-<div class="flex-grow flex items-end justify-between gap-base h-48 pt-md px-md">
-<div class="w-full flex flex-col items-center gap-xs">
-<div class="w-full bg-primary-fixed rounded-t-lg transition-all duration-500 hover:bg-primary" style="height: 0%;"></div>
-<span class="text-label-sm text-outline">Bandung</span>
+<div class="flex-grow flex items-end justify-between gap-md h-48 pt-md px-md">
+<?php foreach ($chart_areas as $area): ?>
+<?php 
+$count = $sebaran_data[$area] ?? 0;
+$height = $max_count > 0 ? ($count / $max_count) * 80 : 0; 
+$is_max = ($max_count > 0 && $count === $max_count);
+$bg_class = $is_max ? 'bg-primary' : 'bg-primary-fixed hover:bg-primary/80';
+$font_class = $is_max ? 'font-bold text-on-surface' : 'text-outline';
+?>
+<div class="w-full flex flex-col items-center gap-xs group relative h-full justify-end">
+    <!-- Tooltip on hover -->
+    <div class="absolute bottom-full mb-xs bg-inverse-surface text-inverse-on-surface text-[11px] px-xs py-[2px] rounded opacity-0 group-hover:opacity-100 transition-opacity pointer-events-none whitespace-nowrap z-10 shadow-sm">
+        <?= $count; ?> Mitra Aktif
+    </div>
+    <div class="w-12 <?= $bg_class; ?> rounded-t-lg transition-all duration-300" style="height: <?= max(4, $height); ?>%;"></div>
+    <span class="text-[11px] <?= $font_class; ?> text-center truncate w-full mt-xs" title="<?= htmlspecialchars($area); ?>"><?= htmlspecialchars($area); ?></span>
 </div>
-<div class="w-full flex flex-col items-center gap-xs">
-<div class="w-full bg-primary-fixed rounded-t-lg transition-all duration-500 hover:bg-primary" style="height: 0%;"></div>
-<span class="text-label-sm text-outline">Bogor</span>
-</div>
-<div class="w-full flex flex-col items-center gap-xs">
-<div class="w-full bg-primary-fixed rounded-t-lg transition-all duration-500 hover:bg-primary" style="height: 0%;"></div>
-<span class="text-label-sm text-outline">Bekasi</span>
-</div>
-<div class="w-full flex flex-col items-center gap-xs">
-<div class="w-full bg-primary-container rounded-t-lg transition-all duration-500 hover:bg-primary" style="height: 0%;"></div>
-<span class="text-label-sm text-outline font-bold text-on-surface">Depok</span>
-</div>
-<div class="w-full flex flex-col items-center gap-xs">
-<div class="w-full bg-primary-fixed rounded-t-lg transition-all duration-500 hover:bg-primary" style="height: 0%;"></div>
-<span class="text-label-sm text-outline">Cirebon</span>
-</div>
-<div class="w-full flex flex-col items-center gap-xs">
-<div class="w-full bg-primary-fixed rounded-t-lg transition-all duration-500 hover:bg-primary" style="height: 0%;"></div>
-<span class="text-label-sm text-outline">Garut</span>
-</div>
-<div class="w-full flex flex-col items-center gap-xs">
-<div class="w-full bg-primary-fixed rounded-t-lg transition-all duration-500 hover:bg-primary" style="height: 0%;"></div>
-<span class="text-label-sm text-outline">Sumedang</span>
+<?php endforeach; ?>
 </div>
 </div>
-</div>
-<!-- Partner Distribution Card -->
-<div class="bento-card p-lg rounded-xl space-y-md">
+<div class="bento-card p-lg rounded-xl space-y-md flex flex-col justify-between">
 <h2 class="text-headline-sm font-bold">Sebaran Mitra</h2>
-<div class="space-y-sm">
+<div class="space-y-xs overflow-y-auto max-h-48 custom-scrollbar">
+<?php if (empty($sebaran_data)): ?>
 <div class="text-center py-10 text-on-surface-variant">
 <span class="material-symbols-outlined text-outline text-[40px] mb-2">location_off</span>
 <p class="text-label-md font-semibold">Belum ada sebaran mitra</p>
 </div>
+<?php else: ?>
+<?php foreach ($sebaran_data as $area => $count): ?>
+<div class="flex justify-between items-center p-sm bg-surface-container-low rounded-xl">
+<div class="flex items-center gap-xs">
+<span class="material-symbols-outlined text-primary text-[20px]">location_on</span>
+<span class="text-label-md font-semibold text-on-surface"><?= htmlspecialchars($area); ?></span>
 </div>
-<button class="w-full py-xs text-primary font-bold text-label-md hover:underline disabled:opacity-50" disabled>Detail Peta Wilayah</button>
+<span class="px-sm py-[2px] bg-primary-container text-on-primary-container rounded-full font-bold text-label-sm text-[12px]"><?= $count; ?> Toko</span>
+</div>
+<?php endforeach; ?>
+<?php endif; ?>
+</div>
+<a href="../lokasi/locations.php" class="block w-full text-center py-xs bg-surface-container hover:bg-surface-container-high text-primary font-bold text-label-md rounded-xl transition-colors">Detail Peta Wilayah</a>
 </div>
 </div>
 <!-- Recent Partners Table -->
