@@ -20,6 +20,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     $jam_buka = trim($_POST['jam_buka'] ?? '');
     $icon_type = $_POST['icon_type'] ?? 'kiloan';
     $status_buka = isset($_POST['status_buka']) ? 1 : 0;
+    $is_rekomendasi = isset($_POST['is_rekomendasi']) ? 1 : 0;
     $rating = trim($_POST['rating'] ?? '5.0');
 
     // Validation
@@ -59,7 +60,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         if (empty($error)) {
             try {
                 // Insert into database
-                $stmt = $pdo->prepare("INSERT INTO mitra_laundry (nama_mitra, foto_toko, latitude, longitude, alamat, no_telp, rating, harga_per_kg, jam_buka, status_buka, icon_type) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)");
+                $stmt = $pdo->prepare("INSERT INTO mitra_laundry (nama_mitra, foto_toko, latitude, longitude, alamat, no_telp, rating, harga_per_kg, jam_buka, status_buka, icon_type, is_rekomendasi) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)");
                 $stmt->execute([
                     $nama_mitra,
                     $foto_toko,
@@ -71,7 +72,8 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                     $harga_per_kg,
                     $jam_buka,
                     $status_buka,
-                    $icon_type
+                    $icon_type,
+                    $is_rekomendasi
                 ]);
 
                 // Create the detail template page in "../Mitra laundry/"
@@ -386,11 +388,16 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                                     <label for="jam_buka" class="text-label-md font-bold text-on-surface-variant">Jam Operasional</label>
                                     <input type="text" id="jam_buka" name="jam_buka" placeholder="Contoh: Senin - Minggu 07:00 - 21:00" class="w-full rounded-xl border-outline-variant focus:ring-primary focus:border-primary text-body-md py-2.5 px-md bg-white">
                                 </div>
-                                <div class="flex items-center gap-md pt-lg">
+                                <div class="flex flex-col gap-sm pt-xs justify-center">
                                     <label class="relative inline-flex items-center cursor-pointer select-none">
                                         <input type="checkbox" name="status_buka" value="1" checked class="sr-only peer">
                                         <div class="w-11 h-6 bg-slate-300 peer-focus:outline-none rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-slate-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-primary"></div>
                                         <span class="ml-3 text-label-md font-bold text-on-surface-variant">Status: Buka &amp; Aktif</span>
+                                    </label>
+                                    <label class="relative inline-flex items-center cursor-pointer select-none">
+                                        <input type="checkbox" name="is_rekomendasi" value="1" checked class="sr-only peer">
+                                        <div class="w-11 h-6 bg-slate-300 peer-focus:outline-none rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-slate-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-primary"></div>
+                                        <span class="ml-3 text-label-md font-bold text-on-surface-variant">Tampilkan di Rekomendasi Beranda</span>
                                     </label>
                                 </div>
                             </div>
