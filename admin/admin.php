@@ -236,11 +236,6 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 </div>
 </form>
 <div class="mt-xl pt-xl border-t border-outline-variant flex flex-col gap-lg">
-<!-- User Login Link -->
-<a class="flex items-center justify-center gap-xs py-md px-md rounded-lg border border-outline-variant text-label-md font-semibold text-on-surface-variant hover:bg-surface-container-low transition-colors" href="../login/login.php">
-<span class="material-symbols-outlined text-[20px]">account_circle</span>
-                Bukan Admin? Kembali ke Login User
-            </a>
 <!-- Disclaimer Box -->
 <div class="p-md rounded-xl bg-error/5 border border-error/10 flex gap-sm items-start">
 <span class="material-symbols-outlined text-error" style="font-variation-settings: 'FILL' 1;">warning</span>
