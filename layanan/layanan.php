@@ -366,6 +366,154 @@ try {
                         </div>
                     <?php endforeach; ?>
                 <?php endif; ?>
+
+                <!-- Upcoming Card 1 -->
+                <div class="mitra-item group bg-surface rounded-xl overflow-hidden shadow-sm border border-outline-variant/60 opacity-80 flex flex-col justify-between"
+                     data-baju="true" 
+                     data-sepatu="true" 
+                     data-satuan="true" 
+                     data-address="sekarbela ampenan cilinaya pagutan ampenan mataram ampenan kekalik">
+                    <div class="h-48 relative overflow-hidden bg-surface-container flex items-center justify-center">
+                        <div class="w-full h-full bg-gradient-to-br from-primary-fixed/30 to-secondary-fixed/30 flex flex-col items-center justify-center text-outline gap-xs">
+                            <span class="material-symbols-outlined text-4xl text-primary/40 animate-pulse">store</span>
+                        </div>
+                        <div class="absolute top-md right-md bg-primary-container text-on-primary-container px-sm py-[2px] rounded-full text-label-sm font-bold shadow-sm">Upcoming</div>
+                    </div>
+                    <div class="p-md flex-1 flex flex-col justify-between space-y-md">
+                        <div>
+                            <div class="flex justify-between items-start mb-1">
+                                <h4 class="font-bold text-on-surface/80 text-base leading-tight">Mitra Baru Mataram</h4>
+                            </div>
+                            <div class="flex items-center text-outline/50 font-bold mb-2">
+                                <span class="material-symbols-outlined text-[18px] mr-1">star</span>
+                                <span class="text-label-md">-.-</span>
+                            </div>
+                            <p class="text-on-surface-variant text-xs line-clamp-2 leading-relaxed flex items-start">
+                                <span class="material-symbols-outlined text-sm mr-1 mt-[2px] text-outline">location_on</span>
+                                <span>Area Mataram &amp; Sekitarnya</span>
+                            </p>
+                        </div>
+                        <div class="pt-md border-t border-outline-variant/40 flex justify-between items-center">
+                            <div class="bg-surface-container px-md py-xs rounded-full">
+                                <span class="text-on-surface-variant/70 font-bold text-xs">Tarif TBA</span>
+                            </div>
+                            <span class="text-outline text-label-md font-bold flex items-center gap-base select-none">
+                                <span>Segera Hadir</span>
+                            </span>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Upcoming Card 2 -->
+                <div class="mitra-item group bg-surface rounded-xl overflow-hidden shadow-sm border border-outline-variant/60 opacity-80 flex flex-col justify-between"
+                     data-baju="true" 
+                     data-sepatu="true" 
+                     data-satuan="true" 
+                     data-address="sekarbela ampenan cilinaya pagutan ampenan mataram ampenan kekalik">
+                    <div class="h-48 relative overflow-hidden bg-surface-container flex items-center justify-center">
+                        <div class="w-full h-full bg-gradient-to-br from-primary-fixed/30 to-secondary-fixed/30 flex flex-col items-center justify-center text-outline gap-xs">
+                            <span class="material-symbols-outlined text-4xl text-secondary/40 animate-pulse">local_laundry_service</span>
+                        </div>
+                        <div class="absolute top-md right-md bg-primary-container text-on-primary-container px-sm py-[2px] rounded-full text-label-sm font-bold shadow-sm">Upcoming</div>
+                    </div>
+                    <div class="p-md flex-1 flex flex-col justify-between space-y-md">
+                        <div>
+                            <div class="flex justify-between items-start mb-1">
+                                <h4 class="font-bold text-on-surface/80 text-base leading-tight">Clean &amp; Fresh Express</h4>
+                            </div>
+                            <div class="flex items-center text-outline/50 font-bold mb-2">
+                                <span class="material-symbols-outlined text-[18px] mr-1">star</span>
+                                <span class="text-label-md">-.-</span>
+                            </div>
+                            <p class="text-on-surface-variant text-xs line-clamp-2 leading-relaxed flex items-start">
+                                <span class="material-symbols-outlined text-sm mr-1 mt-[2px] text-outline">location_on</span>
+                                <span>Area Sekarbela &amp; Kekalik</span>
+                            </p>
+                        </div>
+                        <div class="pt-md border-t border-outline-variant/40 flex justify-between items-center">
+                            <div class="bg-surface-container px-md py-xs rounded-full">
+                                <span class="text-on-surface-variant/70 font-bold text-xs">Tarif TBA</span>
+                            </div>
+                            <span class="text-outline text-label-md font-bold flex items-center gap-base select-none">
+                                <span>Segera Hadir</span>
+                            </span>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Upcoming Card 3 -->
+                <div class="mitra-item group bg-surface rounded-xl overflow-hidden shadow-sm border border-outline-variant/60 opacity-80 flex flex-col justify-between"
+                     data-baju="true" 
+                     data-sepatu="true" 
+                     data-satuan="true" 
+                     data-address="sekarbela ampenan cilinaya pagutan ampenan mataram ampenan kekalik">
+                    <div class="h-48 relative overflow-hidden bg-surface-container flex items-center justify-center">
+                        <div class="w-full h-full bg-gradient-to-br from-primary-fixed/30 to-secondary-fixed/30 flex flex-col items-center justify-center text-outline gap-xs">
+                            <span class="material-symbols-outlined text-4xl text-[#7c3aed]/40 animate-pulse">dry_cleaning</span>
+                        </div>
+                        <div class="absolute top-md right-md bg-primary-container text-on-primary-container px-sm py-[2px] rounded-full text-label-sm font-bold shadow-sm">Upcoming</div>
+                    </div>
+                    <div class="p-md flex-1 flex flex-col justify-between space-y-md">
+                        <div>
+                            <div class="flex justify-between items-start mb-1">
+                                <h4 class="font-bold text-on-surface/80 text-base leading-tight">Shoes Clinic &amp; Care</h4>
+                            </div>
+                            <div class="flex items-center text-outline/50 font-bold mb-2">
+                                <span class="material-symbols-outlined text-[18px] mr-1">star</span>
+                                <span class="text-label-md">-.-</span>
+                            </div>
+                            <p class="text-on-surface-variant text-xs line-clamp-2 leading-relaxed flex items-start">
+                                <span class="material-symbols-outlined text-sm mr-1 mt-[2px] text-outline">location_on</span>
+                                <span>Area Ampenan &amp; Cilinaya</span>
+                            </p>
+                        </div>
+                        <div class="pt-md border-t border-outline-variant/40 flex justify-between items-center">
+                            <div class="bg-surface-container px-md py-xs rounded-full">
+                                <span class="text-on-surface-variant/70 font-bold text-xs">Tarif TBA</span>
+                            </div>
+                            <span class="text-outline text-label-md font-bold flex items-center gap-base select-none">
+                                <span>Segera Hadir</span>
+                            </span>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Upcoming Card 4 -->
+                <div class="mitra-item group bg-surface rounded-xl overflow-hidden shadow-sm border border-outline-variant/60 opacity-80 flex flex-col justify-between"
+                     data-baju="true" 
+                     data-sepatu="true" 
+                     data-satuan="true" 
+                     data-address="sekarbela ampenan cilinaya pagutan ampenan mataram ampenan kekalik">
+                    <div class="h-48 relative overflow-hidden bg-surface-container flex items-center justify-center">
+                        <div class="w-full h-full bg-gradient-to-br from-primary-fixed/30 to-secondary-fixed/30 flex flex-col items-center justify-center text-outline gap-xs">
+                            <span class="material-symbols-outlined text-4xl text-amber-600/40 animate-pulse">handshake</span>
+                        </div>
+                        <div class="absolute top-md right-md bg-primary-container text-on-primary-container px-sm py-[2px] rounded-full text-label-sm font-bold shadow-sm">Upcoming</div>
+                    </div>
+                    <div class="p-md flex-1 flex flex-col justify-between space-y-md">
+                        <div>
+                            <div class="flex justify-between items-start mb-1">
+                                <h4 class="font-bold text-on-surface/80 text-base leading-tight">KosanLaundry Outlet #8</h4>
+                            </div>
+                            <div class="flex items-center text-outline/50 font-bold mb-2">
+                                <span class="material-symbols-outlined text-[18px] mr-1">star</span>
+                                <span class="text-label-md">-.-</span>
+                            </div>
+                            <p class="text-on-surface-variant text-xs line-clamp-2 leading-relaxed flex items-start">
+                                <span class="material-symbols-outlined text-sm mr-1 mt-[2px] text-outline">location_on</span>
+                                <span>Area Pagutan &amp; Mataram</span>
+                            </p>
+                        </div>
+                        <div class="pt-md border-t border-outline-variant/40 flex justify-between items-center">
+                            <div class="bg-surface-container px-md py-xs rounded-full">
+                                <span class="text-on-surface-variant/70 font-bold text-xs">Tarif TBA</span>
+                            </div>
+                            <span class="text-outline text-label-md font-bold flex items-center gap-base select-none">
+                                <span>Segera Hadir</span>
+                            </span>
+                        </div>
+                    </div>
+                </div>
                 
                 <!-- Empty search alert -->
                 <div id="no-mitra-alert" class="col-span-full text-center py-12 bg-surface-container-lowest border border-outline-variant/60 rounded-2xl hidden">

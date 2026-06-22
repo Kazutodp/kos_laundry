@@ -346,6 +346,154 @@ try {
                     </div>
                 </div>
             <?php endforeach; ?>
+            
+            <!-- Upcoming Shop Card 1 -->
+            <div class="group bg-surface rounded-xl overflow-hidden shadow-sm border border-outline-variant/60 opacity-85 hover:shadow-md transition-all flex flex-col justify-between">
+                <div class="h-48 relative overflow-hidden bg-slate-100 flex items-center justify-center">
+                    <div class="w-full h-full bg-gradient-to-br from-primary-fixed/30 to-secondary-fixed/30 flex flex-col items-center justify-center text-outline gap-xs">
+                        <span class="material-symbols-outlined text-4xl text-primary/40 animate-pulse">store</span>
+                    </div>
+                    <div class="absolute top-md right-md bg-primary-container text-on-primary-container px-sm py-[2px] rounded-full text-label-sm font-bold shadow-sm">Upcoming</div>
+                </div>
+                <div class="p-md space-y-md flex-1 flex flex-col justify-between">
+                    <div>
+                        <div class="flex justify-between items-start mb-1">
+                            <h4 class="font-headline-md text-on-surface/85 text-base font-bold">Mitra Baru Mataram</h4>
+                            <div class="flex items-center text-outline/50 font-bold">
+                                <span class="material-symbols-outlined text-[18px] mr-1">star</span>
+                                <span class="text-label-md">-.-</span>
+                            </div>
+                        </div>
+                        <div class="flex items-center space-x-md text-on-surface-variant text-label-sm">
+                            <div class="flex items-center">
+                                <span class="material-symbols-outlined text-[16px] mr-1 text-outline">location_on</span>
+                                <span class="">Area Mataram</span>
+                            </div>
+                            <div class="flex items-center">
+                                <span class="material-symbols-outlined text-[16px] mr-1 text-outline">schedule</span>
+                                <span class="">TBA</span>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="pt-md border-t border-outline-variant/60 flex justify-between items-center">
+                        <div class="bg-surface-container px-md py-xs rounded-full">
+                            <span class="text-on-surface-variant/70 font-bold text-label-md">Tarif TBA</span>
+                        </div>
+                        <span class="text-outline text-label-md font-bold select-none">Segera Hadir</span>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Upcoming Shop Card 2 -->
+            <div class="group bg-surface rounded-xl overflow-hidden shadow-sm border border-outline-variant/60 opacity-85 hover:shadow-md transition-all flex flex-col justify-between">
+                <div class="h-48 relative overflow-hidden bg-slate-100 flex items-center justify-center">
+                    <div class="w-full h-full bg-gradient-to-br from-primary-fixed/30 to-secondary-fixed/30 flex flex-col items-center justify-center text-outline gap-xs">
+                        <span class="material-symbols-outlined text-4xl text-secondary/40 animate-pulse">local_laundry_service</span>
+                    </div>
+                    <div class="absolute top-md right-md bg-primary-container text-on-primary-container px-sm py-[2px] rounded-full text-label-sm font-bold shadow-sm">Upcoming</div>
+                </div>
+                <div class="p-md space-y-md flex-1 flex flex-col justify-between">
+                    <div>
+                        <div class="flex justify-between items-start mb-1">
+                            <h4 class="font-headline-md text-on-surface/85 text-base font-bold">Clean &amp; Fresh Express</h4>
+                            <div class="flex items-center text-outline/50 font-bold">
+                                <span class="material-symbols-outlined text-[18px] mr-1">star</span>
+                                <span class="text-label-md">-.-</span>
+                            </div>
+                        </div>
+                        <div class="flex items-center space-x-md text-on-surface-variant text-label-sm">
+                            <div class="flex items-center">
+                                <span class="material-symbols-outlined text-[16px] mr-1 text-outline">location_on</span>
+                                <span class="">Area Sekarbela</span>
+                            </div>
+                            <div class="flex items-center">
+                                <span class="material-symbols-outlined text-[16px] mr-1 text-outline">schedule</span>
+                                <span class="">TBA</span>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="pt-md border-t border-outline-variant/60 flex justify-between items-center">
+                        <div class="bg-surface-container px-md py-xs rounded-full">
+                            <span class="text-on-surface-variant/70 font-bold text-label-md">Tarif TBA</span>
+                        </div>
+                        <span class="text-outline text-label-md font-bold select-none">Segera Hadir</span>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Upcoming Shop Card 3 -->
+            <div class="group bg-surface rounded-xl overflow-hidden shadow-sm border border-outline-variant/60 opacity-85 hover:shadow-md transition-all flex flex-col justify-between">
+                <div class="h-48 relative overflow-hidden bg-slate-100 flex items-center justify-center">
+                    <div class="w-full h-full bg-gradient-to-br from-primary-fixed/30 to-secondary-fixed/30 flex flex-col items-center justify-center text-outline gap-xs">
+                        <span class="material-symbols-outlined text-4xl text-[#7c3aed]/40 animate-pulse">dry_cleaning</span>
+                    </div>
+                    <div class="absolute top-md right-md bg-primary-container text-on-primary-container px-sm py-[2px] rounded-full text-label-sm font-bold shadow-sm">Upcoming</div>
+                </div>
+                <div class="p-md space-y-md flex-1 flex flex-col justify-between">
+                    <div>
+                        <div class="flex justify-between items-start mb-1">
+                            <h4 class="font-headline-md text-on-surface/85 text-base font-bold">Shoes Clinic &amp; Care</h4>
+                            <div class="flex items-center text-outline/50 font-bold">
+                                <span class="material-symbols-outlined text-[18px] mr-1">star</span>
+                                <span class="text-label-md">-.-</span>
+                            </div>
+                        </div>
+                        <div class="flex items-center space-x-md text-on-surface-variant text-label-sm">
+                            <div class="flex items-center">
+                                <span class="material-symbols-outlined text-[16px] mr-1 text-outline">location_on</span>
+                                <span class="">Area Ampenan</span>
+                            </div>
+                            <div class="flex items-center">
+                                <span class="material-symbols-outlined text-[16px] mr-1 text-outline">schedule</span>
+                                <span class="">TBA</span>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="pt-md border-t border-outline-variant/60 flex justify-between items-center">
+                        <div class="bg-surface-container px-md py-xs rounded-full">
+                            <span class="text-on-surface-variant/70 font-bold text-label-md">Tarif TBA</span>
+                        </div>
+                        <span class="text-outline text-label-md font-bold select-none">Segera Hadir</span>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Upcoming Shop Card 4 -->
+            <div class="group bg-surface rounded-xl overflow-hidden shadow-sm border border-outline-variant/60 opacity-85 hover:shadow-md transition-all flex flex-col justify-between">
+                <div class="h-48 relative overflow-hidden bg-slate-100 flex items-center justify-center">
+                    <div class="w-full h-full bg-gradient-to-br from-primary-fixed/30 to-secondary-fixed/30 flex flex-col items-center justify-center text-outline gap-xs">
+                        <span class="material-symbols-outlined text-4xl text-amber-600/40 animate-pulse">handshake</span>
+                    </div>
+                    <div class="absolute top-md right-md bg-primary-container text-on-primary-container px-sm py-[2px] rounded-full text-label-sm font-bold shadow-sm">Upcoming</div>
+                </div>
+                <div class="p-md space-y-md flex-1 flex flex-col justify-between">
+                    <div>
+                        <div class="flex justify-between items-start mb-1">
+                            <h4 class="font-headline-md text-on-surface/85 text-base font-bold">KosanLaundry Outlet #8</h4>
+                            <div class="flex items-center text-outline/50 font-bold">
+                                <span class="material-symbols-outlined text-[18px] mr-1">star</span>
+                                <span class="text-label-md">-.-</span>
+                            </div>
+                        </div>
+                        <div class="flex items-center space-x-md text-on-surface-variant text-label-sm">
+                            <div class="flex items-center">
+                                <span class="material-symbols-outlined text-[16px] mr-1 text-outline">location_on</span>
+                                <span class="">Area Pagutan</span>
+                            </div>
+                            <div class="flex items-center">
+                                <span class="material-symbols-outlined text-[16px] mr-1 text-outline">schedule</span>
+                                <span class="">TBA</span>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="pt-md border-t border-outline-variant/60 flex justify-between items-center">
+                        <div class="bg-surface-container px-md py-xs rounded-full">
+                            <span class="text-on-surface-variant/70 font-bold text-label-md">Tarif TBA</span>
+                        </div>
+                        <span class="text-outline text-label-md font-bold select-none">Segera Hadir</span>
+                    </div>
+                </div>
+            </div>
         </div>
     </div>
 </section>
