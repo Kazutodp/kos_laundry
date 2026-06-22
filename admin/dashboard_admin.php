@@ -208,7 +208,7 @@ try {
 <!-- SideNavBar -->
 <aside class="hidden lg:flex flex-col h-screen sticky top-0 p-md space-y-md bg-surface-container-low border-r border-outline-variant w-64 shrink-0">
 <div class="flex items-center gap-xs px-xs py-sm">
-<span class="material-symbols-outlined text-primary text-[32px]">local_laundry_service</span>
+<img alt="KosanLaundry Logo" class="h-8 w-8 object-contain" src="../logo.png?v=3">
 <span class="text-headline-sm font-headline-md font-bold text-primary">KosanLaundry</span>
 </div>
 <div class="flex flex-col gap-xs py-md border-b border-outline-variant">
