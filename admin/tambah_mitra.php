@@ -10,10 +10,58 @@ require_once '../db_connect.php';
 $success = false;
 $error = '';
 
+function get_coords_from_google_maps($url) {
+    $url = trim($url);
+    if (empty($url)) return null;
+
+    // Follow short link redirect if maps.app.goo.gl or g.co is found
+    if (strpos($url, 'maps.app.goo.gl') !== false || strpos($url, 'g.co') !== false) {
+        $headers = @get_headers($url, 1);
+        if ($headers) {
+            $location = '';
+            if (isset($headers['Location'])) {
+                $location = is_array($headers['Location']) ? end($headers['Location']) : $headers['Location'];
+            } elseif (isset($headers['location'])) {
+                $location = is_array($headers['location']) ? end($headers['location']) : $headers['location'];
+            }
+            if ($location) {
+                $url = $location;
+            }
+        }
+    }
+    
+    // Pattern 1: @latitude,longitude
+    if (preg_match('/@(-?\d+\.\d+),(-?\d+\.\d+)/', $url, $matches)) {
+        return ['latitude' => $matches[1], 'longitude' => $matches[2]];
+    }
+    
+    // Pattern 2: q=latitude,longitude
+    if (preg_match('/[?&]q=(-?\d+\.\d+),(-?\d+\.\d+)/', $url, $matches)) {
+        return ['latitude' => $matches[1], 'longitude' => $matches[2]];
+    }
+    
+    // Pattern 3: ll=latitude,longitude
+    if (preg_match('/[?&]ll=(-?\d+\.\d+),(-?\d+\.\d+)/', $url, $matches)) {
+        return ['latitude' => $matches[1], 'longitude' => $matches[2]];
+    }
+    
+    return null;
+}
+
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     $nama_mitra = trim($_POST['nama_mitra'] ?? '');
     $latitude = trim($_POST['latitude'] ?? '');
     $longitude = trim($_POST['longitude'] ?? '');
+    $google_maps_link = trim($_POST['google_maps_link'] ?? '');
+    
+    // Attempt coordinate extraction if Google Maps link is provided
+    if (!empty($google_maps_link)) {
+        $extracted_coords = get_coords_from_google_maps($google_maps_link);
+        if ($extracted_coords) {
+            $latitude = $extracted_coords['latitude'];
+            $longitude = $extracted_coords['longitude'];
+        }
+    }
     $alamat = trim($_POST['alamat'] ?? '');
     $no_telp = trim($_POST['no_telp'] ?? '');
     $harga_per_kg = trim($_POST['harga_per_kg'] ?? '');
@@ -409,6 +457,11 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                                 <span>Koordinat Geografis (Peta) *</span>
                             </h2>
                             <p class="text-xs text-on-surface-variant">Koordinat sangat penting untuk pencarian laundry terdekat berdasarkan jarak.</p>
+                            <div class="space-y-xs">
+                                <label for="google_maps_link" class="text-label-md font-bold text-on-surface-variant">Link Google Maps (Opsional)</label>
+                                <input type="url" id="google_maps_link" name="google_maps_link" placeholder="https://www.google.com/maps/place/..." class="w-full rounded-xl border-outline-variant focus:ring-primary focus:border-primary text-body-md py-2.5 px-md bg-white">
+                                <div id="link_info" class="text-[11px] font-semibold text-outline">Tempel link Google Maps di sini untuk mengisi koordinat secara otomatis.</div>
+                            </div>
                             <div class="grid grid-cols-1 md:grid-cols-2 gap-md">
                                 <div class="space-y-xs">
                                     <label for="latitude" class="text-label-md font-bold text-on-surface-variant">Latitude *</label>
@@ -510,6 +563,53 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 
             document.getElementById('latitude').value = lat;
             document.getElementById('longitude').value = lng;
+        }
+
+        // Live Google Maps link parsing
+        const mapsLinkInput = document.getElementById('google_maps_link');
+        const latInput = document.getElementById('latitude');
+        const lngInput = document.getElementById('longitude');
+        const linkInfo = document.getElementById('link_info');
+
+        if (mapsLinkInput) {
+            mapsLinkInput.addEventListener('input', function() {
+                const url = this.value.trim();
+                if (!url) {
+                    linkInfo.textContent = 'Tempel link Google Maps di sini untuk mengisi koordinat secara otomatis.';
+                    linkInfo.className = 'text-[11px] font-semibold text-outline';
+                    return;
+                }
+                
+                // Regex for @lat,lng
+                let match = url.match(/@(-?\d+\.\d+),(-?\d+\.\d+)/);
+                if (match) {
+                    latInput.value = match[1];
+                    lngInput.value = match[2];
+                    linkInfo.className = 'text-[11px] font-bold text-emerald-600 flex items-center gap-xs mt-xs';
+                    linkInfo.innerHTML = '<span class="material-symbols-outlined text-[14px]">check_circle</span> Koordinat berhasil diekstrak!';
+                    return;
+                }
+                
+                // Regex for q=lat,lng
+                match = url.match(/[?&]q=(-?\d+\.\d+),(-?\d+\.\d+)/);
+                if (match) {
+                    latInput.value = match[1];
+                    lngInput.value = match[2];
+                    linkInfo.className = 'text-[11px] font-bold text-emerald-600 flex items-center gap-xs mt-xs';
+                    linkInfo.innerHTML = '<span class="material-symbols-outlined text-[14px]">check_circle</span> Koordinat berhasil diekstrak!';
+                    return;
+                }
+                
+                // If short link
+                if (url.includes('maps.app.goo.gl') || url.includes('g.co')) {
+                    linkInfo.className = 'text-[11px] font-bold text-amber-600 flex items-center gap-xs mt-xs';
+                    linkInfo.innerHTML = '<span class="material-symbols-outlined text-[14px]">info</span> Link pendek terdeteksi. Koordinat akan diekstrak otomatis saat disimpan.';
+                    return;
+                }
+                
+                linkInfo.className = 'text-[11px] font-bold text-error flex items-center gap-xs mt-xs';
+                linkInfo.innerHTML = '<span class="material-symbols-outlined text-[14px]">error</span> Format link tidak dikenali. Silakan isi koordinat secara manual.';
+            });
         }
     </script>
 </body>
