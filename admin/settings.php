@@ -75,13 +75,19 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['update_config'])) {
     $region = trim($_POST['region_name'] ?? 'Mataram, Nusa Tenggara Barat');
     $maintenance = isset($_POST['maintenance_mode']) ? 1 : 0;
     $branding = trim($_POST['system_branding'] ?? 'MataramWash');
+    $midtrans_env = trim($_POST['midtrans_environment'] ?? 'sandbox');
+    $midtrans_client = trim($_POST['midtrans_client_key'] ?? '');
+    $midtrans_server = trim($_POST['midtrans_server_key'] ?? '');
 
     $config_data = [
         'platform_commission' => $commission,
         'whatsapp_contact' => $whatsapp,
         'region_name' => $region,
         'maintenance_mode' => $maintenance,
-        'system_branding' => $branding
+        'system_branding' => $branding,
+        'midtrans_environment' => $midtrans_env,
+        'midtrans_client_key' => $midtrans_client,
+        'midtrans_server_key' => $midtrans_server
     ];
 
     if (file_put_contents('settings_config.json', json_encode($config_data, JSON_PRETTY_PRINT))) {
@@ -98,7 +104,10 @@ $config = [
     'whatsapp_contact' => '628983887223',
     'region_name' => 'Mataram, Nusa Tenggara Barat',
     'maintenance_mode' => 0,
-    'system_branding' => 'MataramWash'
+    'system_branding' => 'MataramWash',
+    'midtrans_environment' => 'sandbox',
+    'midtrans_client_key' => '',
+    'midtrans_server_key' => ''
 ];
 
 if (file_exists($config_file)) {
@@ -417,6 +426,29 @@ try {
                                 <div>
                                     <label class="block text-label-md font-bold mb-xs text-on-surface-variant" for="region_name">Wilayah Operasional Utama</label>
                                     <input type="text" id="region_name" name="region_name" required value="<?= htmlspecialchars($config['region_name']); ?>" class="w-full rounded-xl border border-outline-variant bg-surface-container-lowest px-md py-sm text-body-md focus:border-primary focus:ring-1 focus:ring-primary transition-all">
+                                </div>
+                                <div class="border-t border-outline-variant pt-md mt-md space-y-md">
+                                    <h4 class="text-title-sm font-bold text-primary flex items-center gap-xs">
+                                        <span class="material-symbols-outlined">payments</span>
+                                        <span>Pengaturan Midtrans Payment Gateway</span>
+                                    </h4>
+                                    <div class="grid grid-cols-1 sm:grid-cols-3 gap-md">
+                                        <div class="sm:col-span-1">
+                                            <label class="block text-label-md font-bold mb-xs text-on-surface-variant" for="midtrans_environment">Environment *</label>
+                                            <select id="midtrans_environment" name="midtrans_environment" class="w-full rounded-xl border border-outline-variant bg-surface-container-lowest px-md py-sm text-body-md focus:border-primary focus:ring-1 focus:ring-primary cursor-pointer">
+                                                <option value="sandbox" <?= ($config['midtrans_environment'] ?? 'sandbox') === 'sandbox' ? 'selected' : ''; ?>>Sandbox (Testing)</option>
+                                                <option value="production" <?= ($config['midtrans_environment'] ?? 'sandbox') === 'production' ? 'selected' : ''; ?>>Production (Live/Asli)</option>
+                                            </select>
+                                        </div>
+                                        <div class="sm:col-span-2">
+                                            <label class="block text-label-md font-bold mb-xs text-on-surface-variant" for="midtrans_client_key">Midtrans Client Key</label>
+                                            <input type="text" id="midtrans_client_key" name="midtrans_client_key" value="<?= htmlspecialchars($config['midtrans_client_key'] ?? ''); ?>" placeholder="Contoh: SB-Mid-client-..." class="w-full rounded-xl border border-outline-variant bg-surface-container-lowest px-md py-sm text-body-md focus:border-primary focus:ring-1 focus:ring-primary transition-all">
+                                        </div>
+                                    </div>
+                                    <div>
+                                        <label class="block text-label-md font-bold mb-xs text-on-surface-variant" for="midtrans_server_key">Midtrans Server Key</label>
+                                        <input type="text" id="midtrans_server_key" name="midtrans_server_key" value="<?= htmlspecialchars($config['midtrans_server_key'] ?? ''); ?>" placeholder="Contoh: SB-Mid-server-..." class="w-full rounded-xl border border-outline-variant bg-surface-container-lowest px-md py-sm text-body-md focus:border-primary focus:ring-1 focus:ring-primary transition-all">
+                                    </div>
                                 </div>
                                 <div class="flex items-center justify-between p-sm bg-slate-50 border border-slate-200 rounded-xl mt-md">
                                     <div>

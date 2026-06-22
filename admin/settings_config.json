@@ -3,5 +3,8 @@
     "whatsapp_contact": "628983887223",
     "region_name": "Mataram, Nusa Tenggara Barat",
     "maintenance_mode": 0,
-    "system_branding": "MataramWash"
+    "system_branding": "MataramWash",
+    "midtrans_environment": "sandbox",
+    "midtrans_client_key": "",
+    "midtrans_server_key": ""
 }

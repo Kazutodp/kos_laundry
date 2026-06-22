@@ -5,6 +5,20 @@ if (session_status() === PHP_SESSION_NONE) {
 }
 require_once '../db_connect.php';
 
+// Load configuration
+$config_file = '../admin/settings_config.json';
+$config = [
+    'midtrans_environment' => 'sandbox',
+    'midtrans_client_key' => ''
+];
+
+if (file_exists($config_file)) {
+    $loaded_config = json_decode(file_get_contents($config_file), true);
+    if ($loaded_config) {
+        $config = array_merge($config, $loaded_config);
+    }
+}
+
 if (!isset($nama_mitra)) {
     die("Nama mitra tidak ditentukan.");
 }
@@ -139,6 +153,13 @@ $logo_url = $partner_logos[$id_mitra] ?? $partner_logos[1];
     <!-- Leaflet.js for Interactive Map -->
     <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" integrity="sha256-p4NxAoJBhIIN+hmNHrzRCf9tD/miZyoHS5obTRR9BMY=" crossorigin="" />
     <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js" integrity="sha256-20nQCchB9co0qIjJZRGuk2/Z9VM+kNiyxNV1lvTlZBo=" crossorigin=""></script>
+
+    <!-- Midtrans Snap.js -->
+    <?php if (($config['midtrans_environment'] ?? 'sandbox') === 'production'): ?>
+        <script src="https://app.midtrans.com/snap/snap.js" data-client-key="<?= htmlspecialchars($config['midtrans_client_key'] ?? ''); ?>"></script>
+    <?php else: ?>
+        <script src="https://app.sandbox.midtrans.com/snap/snap.js" data-client-key="<?= htmlspecialchars($config['midtrans_client_key'] ?? ''); ?>"></script>
+    <?php endif; ?>
 
     <style>
         .material-symbols-outlined {
@@ -1038,9 +1059,9 @@ $logo_url = $partner_logos[$id_mitra] ?? $partner_logos[1];
         return 'Rp ' + new Intl.NumberFormat('id-ID').format(number);
     }
 
-    // Confirm Order Mock
+    // Confirm Order and trigger Midtrans Snap
     function confirmOrder() {
-        const qty = document.getElementById('order-qty').value;
+        const qty = parseFloat(document.getElementById('order-qty').value) || 1;
         const serviceName = document.getElementById('modal-service-name').innerText;
         const notes = document.getElementById('order-notes').value.trim();
         
@@ -1051,24 +1072,63 @@ $logo_url = $partner_logos[$id_mitra] ?? $partner_logos[1];
         originalBtn.disabled = true;
 
         const isSelfService = <?= $is_self_service ? 'true' : 'false'; ?>;
+        const addonFee = isSelfService ? 1000 : 1500;
         
-        if (isSelfService) {
-            const date = document.getElementById('reservation-date').value;
-            const time = document.getElementById('reservation-time').value;
-            setTimeout(() => {
-                alert('Reservasi slot ' + serviceName + ' (' + qty + ' Mesin) pada tanggal ' + date + ' (' + time + ') berhasil dibuat! Silakan datang ke WashTra tepat waktu. Kode Tiket Anda: WT-' + Math.floor(1000 + Math.random() * 9000));
+        // Prepare order data
+        const orderData = {
+            mitra_id: <?= intval($mitra['id']); ?>,
+            layanan: serviceName,
+            qty: qty,
+            tarif_per_kg: activeServicePrice,
+            biaya_antar_jemput: addonFee
+        };
+
+        // Call backend processing order
+        fetch('../user/proses_order.php', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+                'Accept': 'application/json'
+            },
+            body: JSON.stringify(orderData)
+        })
+        .then(response => response.json())
+        .then(data => {
+            if (data.status === 'success') {
                 closeOrderModal();
+                
+                // Trigger Midtrans Snap Popup
+                snap.pay(data.token, {
+                    onSuccess: function(result) {
+                        window.location.href = '../user/pembayaran_sukses.php?order_id=' + data.order_id + '&reference=' + result.order_id;
+                    },
+                    onPending: function(result) {
+                        alert('Pembayaran tertunda. Silakan selesaikan pembayaran Anda.');
+                        window.location.href = '../user/notifikasi.php';
+                    },
+                    onError: function(result) {
+                        alert('Pembayaran gagal. Silakan coba kembali.');
+                        originalBtn.innerHTML = originalText;
+                        originalBtn.disabled = false;
+                    },
+                    onClose: function() {
+                        alert('Anda menutup popup pembayaran sebelum menyelesaikan transaksi.');
+                        originalBtn.innerHTML = originalText;
+                        originalBtn.disabled = false;
+                    }
+                });
+            } else {
+                alert(data.message || 'Terjadi kesalahan saat memproses pesanan.');
                 originalBtn.innerHTML = originalText;
                 originalBtn.disabled = false;
-            }, 1500);
-        } else {
-            setTimeout(() => {
-                alert('Pesanan ' + serviceName + ' sebanyak ' + qty + ' ' + activeUnitType + ' berhasil dibuat! Mitra akan segera menghubungi Anda.');
-                closeOrderModal();
-                originalBtn.innerHTML = originalText;
-                originalBtn.disabled = false;
-            }, 1500);
-        }
+            }
+        })
+        .catch(error => {
+            console.error('Error:', error);
+            alert('Gagal terhubung ke server pembayaran.');
+            originalBtn.innerHTML = originalText;
+            originalBtn.disabled = false;
+        });
     }
 
     // Filter Reviews Dynamically
