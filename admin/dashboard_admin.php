@@ -79,7 +79,7 @@ try {
 <!DOCTYPE html><html lang="en"><head>
 <meta charset="utf-8">
 <meta content="width=device-width, initial-scale=1.0" name="viewport">
-<title>Provincial Partnership Portal | KosanLaundry</title>
+<title>Portal Kemitraan | KosanLaundry Admin</title>
 <script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
 <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&amp;display=swap" rel="stylesheet">
 <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet">
@@ -273,7 +273,7 @@ try {
 <div class="flex items-center gap-sm">
 <div class="text-right hidden sm:block">
 <p class="text-label-md font-bold leading-none"><?= htmlspecialchars($_SESSION['admin_nama'] ?? 'Budi Santoso'); ?></p>
-<p class="text-label-sm text-outline leading-tight">Provincial Lead</p>
+<p class="text-label-sm text-outline leading-tight">Administrator</p>
 </div>
 <img alt="Admin profile" class="w-9 h-9 rounded-full object-cover border border-outline-variant" src="https://lh3.googleusercontent.com/aida-public/AB6AXuAVvTfpl6gmSbn7utdVTjVT1ZrHaIbCt76OBU9jA9oc3rue19H1ElhbliNLU8FUVfCMZWMCOXO6ZI0EBlE68GvL7TdpDcdz05FrUqtzRUVrrTQKcC_MwtAKGFkV_XAbFOxIpl3JRF93_22IuQMGYGKqzXSHUZRnab8I7P_AWzrPQKLrh9PmQd4pqpbRW8v-5sKU_uUJt1jpvrX5bWXDDQshtNQtM9DcfB5GsKwZW-zFy6P6DnFBWUY_oCDubbBHW4BXb1p5RWiXyyg">
 </div>
@@ -285,7 +285,7 @@ try {
 <!-- Greeting Header -->
 <div class="flex flex-col md:flex-row md:items-end justify-between gap-md">
 <div>
-<h1 class="text-headline-lg font-headline-lg text-on-surface">Pusat Kendali Kemitraan Provinsi</h1>
+<h1 class="text-headline-lg font-headline-lg text-on-surface">Pusat Kendali Mitra KosanLaundry</h1>
 <p class="text-body-lg text-on-surface-variant">Monitor performa dan sebaran mitra di wilayah Mataram dan sekitarnya.</p>
 </div>
 </div>
