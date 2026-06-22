@@ -425,7 +425,7 @@ try {
 <script>
     // Filtering & Pagination Logic for Mitra List
     let currentPage = 1;
-    const itemsPerPage = 4; // Menampilkan 4 mitra per halaman
+    const itemsPerPage = 8; // Menampilkan 8 mitra per halaman
 
     function applyFilters(resetPage = true) {
         if (resetPage) {
@@ -541,7 +541,7 @@ try {
         const container = document.getElementById('pagination-container');
         if (!container) return;
 
-        if (totalPages <= 1) {
+        if (totalPages === 0) {
             container.innerHTML = '';
             container.classList.add('hidden');
             return;
