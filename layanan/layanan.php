@@ -376,87 +376,7 @@ try {
         </div>
     </section>
 
-    <!-- FAQ Section -->
-    <section class="py-20 bg-surface-container-lowest px-container-margin border-t border-outline-variant/20">
-        <div class="max-w-4xl mx-auto space-y-xl">
-            <div class="text-center space-y-md mb-12">
-                <h2 class="text-headline-lg font-headline-lg text-primary">Tanya Jawab Layanan</h2>
-                <p class="text-on-surface-variant">Berikut beberapa jawaban dari pertanyaan yang sering ditanyakan oleh pelanggan kami.</p>
-            </div>
-            
-            <div class="space-y-md" id="faq-accordion">
-                <!-- FAQ item 1 -->
-                <div class="border border-outline-variant/60 rounded-xl overflow-hidden bg-surface transition-all">
-                    <button class="w-full flex justify-between items-center p-lg text-left font-bold text-on-surface hover:bg-surface-container-high/40 transition-colors" onclick="toggleFaq(0)">
-                        <span>Apakah ada layanan antar jemput gratis untuk daerah kos saya?</span>
-                        <span class="material-symbols-outlined text-outline transition-transform duration-300" id="faq-icon-0">expand_more</span>
-                    </button>
-                    <div class="accordion-content max-h-0 overflow-hidden" id="faq-content-0">
-                        <p class="p-lg pt-0 text-sm text-on-surface-variant leading-relaxed">
-                            Ya, benar! Layanan antar-jemput gratis ongkos kirim berlaku untuk radius jarak di bawah 3 km dari outlet mitra yang Anda pilih. Jika jarak di atas 3 km, tarif pengiriman akan otomatis disesuaikan secara transparan sebelum Anda checkout.
-                        </p>
-                    </div>
-                </div>
 
-                <!-- FAQ item 2 -->
-                <div class="border border-outline-variant/60 rounded-xl overflow-hidden bg-surface transition-all">
-                    <button class="w-full flex justify-between items-center p-lg text-left font-bold text-on-surface hover:bg-surface-container-high/40 transition-colors" onclick="toggleFaq(1)">
-                        <span>Bagaimana jika pakaian saya rusak atau hilang saat proses laundry?</span>
-                        <span class="material-symbols-outlined text-outline transition-transform duration-300" id="faq-icon-1">expand_more</span>
-                    </button>
-                    <div class="accordion-content max-h-0 overflow-hidden" id="faq-content-1">
-                        <p class="p-lg pt-0 text-sm text-on-surface-variant leading-relaxed">
-                            Semua mitra laundry kami telah dikurasi dan berkomitmen untuk memberikan kualitas terbaik. Apabila terjadi kehilangan atau kerusakan akibat kelalaian operasional, mitra akan memberikan ganti rugi senilai maksimal 10x dari ongkos cuci pakaian tersebut, sesuai syarat dan ketentuan mitra terkait.
-                        </p>
-                    </div>
-                </div>
-
-                <!-- FAQ item 3 -->
-                <div class="border border-outline-variant/60 rounded-xl overflow-hidden bg-surface transition-all">
-                    <button class="w-full flex justify-between items-center p-lg text-left font-bold text-on-surface hover:bg-surface-container-high/40 transition-colors" onclick="toggleFaq(2)">
-                        <span>Berapa lama waktu pengerjaan untuk layanan kiloan reguler?</span>
-                        <span class="material-symbols-outlined text-outline transition-transform duration-300" id="faq-icon-2">expand_more</span>
-                    </button>
-                    <div class="accordion-content max-h-0 overflow-hidden" id="faq-content-2">
-                        <p class="p-lg pt-0 text-sm text-on-surface-variant leading-relaxed">
-                            Layanan kiloan reguler (cuci lipat atau cuci setrika) membutuhkan waktu proses sekitar 2-3 hari kerja. Jika Anda membutuhkan pakaian cepat bersih, Anda dapat memilih layanan Express yang selesai dalam 6 hingga 12 jam.
-                        </p>
-                    </div>
-                </div>
-
-                <!-- FAQ item 4 -->
-                <div class="border border-outline-variant/60 rounded-xl overflow-hidden bg-surface transition-all">
-                    <button class="w-full flex justify-between items-center p-lg text-left font-bold text-on-surface hover:bg-surface-container-high/40 transition-colors" onclick="toggleFaq(3)">
-                        <span>Bagaimana sistem pencucian pakaian di KosanLaundry? Apakah dicampur dengan orang lain?</span>
-                        <span class="material-symbols-outlined text-outline transition-transform duration-300" id="faq-icon-3">expand_more</span>
-                    </button>
-                    <div class="accordion-content max-h-0 overflow-hidden" id="faq-content-3">
-                        <p class="p-lg pt-0 text-sm text-on-surface-variant leading-relaxed">
-                            Tidak dicampur! Demi menjaga kebersihan dan higienitas, pakaian dari setiap pelanggan dicuci dalam mesin cuci yang terpisah (1 pelanggan 1 mesin cuci) untuk semua jenis layanan kiloan maupun satuan.
-                        </p>
-                    </div>
-                </div>
-            </div>
-        </div>
-    </section>
-
-    <!-- Call to Action Section -->
-    <section class="py-12 px-container-margin">
-        <div class="max-w-7xl mx-auto bg-primary rounded-3xl overflow-hidden relative p-xl lg:p-[80px]">
-            <div class="relative z-10 text-center space-y-lg max-w-2xl mx-auto">
-                <h2 class="text-display-lg text-on-primary font-display-lg leading-tight text-3xl md:text-5xl">Siap Menikmati Pakaian Bersih, Wangi &amp; Rapi?</h2>
-                <p class="text-body-lg text-primary-fixed/80">Bergabunglah dengan ribuan mahasiswa dan profesional lainnya yang sudah mempercayakan pakaian mereka kepada KosanLaundry.</p>
-                <div class="pt-md">
-                    <button onclick="window.location.href='<?= $is_logged_in ? $dashboard_url : '../login/daftar.php'; ?>'" class="px-[48px] py-[20px] bg-secondary-container text-on-secondary-container rounded-2xl font-bold text-headline-md shadow-xl hover:scale-105 transition-transform active:scale-95 duration-150">
-                        Pesan Sekarang
-                    </button>
-                </div>
-            </div>
-            <!-- Decorative Pattern -->
-            <div class="absolute inset-0 opacity-10 pointer-events-none" style="background-image: radial-gradient(circle at 2px 2px, white 1px, transparent 0); background-size: 32px 32px;"></div>
-            <div class="absolute -bottom-20 -right-20 w-[400px] h-[400px] bg-secondary rounded-full blur-[100px] opacity-20"></div>
-        </div>
-    </section>
 </main>
 
 <!-- Footer -->
@@ -597,30 +517,7 @@ try {
         document.getElementById('filter-location').scrollIntoView({ behavior: 'smooth' });
     }
 
-    // Toggle FAQ Accordion
-    function toggleFaq(index) {
-        const content = document.getElementById('faq-content-' + index);
-        const icon = document.getElementById('faq-icon-' + index);
-        
-        if (content.style.maxHeight && content.style.maxHeight !== '0px') {
-            content.style.maxHeight = '0px';
-            content.style.paddingTop = '0px';
-            content.style.paddingBottom = '0px';
-            icon.style.transform = 'rotate(0deg)';
-        } else {
-            // Close other items
-            document.querySelectorAll('.accordion-content').forEach((pane, idx) => {
-                pane.style.maxHeight = '0px';
-                pane.style.paddingTop = '0px';
-                pane.style.paddingBottom = '0px';
-                const otherIcon = document.getElementById('faq-icon-' + idx);
-                if (otherIcon) otherIcon.style.transform = 'rotate(0deg)';
-            });
-            
-            content.style.maxHeight = content.scrollHeight + 'px';
-            icon.style.transform = 'rotate(180deg)';
-        }
-    }
+
 
     // Mobile Navbar Menu Toggle
     const mobileMenuBtn = document.getElementById('mobile-menu-btn');
