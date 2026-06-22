@@ -187,7 +187,7 @@
         <div class="max-w-7xl mx-auto flex flex-col md:flex-row justify-between items-center gap-md opacity-60">
             <p class="font-label-sm text-label-sm text-on-surface-variant">© 2024 KosanLaundry. Freshness delivered.</p>
             <div class="flex gap-lg">
-                <a class="font-label-sm text-label-sm text-on-surface-variant hover:text-primary" href="#">Bantuan</a>
+                <a class="font-label-sm text-label-sm text-on-surface-variant hover:text-primary" href="../bantuan/bantuan.php">Bantuan</a>
                 <a class="font-label-sm text-label-sm text-on-surface-variant hover:text-primary" href="#">Privasi</a>
             </div>
         </div>

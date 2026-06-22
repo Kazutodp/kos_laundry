@@ -169,7 +169,7 @@ if (!isset($_SESSION['admin_logged_in'])) {
 </div>
 <div class="flex-grow"></div>
 <div class="flex flex-col gap-xs py-md">
-<a class="flex items-center gap-sm px-md py-sm text-on-surface-variant hover:bg-surface-container-high rounded-lg transition-all" href="#">
+<a class="flex items-center gap-sm px-md py-sm text-on-surface-variant hover:bg-surface-container-high rounded-lg transition-all" href="../bantuan/bantuan.php">
 <span class="material-symbols-outlined">help</span>
 <span class="text-label-md font-label-md">Help</span>
 </a>
@@ -363,7 +363,7 @@ if (!isset($_SESSION['admin_logged_in'])) {
 <footer class="w-full py-md px-lg bg-surface-container-highest flex justify-between items-center text-on-surface-variant">
 <p class="text-label-sm">© 2024 KosanLaundry Provincial Partnership Program. Freshness across the region.</p>
 <div class="flex gap-lg">
-<a class="text-label-sm hover:text-primary transition-colors" href="#">Pusat Bantuan</a>
+<a class="text-label-sm hover:text-primary transition-colors" href="../bantuan/bantuan.php">Pusat Bantuan</a>
 <a class="text-label-sm hover:text-primary transition-colors" href="#">Kebijakan Kemitraan</a>
 </div>
 </footer>

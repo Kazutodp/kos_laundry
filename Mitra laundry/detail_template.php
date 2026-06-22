@@ -277,7 +277,7 @@ $logo_url = $partner_logos[$id_mitra] ?? $partner_logos[1];
             <a class="text-on-surface-variant hover:text-primary transition-colors font-label-md text-label-md" href="../index.php">Beranda</a>
             <a class="text-primary font-bold border-b-2 border-primary pb-1 font-label-md text-label-md" href="#">Layanan</a>
             <a class="text-on-surface-variant hover:text-primary transition-colors font-label-md text-label-md" href="../lokasi/locations.php">Lokasi</a>
-            <a class="text-on-surface-variant hover:text-primary transition-colors font-label-md text-label-md" href="#">Bantuan</a>
+            <a class="text-on-surface-variant hover:text-primary transition-colors font-label-md text-label-md" href="../bantuan/bantuan.php">Bantuan</a>
         </div>
         <div class="flex items-center gap-md">
             <div class="hidden md:flex items-center bg-surface-container rounded-full px-md py-xs">

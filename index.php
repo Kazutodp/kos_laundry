@@ -164,7 +164,7 @@ try {
                 <a class="text-primary font-bold border-b-2 border-primary pb-1 font-label-md" href="#">Beranda</a>
                 <a class="text-on-surface-variant hover:text-primary transition-colors font-label-md" href="layanan/layanan.php">Layanan</a>
                 <a class="text-on-surface-variant hover:text-primary transition-colors font-label-md" href="lokasi/locations.php">Lokasi</a>
-                <a class="text-on-surface-variant hover:text-primary transition-colors font-label-md" href="#">Bantuan</a>
+                <a class="text-on-surface-variant hover:text-primary transition-colors font-label-md" href="bantuan/bantuan.php">Bantuan</a>
             </div>
             <?php if ($is_logged_in): ?>
                 <!-- Profile Indicator with Hover Dropdown -->
