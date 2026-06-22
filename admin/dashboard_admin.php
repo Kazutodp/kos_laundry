@@ -178,13 +178,7 @@ if (!isset($_SESSION['admin_logged_in'])) {
 <span class="text-label-md font-label-md text-error">Logout</span>
 </a>
 </div>
-<div class="p-md flex items-center gap-sm border-t border-outline-variant">
-<img alt="Admin profile" class="w-10 h-10 rounded-full object-cover border-2 border-primary-fixed" src="https://lh3.googleusercontent.com/aida-public/AB6AXuAujDASjotNPhxVCbFSMamJHuY0tt4fH4wHzInaJo76NKY8h96K_hXs-SA3TO25Bk9GuHaSOAlZvhZbjkbs39cziUvC94KRm0NJhIG60l0lCYUIJEUFeq0IWNwgdtnwzPPLEsGh5WEq-UcoP_JfCRWvwn9kcvt06eGJitMTyRv3OCnRC2qjryAwPwir7UqK_NzpS8Uvnw6YVv581zpb8LKXDamalit1xNglj8ZYlclmFFB8b-VXAk2jlRRj9C76Sk6pYTOMHHwIJZ4">
-<div class="overflow-hidden">
-<p class="text-label-md font-bold truncate"><?= htmlspecialchars($_SESSION['admin_nama'] ?? 'Administrator'); ?></p>
-<p class="text-label-sm text-on-surface-variant truncate">KosanLaundry HQ</p>
-</div>
-</div>
+
 </aside>
 <!-- Main Content Canvas -->
 <main class="flex-grow flex flex-col h-screen overflow-hidden">
