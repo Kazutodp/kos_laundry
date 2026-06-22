@@ -3,7 +3,7 @@
 <head>
     <meta charset="utf-8"/>
     <meta content="width=device-width, initial-scale=1.0" name="viewport"/>
-    <title>Lupa Kata Sandi - KosanLaundry</title>
+    <title>Lupa Kata Sandi - MataramWash</title>
     <script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&amp;display=swap" rel="stylesheet"/>
     <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
@@ -125,8 +125,8 @@
     <!-- Top Navigation Bar - Contextual for Transactional (Minimized) -->
     <header class="fixed top-0 w-full z-50 bg-transparent py-md px-lg">
         <div class="max-w-7xl mx-auto flex items-center justify-center md:justify-start gap-xs">
-            <img alt="KosanLaundry Logo" class="h-10 w-10 object-contain" src="../logo.png?v=3"/>
-            <span class="text-headline-md font-headline-md font-bold text-primary">KosanLaundry</span>
+            <img alt="MataramWash Logo" class="h-10 w-10 object-contain" src="../logo.png?v=3"/>
+            <span class="text-headline-md font-headline-md font-bold text-primary">MataramWash</span>
         </div>
     </header>
     <!-- Main Content Area -->
@@ -185,7 +185,7 @@
     <!-- Footer - Minimum for focused screen -->
     <footer class="w-full py-lg px-gutter border-t border-outline-variant/10">
         <div class="max-w-7xl mx-auto flex flex-col md:flex-row justify-between items-center gap-md opacity-60">
-            <p class="font-label-sm text-label-sm text-on-surface-variant">© 2024 KosanLaundry. Freshness delivered.</p>
+            <p class="font-label-sm text-label-sm text-on-surface-variant">© 2024 MataramWash. Freshness delivered.</p>
             <div class="flex gap-lg">
                 <a class="font-label-sm text-label-sm text-on-surface-variant hover:text-primary" href="../bantuan/bantuan.php">Bantuan</a>
                 <a class="font-label-sm text-label-sm text-on-surface-variant hover:text-primary" href="#">Privasi</a>

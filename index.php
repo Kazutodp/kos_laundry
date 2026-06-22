@@ -47,7 +47,7 @@ try {
             'color' => 'text-[#7c3aed]/40'
         ],
         [
-            'nama' => 'KosanLaundry Outlet #8',
+            'nama' => 'MataramWash Outlet #8',
             'icon' => 'handshake',
             'area' => 'Area Pagutan',
             'color' => 'text-amber-600/40'
@@ -63,7 +63,7 @@ try {
 <head>
     <meta charset="utf-8">
     <meta content="width=device-width, initial-scale=1.0" name="viewport">
-    <title>KosanLaundry - Laundry Bersih, Kosan Nyaman</title>
+    <title>MataramWash - Laundry Bersih, Kosan Nyaman</title>
     <script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&amp;display=swap" rel="stylesheet">
     <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet">
@@ -181,8 +181,8 @@ try {
     <div class="max-w-7xl mx-auto px-gutter py-md flex justify-between items-center">
         <div class="flex items-center space-x-md lg:space-x-lg">
             <a class="flex items-center space-x-xs text-headline-md font-headline-md font-bold text-primary" href="#">
-                <img alt="KosanLaundry Logo" class="h-10 w-10 object-contain" src="logo.png?v=3">
-                <span class="">KosanLaundry</span>
+                <img alt="MataramWash Logo" class="h-10 w-10 object-contain" src="logo.png?v=3">
+                <span class="">MataramWash</span>
             </a>
             <div class="hidden md:block relative w-72 lg:w-96">
                 <div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
@@ -287,7 +287,7 @@ try {
 <!-- Key Benefits -->
 <section class="py-xl px-container-margin max-w-7xl mx-auto">
     <div class="text-center mb-xl space-y-md">
-        <h2 class="text-headline-lg font-headline-lg text-primary">Mengapa KosanLaundry?</h2>
+        <h2 class="text-headline-lg font-headline-lg text-primary">Mengapa MataramWash?</h2>
         <p class="text-on-surface-variant max-w-2xl mx-auto font-body-md">Kami memberikan layanan terbaik untuk memastikan pakaian Anda tetap awet dan bersih maksimal.</p>
     </div>
     <div class="grid md:grid-cols-3 gap-lg">
@@ -433,7 +433,7 @@ try {
         <!-- Platform Stats Sub-section -->
         <div class="space-y-xl text-center">
             <div class="space-y-sm">
-                <h2 class="text-headline-lg font-headline-lg text-primary text-center">KosanLaundry Dalam Angka</h2>
+                <h2 class="text-headline-lg font-headline-lg text-primary text-center">MataramWash Dalam Angka</h2>
                 <p class="text-on-surface-variant font-body-md max-w-xl mx-auto">Kepercayaan mahasiswa dan kualitas layanan mitra adalah prioritas utama kami.</p>
             </div>
             <div class="grid grid-cols-2 lg:grid-cols-4 gap-lg">
@@ -533,7 +533,7 @@ try {
                             <span class="material-symbols-outlined text-[18px]" style="font-variation-settings: 'FILL' 1;">star</span>
                         </div>
                         <p class="text-xs lg:text-sm text-on-surface-variant italic leading-relaxed">
-                            "Layanan jemput antarnya juara! Baju disetrika rapi banget dan wanginya segar tahan lama. Sangat merekomendasikan KosanLaundry buat sesama anak kosan."
+                            "Layanan jemput antarnya juara! Baju disetrika rapi banget dan wanginya segar tahan lama. Sangat merekomendasikan MataramWash buat sesama anak kosan."
                         </p>
                     </div>
                     <div class="flex items-center gap-md border-t border-outline-variant/30 pt-md">
@@ -557,8 +557,8 @@ try {
 <footer class="w-full py-xl px-gutter grid grid-cols-1 md:grid-cols-4 gap-lg bg-surface-container-highest mt-xl">
     <div class="space-y-md">
         <div class="flex items-center gap-xs">
-            <img alt="KosanLaundry Logo" class="h-8 w-8 object-contain" src="logo.png?v=3">
-            <span class="text-headline-sm font-headline-md font-bold text-primary">KosanLaundry</span>
+            <img alt="MataramWash Logo" class="h-8 w-8 object-contain" src="logo.png?v=3">
+            <span class="text-headline-sm font-headline-md font-bold text-primary">MataramWash</span>
         </div>
         <p class="text-on-surface-variant font-body-md">Freshness delivered to your doorstep. Laundry solusi cerdas untuk hidup lebih produktif.</p>
     </div>
@@ -590,7 +590,7 @@ try {
                 <span class="material-symbols-outlined text-[20px]">public</span>
             </a>
         </div>
-        <p class="text-label-sm text-on-surface-variant opacity-80 mt-lg">© 2026 KosanLaundry. Freshness delivered to your doorstep.</p>
+        <p class="text-label-sm text-on-surface-variant opacity-80 mt-lg">© 2026 MataramWash. Freshness delivered to your doorstep.</p>
     </div>
 </footer>
 

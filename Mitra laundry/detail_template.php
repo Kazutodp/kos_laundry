@@ -132,7 +132,7 @@ $logo_url = $partner_logos[$id_mitra] ?? $partner_logos[1];
 <head>
     <meta charset="utf-8"/>
     <meta content="width=device-width, initial-scale=1.0" name="viewport"/>
-    <title><?= htmlspecialchars($mitra['nama_mitra']); ?> - Profil Partner | KosanLaundry</title>
+    <title><?= htmlspecialchars($mitra['nama_mitra']); ?> - Profil Partner | MataramWash</title>
     <script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&amp;family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
     
@@ -269,8 +269,8 @@ $logo_url = $partner_logos[$id_mitra] ?? $partner_logos[1];
     <div class="flex justify-between items-center px-lg py-md w-full mx-auto max-w-6xl">
         <div class="flex items-center gap-md">
             <a href="../index.php" class="flex items-center gap-xs">
-                <img alt="KosanLaundry Logo" class="h-10 w-10 object-contain" src="../logo.png?v=3"/>
-                <span class="font-headline-md text-headline-md font-bold text-primary">KosanLaundry</span>
+                <img alt="MataramWash Logo" class="h-10 w-10 object-contain" src="../logo.png?v=3"/>
+                <span class="font-headline-md text-headline-md font-bold text-primary">MataramWash</span>
             </a>
         </div>
         <div class="hidden md:flex gap-lg items-center">
@@ -820,8 +820,8 @@ $logo_url = $partner_logos[$id_mitra] ?? $partner_logos[1];
 <footer class="bg-surface-container-low border-t border-outline-variant mt-xl">
     <div class="flex flex-col md:flex-row justify-between items-center px-lg py-xl w-full mx-auto gap-md max-w-6xl">
         <div class="flex flex-col items-center md:items-start gap-xs">
-            <span class="font-headline-md text-headline-md font-bold text-primary">KosanLaundry</span>
-            <p class="text-label-sm text-on-surface-variant">© 2026 KosanLaundry. All rights reserved.</p>
+            <span class="font-headline-md text-headline-md font-bold text-primary">MataramWash</span>
+            <p class="text-label-sm text-on-surface-variant">© 2026 MataramWash. All rights reserved.</p>
         </div>
         <div class="flex gap-lg">
             <a class="text-on-surface-variant hover:text-primary transition-colors text-label-sm" href="#">Kebijakan Privasi</a>

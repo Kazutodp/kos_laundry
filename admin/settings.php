@@ -74,7 +74,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['update_config'])) {
     $whatsapp = trim($_POST['whatsapp_contact'] ?? '628983887223');
     $region = trim($_POST['region_name'] ?? 'Mataram, Nusa Tenggara Barat');
     $maintenance = isset($_POST['maintenance_mode']) ? 1 : 0;
-    $branding = trim($_POST['system_branding'] ?? 'KosanLaundry');
+    $branding = trim($_POST['system_branding'] ?? 'MataramWash');
 
     $config_data = [
         'platform_commission' => $commission,
@@ -98,7 +98,7 @@ $config = [
     'whatsapp_contact' => '628983887223',
     'region_name' => 'Mataram, Nusa Tenggara Barat',
     'maintenance_mode' => 0,
-    'system_branding' => 'KosanLaundry'
+    'system_branding' => 'MataramWash'
 ];
 
 if (file_exists($config_file)) {
@@ -125,7 +125,7 @@ try {
 <head>
     <meta charset="utf-8">
     <meta content="width=device-width, initial-scale=1.0" name="viewport">
-    <title>Pengaturan | KosanLaundry Admin</title>
+    <title>Pengaturan | MataramWash Admin</title>
     <script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&amp;display=swap" rel="stylesheet">
     <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet">
@@ -230,8 +230,8 @@ try {
     <!-- SideNavBar -->
     <aside class="hidden lg:flex flex-col h-screen sticky top-0 p-md space-y-md bg-surface-container-low border-r border-outline-variant w-64 shrink-0">
         <div class="flex items-center gap-xs px-xs py-sm">
-            <img alt="KosanLaundry Logo" class="h-8 w-8 object-contain" src="../logo.png?v=3">
-            <span class="text-headline-sm font-headline-md font-bold text-primary">KosanLaundry</span>
+            <img alt="MataramWash Logo" class="h-8 w-8 object-contain" src="../logo.png?v=3">
+            <span class="text-headline-sm font-headline-md font-bold text-primary">MataramWash</span>
         </div>
         <div class="flex flex-col gap-xs py-md border-b border-outline-variant">
             <p class="px-md text-label-sm text-outline uppercase tracking-widest">Main Menu</p>
@@ -445,7 +445,7 @@ try {
 
         <!-- Footer -->
         <footer class="w-full py-md px-lg bg-surface-container-highest flex justify-between items-center text-on-surface-variant">
-            <p class="text-label-sm">© 2024 KosanLaundry Provincial Partnership Program. Freshness across the region.</p>
+            <p class="text-label-sm">© 2024 MataramWash Provincial Partnership Program. Freshness across the region.</p>
             <div class="flex gap-lg">
                 <a class="text-label-sm hover:text-primary transition-colors" href="../bantuan/bantuan.php">Pusat Bantuan</a>
                 <a class="text-label-sm hover:text-primary transition-colors" href="#">Kebijakan Kemitraan</a>

@@ -15,7 +15,7 @@ $user_id = $_SESSION['user_id'];
 <head>
     <meta charset="utf-8">
     <meta content="width=device-width, initial-scale=1.0" name="viewport">
-    <title>Notifikasi - KosanLaundry</title>
+    <title>Notifikasi - MataramWash</title>
     <script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&amp;display=swap" rel="stylesheet">
     <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet">
@@ -146,8 +146,8 @@ $user_id = $_SESSION['user_id'];
 <header class="w-full bg-surface-container shadow-sm py-4 px-6 border-b border-outline-variant/30 sticky top-0 z-40">
     <div class="max-w-7xl mx-auto flex items-center justify-between">
         <a class="flex items-center space-x-xs text-headline-md font-headline-md font-bold text-primary" href="../index.php">
-            <img alt="KosanLaundry Logo" class="h-8 w-8 object-contain" src="../logo.png?v=3">
-            <span class="text-lg">KosanLaundry</span>
+            <img alt="MataramWash Logo" class="h-8 w-8 object-contain" src="../logo.png?v=3">
+            <span class="text-lg">MataramWash</span>
         </a>
         <a class="flex items-center space-x-1 text-label-md font-bold text-primary hover:underline" href="../index.php">
             <span class="material-symbols-outlined text-sm">arrow_back</span>
@@ -246,7 +246,7 @@ $user_id = $_SESSION['user_id'];
                         <span class="font-label-sm text-label-sm text-on-surface-variant">2 hari yang lalu</span>
                     </div>
                     <p class="font-body-md text-body-md text-on-surface-variant leading-relaxed">
-                        Pesanan Anda telah berhasil diantar dan diterima. Terima kasih telah mempercayakan cucian Anda kepada KosanLaundry!
+                        Pesanan Anda telah berhasil diantar dan diterima. Terima kasih telah mempercayakan cucian Anda kepada MataramWash!
                     </p>
                 </div>
             </div>

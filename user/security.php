@@ -52,7 +52,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 <head>
     <meta charset="utf-8">
     <meta content="width=device-width, initial-scale=1.0" name="viewport">
-    <title>Password &amp; Keamanan | KosanLaundry</title>
+    <title>Password &amp; Keamanan | MataramWash</title>
     <script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&amp;display=swap" rel="stylesheet">
     <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet">
@@ -173,8 +173,8 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 <header class="w-full bg-surface-container shadow-sm py-4 px-6 border-b border-outline-variant/30 sticky top-0 z-40">
     <div class="max-w-7xl mx-auto flex items-center justify-between">
         <a class="flex items-center space-x-xs text-headline-md font-headline-md font-bold text-primary" href="../index.php">
-            <img alt="KosanLaundry Logo" class="h-8 w-8 object-contain" src="../logo.png?v=3">
-            <span class="text-lg">KosanLaundry</span>
+            <img alt="MataramWash Logo" class="h-8 w-8 object-contain" src="../logo.png?v=3">
+            <span class="text-lg">MataramWash</span>
         </a>
         <a class="flex items-center space-x-1 text-label-md font-bold text-primary hover:underline" href="../index.php">
             <span class="material-symbols-outlined text-sm">arrow_back</span>
@@ -331,7 +331,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         
         <div class="space-y-4">
             <p class="text-body-md text-on-surface-variant leading-relaxed">
-                Tindakan ini akan menghapus akun **KosanLaundry** Anda secara permanen. Semua data pesanan, alamat, dan foto profil Anda akan dihapus dan tidak bisa dikembalikan.
+                Tindakan ini akan menghapus akun **MataramWash** Anda secara permanen. Semua data pesanan, alamat, dan foto profil Anda akan dihapus dan tidak bisa dikembalikan.
             </p>
             
             <div class="bg-error-container text-on-error-container p-4 rounded-xl flex gap-3 border border-error/20">

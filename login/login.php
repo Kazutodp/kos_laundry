@@ -49,7 +49,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 <head>
     <meta charset="utf-8"/>
     <meta content="width=device-width, initial-scale=1.0" name="viewport"/>
-    <title>Masuk | KosanLaundry</title>
+    <title>Masuk | MataramWash</title>
     <!-- Google Identity Services SDK -->
     <script async="" defer="" src="https://accounts.google.com/gsi/client"></script>
     <script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
@@ -178,7 +178,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         </div>
         <div class="relative z-10 max-w-lg text-center">
             <div class="mb-lg inline-flex items-center justify-center p-md bg-white rounded-full shadow-lg">
-                <img alt="KosanLaundry Logo" class="w-16 h-16 object-contain" src="../logo.png?v=3"/>
+                <img alt="MataramWash Logo" class="w-16 h-16 object-contain" src="../logo.png?v=3"/>
             </div>
             <h1 class="font-headline-lg text-headline-lg text-on-primary mb-md leading-tight">
                 Kesegaran Maksimal untuk Pakaian Anda.
@@ -205,7 +205,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         <!-- Mobile Brand Identity -->
         <div class="md:hidden flex items-center gap-xs mb-xl">
             <img alt="Logo" class="w-10 h-10 object-contain" src="../logo.png?v=3"/>
-            <span class="font-headline-md text-headline-md text-primary font-bold">KosanLaundry</span>
+            <span class="font-headline-md text-headline-md text-primary font-bold">MataramWash</span>
         </div>
         <div class="max-w-md w-full mx-auto">
             <header class="mb-lg">

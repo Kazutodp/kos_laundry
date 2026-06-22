@@ -12,7 +12,7 @@ $login_url = "../login/login.php";
 <head>
     <meta charset="utf-8">
     <meta content="width=device-width, initial-scale=1.0" name="viewport">
-    <title>Pusat Bantuan - KosanLaundry</title>
+    <title>Pusat Bantuan - MataramWash</title>
     <script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&amp;display=swap" rel="stylesheet">
     <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet">
@@ -138,8 +138,8 @@ $login_url = "../login/login.php";
     <div class="max-w-7xl mx-auto px-gutter py-md flex justify-between items-center">
         <div class="flex items-center space-x-md lg:space-x-lg">
             <a class="flex items-center space-x-xs text-headline-md font-headline-md font-bold text-primary" href="../index.php">
-                <img alt="KosanLaundry Logo" class="h-10 w-10 object-contain" src="../logo.png?v=3">
-                <span class="">KosanLaundry</span>
+                <img alt="MataramWash Logo" class="h-10 w-10 object-contain" src="../logo.png?v=3">
+                <span class="">MataramWash</span>
             </a>
         </div>
         <div class="flex items-center space-x-md">
@@ -216,7 +216,7 @@ $login_url = "../login/login.php";
                 Ada yang Bisa Kami Bantu?
             </h1>
             <p class="text-body-md text-on-surface-variant max-w-xl mx-auto">
-                Cari jawaban untuk kendala Anda atau temukan panduan penggunaan fitur KosanLaundry.
+                Cari jawaban untuk kendala Anda atau temukan panduan penggunaan fitur MataramWash.
             </p>
             <!-- Large Help Search Bar -->
             <div class="relative max-w-xl mx-auto">
@@ -317,7 +317,7 @@ $login_url = "../login/login.php";
 
                         <div class="border border-outline-variant/60 rounded-xl overflow-hidden bg-surface transition-all faq-box">
                             <button class="w-full flex justify-between items-center p-md lg:p-lg text-left font-bold text-on-surface text-sm lg:text-base hover:bg-surface-container-high/40 transition-colors" onclick="toggleFaq(2)">
-                                <span>Bagaimana jika saya lupa kata sandi akun KosanLaundry?</span>
+                                <span>Bagaimana jika saya lupa kata sandi akun MataramWash?</span>
                                 <span class="material-symbols-outlined text-outline transition-transform duration-300" id="faq-icon-2">expand_more</span>
                             </button>
                             <div class="accordion-content max-h-0 overflow-hidden" id="faq-content-2">
@@ -351,7 +351,7 @@ $login_url = "../login/login.php";
 
                         <div class="border border-outline-variant/60 rounded-xl overflow-hidden bg-surface transition-all faq-box">
                             <button class="w-full flex justify-between items-center p-md lg:p-lg text-left font-bold text-on-surface text-sm lg:text-base hover:bg-surface-container-high/40 transition-colors" onclick="toggleFaq(4)">
-                                <span>Bagaimana cara mendaftarkan laundry saya sebagai mitra KosanLaundry?</span>
+                                <span>Bagaimana cara mendaftarkan laundry saya sebagai mitra MataramWash?</span>
                                 <span class="material-symbols-outlined text-outline transition-transform duration-300" id="faq-icon-4">expand_more</span>
                             </button>
                             <div class="accordion-content max-h-0 overflow-hidden" id="faq-content-4">
@@ -406,7 +406,7 @@ $login_url = "../login/login.php";
                     <span class="material-symbols-outlined text-primary text-3xl">verified_user</span>
                     <h4 class="font-bold text-primary text-sm">Keamanan Transaksi Anda</h4>
                     <p class="text-xs text-on-surface-variant leading-relaxed">
-                        Kami menjamin kerahasiaan data pribadi, kata sandi, dan riwayat detail pemesanan Anda di platform KosanLaundry.
+                        Kami menjamin kerahasiaan data pribadi, kata sandi, dan riwayat detail pemesanan Anda di platform MataramWash.
                     </p>
                 </div>
             </div>
@@ -420,8 +420,8 @@ $login_url = "../login/login.php";
 <footer class="w-full py-xl px-gutter grid grid-cols-1 md:grid-cols-4 gap-lg bg-surface-container-highest">
     <div class="space-y-md">
         <div class="flex items-center gap-xs">
-            <img alt="KosanLaundry Logo" class="h-8 w-8 object-contain" src="../logo.png?v=3">
-            <span class="text-headline-sm font-headline-md font-bold text-primary">KosanLaundry</span>
+            <img alt="MataramWash Logo" class="h-8 w-8 object-contain" src="../logo.png?v=3">
+            <span class="text-headline-sm font-headline-md font-bold text-primary">MataramWash</span>
         </div>
         <p class="text-on-surface-variant font-body-md">Freshness delivered to your doorstep. Laundry solusi cerdas untuk hidup lebih produktif.</p>
     </div>
@@ -453,7 +453,7 @@ $login_url = "../login/login.php";
                 <span class="material-symbols-outlined text-[20px]">public</span>
             </a>
         </div>
-        <p class="text-label-sm text-on-surface-variant opacity-80 mt-lg">© 2026 KosanLaundry. Freshness delivered to your doorstep.</p>
+        <p class="text-label-sm text-on-surface-variant opacity-80 mt-lg">© 2026 MataramWash. Freshness delivered to your doorstep.</p>
     </div>
 </footer>
 

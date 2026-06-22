@@ -42,7 +42,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 <!DOCTYPE html><html class="light" lang="id"><head>
 <meta charset="utf-8">
 <meta content="width=device-width, initial-scale=1.0" name="viewport">
-<title>Admin Login | KosanLaundry Management</title>
+<title>Admin Login | MataramWash Management</title>
 <script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
 <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&amp;display=swap" rel="stylesheet">
 <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet">
@@ -157,12 +157,12 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 <section class="hidden lg:flex lg:w-1/2 flex-col justify-between p-xl bg-surface-container-low relative overflow-hidden border-r border-outline-variant">
 <div class="relative z-10">
 <div class="mb-xl">
-<img alt="KosanLaundry Logo" class="h-16 w-16 object-contain" src="../logo.png?v=3">
-<div class="mt-base font-bold text-primary text-headline-md">KosanLaundry</div>
+<img alt="MataramWash Logo" class="h-16 w-16 object-contain" src="../logo.png?v=3">
+<div class="mt-base font-bold text-primary text-headline-md">MataramWash</div>
 </div>
 <h1 class="text-headline-lg font-headline-lg text-primary mb-md leading-tight">Admin Portal Access</h1>
 <p class="text-body-lg text-on-surface-variant max-w-sm">
-                Pintu gerbang manajemen aman untuk operasional dan orkestrasi logistik KosanLaundry.
+                Pintu gerbang manajemen aman untuk operasional dan orkestrasi logistik MataramWash.
             </p>
 </div>
 <!-- Dashboard-style Illustration -->
@@ -186,8 +186,8 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 <div class="mb-xl">
 <!-- Mobile Logo -->
 <div class="lg:hidden flex flex-col items-center mb-xl">
-<img alt="KosanLaundry Logo" class="h-12 w-12 object-contain" src="../logo.png?v=3">
-<span class="font-bold text-primary mt-xs">KosanLaundry</span>
+<img alt="MataramWash Logo" class="h-12 w-12 object-contain" src="../logo.png?v=3">
+<span class="font-bold text-primary mt-xs">MataramWash</span>
 </div>
 <h2 class="text-headline-md font-headline-lg text-on-surface">Masuk Panel Admin</h2>
 <p class="text-body-md text-on-surface-variant mt-xs">Identitas internal diperlukan untuk akses kontrol.</p>
@@ -240,7 +240,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 <div class="p-md rounded-xl bg-error/5 border border-error/10 flex gap-sm items-start">
 <span class="material-symbols-outlined text-error" style="font-variation-settings: 'FILL' 1;">warning</span>
 <p class="text-label-sm text-on-surface-variant leading-relaxed">
-<span class="font-bold text-error">Akses Terbatas:</span> Halaman ini hanya untuk staf KosanLaundry yang berwenang. Segala percobaan akses ilegal akan dicatat dan diproses secara hukum.
+<span class="font-bold text-error">Akses Terbatas:</span> Halaman ini hanya untuk staf MataramWash yang berwenang. Segala percobaan akses ilegal akan dicatat dan diproses secara hukum.
                 </p>
 </div>
 </div>
@@ -248,7 +248,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 </main>
 <footer class="mt-xl text-center">
 <p class="text-label-sm text-on-surface-variant opacity-60">
-        © 2024 KosanLaundry Operations Dept. • Freshness Security Protocol v4.2
+        © 2024 MataramWash Operations Dept. • Freshness Security Protocol v4.2
     </p>
 </footer>
 <script>
