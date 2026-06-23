@@ -501,9 +501,9 @@ try {
                                 </p>
                             </div>
                             <div class="flex items-center gap-md border-t border-outline-variant/30 pt-md">
-                                <img src="uploads/student_1.png" alt="Ahmad Naufal" class="w-10 h-10 rounded-full object-cover shadow-sm">
+                                <img src="uploads/student_1.png" alt="Aulia Putri" class="w-10 h-10 rounded-full object-cover shadow-sm">
                                 <div>
-                                    <h4 class="font-bold text-on-surface text-sm">Ahmad Naufal</h4>
+                                    <h4 class="font-bold text-on-surface text-sm">Aulia Putri</h4>
                                     <p class="text-[10px] text-outline uppercase font-bold tracking-wider">Mahasiswa UNRAM</p>
                                 </div>
                             </div>
@@ -547,9 +547,9 @@ try {
                                 </p>
                             </div>
                             <div class="flex items-center gap-md border-t border-outline-variant/30 pt-md">
-                                <img src="uploads/student_3.png" alt="Dwi Prasetyo" class="w-10 h-10 rounded-full object-cover shadow-sm">
+                                <img src="uploads/student_3.png" alt="Dewi Lestari" class="w-10 h-10 rounded-full object-cover shadow-sm">
                                 <div>
-                                    <h4 class="font-bold text-on-surface text-sm">Dwi Prasetyo</h4>
+                                    <h4 class="font-bold text-on-surface text-sm">Dewi Lestari</h4>
                                     <p class="text-[10px] text-outline uppercase font-bold tracking-wider">Mahasiswa IKIP</p>
                                 </div>
                             </div>
@@ -593,9 +593,9 @@ try {
                                 </p>
                             </div>
                             <div class="flex items-center gap-md border-t border-outline-variant/30 pt-md">
-                                <img src="uploads/student_5.png" alt="Sarah Amanda" class="w-10 h-10 rounded-full object-cover shadow-sm">
+                                <img src="uploads/student_5.png" alt="Fikri Ramadhan" class="w-10 h-10 rounded-full object-cover shadow-sm">
                                 <div>
-                                    <h4 class="font-bold text-on-surface text-sm">Sarah Amanda</h4>
+                                    <h4 class="font-bold text-on-surface text-sm">Fikri Ramadhan</h4>
                                     <p class="text-[10px] text-outline uppercase font-bold tracking-wider">Mahasiswa STIKES</p>
                                 </div>
                             </div>
@@ -619,9 +619,9 @@ try {
                                 </p>
                             </div>
                             <div class="flex items-center gap-md border-t border-outline-variant/30 pt-md">
-                                <img src="uploads/student_1.png" alt="Ahmad Naufal" class="w-10 h-10 rounded-full object-cover shadow-sm">
+                                <img src="uploads/student_1.png" alt="Aulia Putri" class="w-10 h-10 rounded-full object-cover shadow-sm">
                                 <div>
-                                    <h4 class="font-bold text-on-surface text-sm">Ahmad Naufal</h4>
+                                    <h4 class="font-bold text-on-surface text-sm">Aulia Putri</h4>
                                     <p class="text-[10px] text-outline uppercase font-bold tracking-wider">Mahasiswa UNRAM</p>
                                 </div>
                             </div>
@@ -665,9 +665,9 @@ try {
                                 </p>
                             </div>
                             <div class="flex items-center gap-md border-t border-outline-variant/30 pt-md">
-                                <img src="uploads/student_3.png" alt="Dwi Prasetyo" class="w-10 h-10 rounded-full object-cover shadow-sm">
+                                <img src="uploads/student_3.png" alt="Dewi Lestari" class="w-10 h-10 rounded-full object-cover shadow-sm">
                                 <div>
-                                    <h4 class="font-bold text-on-surface text-sm">Dwi Prasetyo</h4>
+                                    <h4 class="font-bold text-on-surface text-sm">Dewi Lestari</h4>
                                     <p class="text-[10px] text-outline uppercase font-bold tracking-wider">Mahasiswa IKIP</p>
                                 </div>
                             </div>
@@ -711,9 +711,9 @@ try {
                                 </p>
                             </div>
                             <div class="flex items-center gap-md border-t border-outline-variant/30 pt-md">
-                                <img src="uploads/student_5.png" alt="Sarah Amanda" class="w-10 h-10 rounded-full object-cover shadow-sm">
+                                <img src="uploads/student_5.png" alt="Fikri Ramadhan" class="w-10 h-10 rounded-full object-cover shadow-sm">
                                 <div>
-                                    <h4 class="font-bold text-on-surface text-sm">Sarah Amanda</h4>
+                                    <h4 class="font-bold text-on-surface text-sm">Fikri Ramadhan</h4>
                                     <p class="text-[10px] text-outline uppercase font-bold tracking-wider">Mahasiswa STIKES</p>
                                 </div>
                             </div>
