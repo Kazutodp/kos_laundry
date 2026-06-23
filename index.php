@@ -501,9 +501,7 @@ try {
                                 </p>
                             </div>
                             <div class="flex items-center gap-md border-t border-outline-variant/30 pt-md">
-                                <div class="w-10 h-10 bg-primary/10 rounded-full flex items-center justify-center font-bold text-primary text-sm">
-                                    AN
-                                </div>
+                                <img src="uploads/student_1.png" alt="Ahmad Naufal" class="w-10 h-10 rounded-full object-cover shadow-sm">
                                 <div>
                                     <h4 class="font-bold text-on-surface text-sm">Ahmad Naufal</h4>
                                     <p class="text-[10px] text-outline uppercase font-bold tracking-wider">Mahasiswa UNRAM</p>
@@ -526,9 +524,7 @@ try {
                                 </p>
                             </div>
                             <div class="flex items-center gap-md border-t border-outline-variant/30 pt-md">
-                                <div class="w-10 h-10 bg-secondary/10 rounded-full flex items-center justify-center font-bold text-secondary text-sm">
-                                    SR
-                                </div>
+                                <img src="uploads/student_2.png" alt="Siti Rahma" class="w-10 h-10 rounded-full object-cover shadow-sm">
                                 <div>
                                     <h4 class="font-bold text-on-surface text-sm">Siti Rahma</h4>
                                     <p class="text-[10px] text-outline uppercase font-bold tracking-wider">Mahasiswa UMM</p>
@@ -551,9 +547,7 @@ try {
                                 </p>
                             </div>
                             <div class="flex items-center gap-md border-t border-outline-variant/30 pt-md">
-                                <div class="w-10 h-10 bg-[#7c3aed]/10 rounded-full flex items-center justify-center font-bold text-[#7c3aed] text-sm">
-                                    DP
-                                </div>
+                                <img src="uploads/student_3.png" alt="Dwi Prasetyo" class="w-10 h-10 rounded-full object-cover shadow-sm">
                                 <div>
                                     <h4 class="font-bold text-on-surface text-sm">Dwi Prasetyo</h4>
                                     <p class="text-[10px] text-outline uppercase font-bold tracking-wider">Mahasiswa IKIP</p>
@@ -576,9 +570,7 @@ try {
                                 </p>
                             </div>
                             <div class="flex items-center gap-md border-t border-outline-variant/30 pt-md">
-                                <div class="w-10 h-10 bg-amber-500/10 rounded-full flex items-center justify-center font-bold text-amber-600 text-sm">
-                                    RH
-                                </div>
+                                <img src="uploads/student_4.png" alt="Rian Hidayat" class="w-10 h-10 rounded-full object-cover shadow-sm">
                                 <div>
                                     <h4 class="font-bold text-on-surface text-sm">Rian Hidayat</h4>
                                     <p class="text-[10px] text-outline uppercase font-bold tracking-wider">Mahasiswa UIN</p>
@@ -601,9 +593,7 @@ try {
                                 </p>
                             </div>
                             <div class="flex items-center gap-md border-t border-outline-variant/30 pt-md">
-                                <div class="w-10 h-10 bg-pink-500/10 rounded-full flex items-center justify-center font-bold text-pink-600 text-sm">
-                                    SA
-                                </div>
+                                <img src="uploads/student_5.png" alt="Sarah Amanda" class="w-10 h-10 rounded-full object-cover shadow-sm">
                                 <div>
                                     <h4 class="font-bold text-on-surface text-sm">Sarah Amanda</h4>
                                     <p class="text-[10px] text-outline uppercase font-bold tracking-wider">Mahasiswa STIKES</p>
@@ -629,9 +619,7 @@ try {
                                 </p>
                             </div>
                             <div class="flex items-center gap-md border-t border-outline-variant/30 pt-md">
-                                <div class="w-10 h-10 bg-primary/10 rounded-full flex items-center justify-center font-bold text-primary text-sm">
-                                    AN
-                                </div>
+                                <img src="uploads/student_1.png" alt="Ahmad Naufal" class="w-10 h-10 rounded-full object-cover shadow-sm">
                                 <div>
                                     <h4 class="font-bold text-on-surface text-sm">Ahmad Naufal</h4>
                                     <p class="text-[10px] text-outline uppercase font-bold tracking-wider">Mahasiswa UNRAM</p>
@@ -654,9 +642,7 @@ try {
                                 </p>
                             </div>
                             <div class="flex items-center gap-md border-t border-outline-variant/30 pt-md">
-                                <div class="w-10 h-10 bg-secondary/10 rounded-full flex items-center justify-center font-bold text-secondary text-sm">
-                                    SR
-                                </div>
+                                <img src="uploads/student_2.png" alt="Siti Rahma" class="w-10 h-10 rounded-full object-cover shadow-sm">
                                 <div>
                                     <h4 class="font-bold text-on-surface text-sm">Siti Rahma</h4>
                                     <p class="text-[10px] text-outline uppercase font-bold tracking-wider">Mahasiswa UMM</p>
@@ -679,9 +665,7 @@ try {
                                 </p>
                             </div>
                             <div class="flex items-center gap-md border-t border-outline-variant/30 pt-md">
-                                <div class="w-10 h-10 bg-[#7c3aed]/10 rounded-full flex items-center justify-center font-bold text-[#7c3aed] text-sm">
-                                    DP
-                                </div>
+                                <img src="uploads/student_3.png" alt="Dwi Prasetyo" class="w-10 h-10 rounded-full object-cover shadow-sm">
                                 <div>
                                     <h4 class="font-bold text-on-surface text-sm">Dwi Prasetyo</h4>
                                     <p class="text-[10px] text-outline uppercase font-bold tracking-wider">Mahasiswa IKIP</p>
@@ -704,9 +688,7 @@ try {
                                 </p>
                             </div>
                             <div class="flex items-center gap-md border-t border-outline-variant/30 pt-md">
-                                <div class="w-10 h-10 bg-amber-500/10 rounded-full flex items-center justify-center font-bold text-amber-600 text-sm">
-                                    RH
-                                </div>
+                                <img src="uploads/student_4.png" alt="Rian Hidayat" class="w-10 h-10 rounded-full object-cover shadow-sm">
                                 <div>
                                     <h4 class="font-bold text-on-surface text-sm">Rian Hidayat</h4>
                                     <p class="text-[10px] text-outline uppercase font-bold tracking-wider">Mahasiswa UIN</p>
@@ -729,9 +711,7 @@ try {
                                 </p>
                             </div>
                             <div class="flex items-center gap-md border-t border-outline-variant/30 pt-md">
-                                <div class="w-10 h-10 bg-pink-500/10 rounded-full flex items-center justify-center font-bold text-pink-600 text-sm">
-                                    SA
-                                </div>
+                                <img src="uploads/student_5.png" alt="Sarah Amanda" class="w-10 h-10 rounded-full object-cover shadow-sm">
                                 <div>
                                     <h4 class="font-bold text-on-surface text-sm">Sarah Amanda</h4>
                                     <p class="text-[10px] text-outline uppercase font-bold tracking-wider">Mahasiswa STIKES</p>
