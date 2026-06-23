@@ -58,6 +58,26 @@ try {
     $upcoming_count_needed = 8;
 }
 
+// Fetch all active partners for autocomplete search
+$search_partners = [];
+try {
+    $stmt_all = $pdo->query("SELECT * FROM mitra_laundry ORDER BY rating DESC");
+    $all_db_mitra = $stmt_all->fetchAll();
+    foreach ($all_db_mitra as $mitra) {
+        $file_name = str_replace(' ', '_', $mitra['nama_mitra']) . '.php';
+        if (file_exists('Mitra laundry/' . $file_name)) {
+            $search_partners[] = [
+                'nama' => $mitra['nama_mitra'],
+                'rating' => $mitra['rating'],
+                'alamat' => $mitra['alamat'],
+                'url' => 'Mitra laundry/' . $file_name,
+                'tipe' => $mitra['icon_type']
+            ];
+        }
+    }
+} catch (PDOException $e) {
+    $search_partners = [];
+}
 ?>
 <!DOCTYPE html>
 <html lang="id">
@@ -194,13 +214,15 @@ try {
                 <img alt="MataramWash Logo" class="h-10 w-10 object-contain" src="logo.png?v=3">
                 <span class="">MataramWash</span>
             </a>
-            <div class="hidden md:block relative w-72 lg:w-96">
+            <div class="hidden md:block relative w-72 lg:w-96" id="search-input-container">
                 <div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
                     <svg class="h-5 w-5 text-slate-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                         <path d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" stroke-linecap="round" stroke-linejoin="round" stroke-width="2"></path>
                     </svg>
                 </div>
-                <input class="block w-full pl-10 pr-3 py-2.5 border border-slate-300 rounded-xl bg-white text-sm placeholder-slate-400 focus:outline-none focus:ring-2 focus:ring-primary/20 focus:border-primary transition-all shadow-sm" placeholder="Cari layanan atau mitra..." type="text">
+                <input id="search-input" autocomplete="off" class="block w-full pl-10 pr-3 py-2.5 border border-slate-300 rounded-xl bg-white text-sm placeholder-slate-400 focus:outline-none focus:ring-2 focus:ring-primary/20 focus:border-primary transition-all shadow-sm" placeholder="Cari layanan atau mitra..." type="text">
+                <!-- Dropdown suggestions container -->
+                <div id="search-suggestions" class="hidden absolute left-0 right-0 top-full mt-2 bg-white border border-slate-200 rounded-2xl shadow-xl py-2 z-50 max-h-80 overflow-y-auto"></div>
             </div>
         </div>
         <div class="flex items-center space-x-md">
@@ -292,32 +314,37 @@ try {
 </section>
 
 <!-- Key Benefits -->
-<section class="py-xl px-container-margin max-w-7xl mx-auto">
-    <div class="text-center mb-xl space-y-md">
-        <h2 class="text-headline-lg font-headline-lg text-primary">Mengapa MataramWash?</h2>
-        <p class="text-on-surface-variant max-w-2xl mx-auto font-body-md">Kami memberikan layanan terbaik untuk memastikan pakaian Anda tetap awet dan bersih maksimal.</p>
-    </div>
-    <div class="grid md:grid-cols-3 gap-lg">
-        <div class="bento-card p-xl bg-surface-container-lowest rounded-xl border border-outline-variant">
-            <div class="w-12 h-12 bg-primary-container text-on-primary-container rounded-lg flex items-center justify-center mb-md">
-                <span class="material-symbols-outlined">bolt</span>
-            </div>
-            <h3 class="text-headline-md font-headline-md mb-xs">Fast Delivery</h3>
-            <p class="text-on-surface-variant font-body-md">Layanan kilat jemput antar. Baju kotor di pagi hari, bersih di sore hari.</p>
+<section class="py-20 bg-slate-50/50 px-container-margin border-t border-b border-outline-variant/30">
+    <div class="max-w-7xl mx-auto space-y-xl">
+        <div class="text-center space-y-sm">
+            <h2 class="text-headline-lg font-headline-lg text-primary text-center">Urusan Baju Kotor? Serahkan ke MataramWash!</h2>
+            <p class="text-on-surface-variant font-body-md max-w-2xl mx-auto">Platform andalan anak kos untuk menemukan laundry terdekat di Mataram. Praktis, hemat di kantong, dan pakaian kembali wangi tanpa perlu keluar kamar.</p>
         </div>
-        <div class="bento-card p-xl bg-surface-container-lowest rounded-xl border border-outline-variant">
-            <div class="w-12 h-12 bg-secondary-container text-on-secondary-container rounded-lg flex items-center justify-center mb-md">
-                <span class="material-symbols-outlined">payments</span>
+        <div class="grid md:grid-cols-3 gap-lg">
+            <!-- Card 1 -->
+            <div class="bento-card group relative p-xl bg-surface-container-lowest rounded-xl border border-outline-variant hover:-translate-y-2 hover:border-primary/50 hover:shadow-xl hover:shadow-primary/10 transition-all duration-300 overflow-hidden">
+                <div class="w-14 h-14 bg-primary/10 text-primary rounded-2xl flex items-center justify-center mb-md transition-all duration-300 group-hover:scale-110 group-hover:rotate-3">
+                    <span class="material-symbols-outlined text-3xl">bolt</span>
+                </div>
+                <h3 class="text-headline-md font-headline-md mb-xs text-on-surface group-hover:text-primary transition-colors">Jemput Antar Kilat</h3>
+                <p class="text-on-surface-variant font-body-md relative z-10">Layanan antar-jemput cepat langsung ke kosan Anda. Baju kotor diambil pagi hari, siap pakai di sore hari.</p>
             </div>
-            <h3 class="text-headline-md font-headline-md mb-xs">Affordable Prices</h3>
-            <p class="text-on-surface-variant font-body-md">Harga ramah di kantong mahasiswa mulai dari Rp 6.000 per kg tanpa biaya tersembunyi.</p>
-        </div>
-        <div class="bento-card p-xl bg-surface-container-lowest rounded-xl border border-outline-variant">
-            <div class="w-12 h-12 bg-tertiary-fixed text-on-tertiary-fixed-variant rounded-lg flex items-center justify-center mb-md">
-                <span class="material-symbols-outlined">high_quality</span>
+            <!-- Card 2 -->
+            <div class="bento-card group relative p-xl bg-surface-container-lowest rounded-xl border border-outline-variant hover:-translate-y-2 hover:border-secondary/50 hover:shadow-xl hover:shadow-secondary/10 transition-all duration-300 overflow-hidden">
+                <div class="w-14 h-14 bg-secondary/10 text-secondary rounded-2xl flex items-center justify-center mb-md transition-all duration-300 group-hover:scale-110 group-hover:rotate-3">
+                    <span class="material-symbols-outlined text-3xl">payments</span>
+                </div>
+                <h3 class="text-headline-md font-headline-md mb-xs text-on-surface group-hover:text-secondary transition-colors">Harga Kantong Mahasiswa</h3>
+                <p class="text-on-surface-variant font-body-md relative z-10">Tarif transparan mulai Rp 6.000/kg tanpa biaya tersembunyi. Sangat pas untuk menghemat anggaran bulanan Anda.</p>
             </div>
-            <h3 class="text-headline-md font-headline-md mb-xs">High-Quality Cleaning</h3>
-            <p class="text-on-surface-variant font-body-md">Detergen premium dan setrika uap modern untuk menjaga serat kain dan keharuman tahan lama.</p>
+            <!-- Card 3 -->
+            <div class="bento-card group relative p-xl bg-surface-container-lowest rounded-xl border border-outline-variant hover:-translate-y-2 hover:border-tertiary/50 hover:shadow-xl hover:shadow-tertiary/10 transition-all duration-300 overflow-hidden">
+                <div class="w-14 h-14 bg-tertiary/10 text-tertiary rounded-2xl flex items-center justify-center mb-md transition-all duration-300 group-hover:scale-110 group-hover:rotate-3">
+                    <span class="material-symbols-outlined text-3xl">high_quality</span>
+                </div>
+                <h3 class="text-headline-md font-headline-md mb-xs text-on-surface group-hover:text-tertiary transition-colors">Hasil Bersih & Harum</h3>
+                <p class="text-on-surface-variant font-body-md relative z-10">Cucian diproses dengan detergen premium dan setrika uap modern untuk menjaga serat pakaian tetap awet dan wangi tahan lama.</p>
+            </div>
         </div>
     </div>
 </section>
@@ -445,7 +472,7 @@ try {
             </div>
             <div class="grid grid-cols-2 lg:grid-cols-4 gap-lg">
                 <!-- Stat 1 -->
-                <div class="bg-surface-container-lowest p-lg rounded-2xl border border-outline-variant/60 shadow-sm flex flex-col items-center text-center space-y-xs hover:shadow-xl hover:shadow-primary/15 hover:-translate-y-2 transition-all duration-300">
+                <div class="bg-gradient-to-br from-blue-50/80 to-white p-lg rounded-2xl border border-blue-100/80 shadow-sm flex flex-col items-center text-center space-y-xs hover:shadow-xl hover:shadow-primary/15 hover:-translate-y-2 transition-all duration-300">
                     <div class="w-14 h-14 bg-primary/10 rounded-2xl flex items-center justify-center text-primary mb-xs">
                         <span class="material-symbols-outlined text-3xl">check_circle</span>
                     </div>
@@ -453,7 +480,7 @@ try {
                     <span class="text-xs lg:text-sm text-on-surface-variant font-medium">Cucian Diselesaikan</span>
                 </div>
                 <!-- Stat 2 -->
-                <div class="bg-surface-container-lowest p-lg rounded-2xl border border-outline-variant/60 shadow-sm flex flex-col items-center text-center space-y-xs hover:shadow-xl hover:shadow-secondary/15 hover:-translate-y-2 transition-all duration-300">
+                <div class="bg-gradient-to-br from-emerald-50/80 to-white p-lg rounded-2xl border border-emerald-100/80 shadow-sm flex flex-col items-center text-center space-y-xs hover:shadow-xl hover:shadow-secondary/15 hover:-translate-y-2 transition-all duration-300">
                     <div class="w-14 h-14 bg-secondary/10 rounded-2xl flex items-center justify-center text-secondary mb-xs">
                         <span class="material-symbols-outlined text-3xl">handshake</span>
                     </div>
@@ -461,7 +488,7 @@ try {
                     <span class="text-xs lg:text-sm text-on-surface-variant font-medium">Mitra Terpercaya</span>
                 </div>
                 <!-- Stat 3 -->
-                <div class="bg-surface-container-lowest p-lg rounded-2xl border border-outline-variant/60 shadow-sm flex flex-col items-center text-center space-y-xs hover:shadow-xl hover:shadow-[#7c3aed]/15 hover:-translate-y-2 transition-all duration-300">
+                <div class="bg-gradient-to-br from-violet-50/80 to-white p-lg rounded-2xl border border-violet-100/80 shadow-sm flex flex-col items-center text-center space-y-xs hover:shadow-xl hover:shadow-[#7c3aed]/15 hover:-translate-y-2 transition-all duration-300">
                     <div class="w-14 h-14 bg-[#7c3aed]/10 rounded-2xl flex items-center justify-center text-[#7c3aed] mb-xs">
                         <span class="material-symbols-outlined text-3xl">groups</span>
                     </div>
@@ -469,7 +496,7 @@ try {
                     <span class="text-xs lg:text-sm text-on-surface-variant font-medium">Mahasiswa Terbantu</span>
                 </div>
                 <!-- Stat 4 -->
-                <div class="bg-surface-container-lowest p-lg rounded-2xl border border-outline-variant/60 shadow-sm flex flex-col items-center text-center space-y-xs hover:shadow-xl hover:shadow-amber-500/15 hover:-translate-y-2 transition-all duration-300">
+                <div class="bg-gradient-to-br from-amber-50/80 to-white p-lg rounded-2xl border border-amber-100/80 shadow-sm flex flex-col items-center text-center space-y-xs hover:shadow-xl hover:shadow-amber-500/15 hover:-translate-y-2 transition-all duration-300">
                     <div class="w-14 h-14 bg-amber-500/10 rounded-2xl flex items-center justify-center text-amber-500 mb-xs">
                         <span class="material-symbols-outlined text-3xl">star</span>
                     </div>
@@ -1036,6 +1063,179 @@ try {
         function deg2rad(deg) {
             return deg * (Math.PI/180);
         }
+    }
+
+    // Autocomplete Search Suggestions
+    const searchPartners = <?php echo json_encode($search_partners); ?>;
+    const staticSuggestions = [
+        // Services
+        { name: "Laundry Baju (Kiloan)", type: "layanan", url: "layanan/layanan.php?service=baju", detail: "Kiloan, setrika uap, cuci kilat" },
+        { name: "Cuci Sepatu & Tas", type: "layanan", url: "layanan/layanan.php?service=sepatu", detail: "Deep cleaning, premium shoe care" },
+        { name: "Satuan & Dry Cleaning", type: "layanan", url: "layanan/layanan.php?service=satuan", detail: "Bed cover, jas, kebaya, jaket" },
+        // Locations
+        { name: "Sekarbela / Kekalik", type: "lokasi", url: "layanan/layanan.php?location=sekarbela", detail: "Area Sekarbela & Kekalik" },
+        { name: "Ampenan", type: "lokasi", url: "layanan/layanan.php?location=ampenan", detail: "Area Ampenan & sekitarnya" },
+        { name: "Cilinaya", type: "lokasi", url: "layanan/layanan.php?location=cilinaya", detail: "Area Cilinaya & sekitarnya" },
+        { name: "Pagutan", type: "lokasi", url: "layanan/layanan.php?location=pagutan", detail: "Area Pagutan & sekitarnya" },
+        { name: "Mataram (Pusat)", type: "lokasi", url: "layanan/layanan.php?location=mataram", detail: "Area Mataram Pusat" }
+    ];
+
+    // Combine all searchable items
+    const searchableItems = [
+        ...searchPartners.map(p => ({
+            name: p.nama,
+            type: "mitra",
+            url: p.url,
+            detail: `⭐ ${parseFloat(p.rating).toFixed(1)} | ${p.alamat}`
+        })),
+        ...staticSuggestions
+    ];
+
+    const searchInput = document.getElementById('search-input');
+    const searchSuggestions = document.getElementById('search-suggestions');
+    let selectedSuggestionIndex = -1;
+
+    if (searchInput && searchSuggestions) {
+        searchInput.addEventListener('input', () => {
+            const query = searchInput.value.toLowerCase().trim();
+            selectedSuggestionIndex = -1;
+            
+            if (query.length === 0) {
+                searchSuggestions.innerHTML = '';
+                searchSuggestions.classList.add('hidden');
+                return;
+            }
+
+            const matches = searchableItems.filter(item => 
+                item.name.toLowerCase().includes(query) || 
+                (item.detail && item.detail.toLowerCase().includes(query))
+            );
+
+            if (matches.length === 0) {
+                searchSuggestions.innerHTML = `
+                    <div class="px-md py-sm text-center text-on-surface-variant/60 text-sm flex flex-col items-center gap-xs">
+                        <span class="material-symbols-outlined text-outline/50">search_off</span>
+                        <span>Tidak ada hasil untuk "${searchInput.value}"</span>
+                    </div>
+                `;
+                searchSuggestions.classList.remove('hidden');
+                return;
+            }
+
+            // Group matches by type
+            const groups = {
+                mitra: [],
+                layanan: [],
+                lokasi: []
+            };
+
+            matches.forEach(item => {
+                if (groups[item.type]) {
+                    groups[item.type].push(item);
+                }
+            });
+
+            let html = '';
+            
+            // Render Mitra
+            if (groups.mitra.length > 0) {
+                html += `<div class="px-md py-xs text-[10px] font-bold text-primary tracking-wider uppercase border-b border-outline-variant/20 select-none">Mitra Laundry</div>`;
+                groups.mitra.forEach(item => {
+                    html += renderSuggestionRow(item);
+                });
+            }
+
+            // Render Layanan & Lokasi
+            if (groups.layanan.length > 0 || groups.lokasi.length > 0) {
+                html += `<div class="px-md py-xs text-[10px] font-bold text-secondary tracking-wider uppercase border-b border-outline-variant/20 mt-2 select-none">Layanan & Wilayah</div>`;
+                groups.layanan.forEach(item => {
+                    html += renderSuggestionRow(item);
+                });
+                groups.lokasi.forEach(item => {
+                    html += renderSuggestionRow(item);
+                });
+            }
+
+            searchSuggestions.innerHTML = html;
+            searchSuggestions.classList.remove('hidden');
+        });
+
+        // Trigger input event when focus on input with value
+        searchInput.addEventListener('focus', () => {
+            if (searchInput.value.trim().length > 0) {
+                searchInput.dispatchEvent(new Event('input'));
+            }
+        });
+
+        // Close on click outside
+        document.addEventListener('click', (e) => {
+            if (!e.target.closest('#search-input-container')) {
+                searchSuggestions.classList.add('hidden');
+            }
+        });
+
+        // Keyboard Navigation
+        searchInput.addEventListener('keydown', (e) => {
+            const items = searchSuggestions.querySelectorAll('.suggestion-item');
+            if (items.length === 0) return;
+
+            if (e.key === 'ArrowDown') {
+                e.preventDefault();
+                selectedSuggestionIndex = (selectedSuggestionIndex + 1) % items.length;
+                updateActiveSuggestion(items);
+            } else if (e.key === 'ArrowUp') {
+                e.preventDefault();
+                selectedSuggestionIndex = (selectedSuggestionIndex - 1 + items.length) % items.length;
+                updateActiveSuggestion(items);
+            } else if (e.key === 'Enter') {
+                e.preventDefault();
+                if (selectedSuggestionIndex >= 0 && selectedSuggestionIndex < items.length) {
+                    items[selectedSuggestionIndex].click();
+                } else if (items.length > 0) {
+                    items[0].click(); // default to first item
+                }
+            } else if (e.key === 'Escape') {
+                searchSuggestions.classList.add('hidden');
+                searchInput.blur();
+            }
+        });
+    }
+
+    function renderSuggestionRow(item) {
+        let icon = 'store';
+        if (item.type === 'layanan') {
+            icon = item.url.includes('sepatu') ? 'dry_cleaning' : 'local_laundry_service';
+        } else if (item.type === 'lokasi') {
+            icon = 'location_on';
+        }
+
+        return `
+            <div onclick="selectSuggestion('${item.url}')" class="suggestion-item px-md py-sm hover:bg-slate-50 cursor-pointer flex items-center justify-between transition-colors duration-150 border-b border-outline-variant/10 last:border-b-0">
+                <div class="flex items-center gap-sm min-w-0">
+                    <span class="material-symbols-outlined text-[20px] text-outline-variant select-none">${icon}</span>
+                    <div class="min-w-0">
+                        <p class="text-sm font-semibold text-on-surface truncate leading-tight">${item.name}</p>
+                        <p class="text-xs text-on-surface-variant truncate mt-[2px] leading-none">${item.detail}</p>
+                    </div>
+                </div>
+                <span class="material-symbols-outlined text-[16px] text-outline-variant select-none">arrow_outward</span>
+            </div>
+        `;
+    }
+
+    window.selectSuggestion = function(url) {
+        window.location.href = url;
+    };
+
+    function updateActiveSuggestion(items) {
+        items.forEach((item, index) => {
+            if (index === selectedSuggestionIndex) {
+                item.classList.add('bg-slate-100');
+                item.scrollIntoView({ block: 'nearest' });
+            } else {
+                item.classList.remove('bg-slate-100');
+            }
+        });
     }
 </script>
 

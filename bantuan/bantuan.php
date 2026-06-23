@@ -417,43 +417,113 @@ $login_url = "../login/login.php";
 </main>
 
 <!-- Footer -->
-<footer class="w-full py-xl px-gutter grid grid-cols-1 md:grid-cols-4 gap-lg bg-surface-container-highest">
-    <div class="space-y-md">
-        <div class="flex items-center gap-xs">
-            <img alt="MataramWash Logo" class="h-8 w-8 object-contain" src="../logo.png?v=3">
-            <span class="text-headline-sm font-headline-md font-bold text-primary">MataramWash</span>
+<footer class="w-full bg-slate-950 text-slate-400 border-t border-slate-900 mt-xl">
+    <div class="max-w-7xl mx-auto px-gutter py-xl grid grid-cols-1 md:grid-cols-4 gap-xl">
+        <!-- Brand Section -->
+        <div class="space-y-md">
+            <div class="flex items-center gap-xs">
+                <img alt="MataramWash Logo" class="h-10 w-10 object-contain" src="../logo.png?v=3">
+                <span class="text-headline-sm font-headline-md font-bold text-white">MataramWash</span>
+            </div>
+            <p class="text-slate-400 font-body-md leading-relaxed">
+                Freshness delivered to your doorstep. Solusi laundry cerdas dan praktis khusus mahasiswa & profesional di Mataram.
+            </p>
+            <div class="space-y-sm pt-xs text-label-sm">
+                <div class="flex items-center space-x-xs">
+                    <span class="material-symbols-outlined text-[18px] text-primary">location_on</span>
+                    <span class="text-slate-300">Mataram, Nusa Tenggara Barat</span>
+                </div>
+                <div class="flex items-center space-x-xs">
+                    <span class="material-symbols-outlined text-[18px] text-primary">call</span>
+                    <span class="text-slate-300">+62 823-4196-1954</span>
+                </div>
+                <div class="flex items-center space-x-xs">
+                    <span class="material-symbols-outlined text-[18px] text-primary">mail</span>
+                    <span class="text-slate-300">support@mataramwash.com</span>
+                </div>
+            </div>
         </div>
-        <p class="text-on-surface-variant font-body-md">Freshness delivered to your doorstep. Laundry solusi cerdas untuk hidup lebih produktif.</p>
-    </div>
-    <div class="space-y-md">
-        <h5 class="font-bold text-on-surface font-label-md">Company</h5>
-        <ul class="space-y-xs">
-            <li><a class="text-on-surface-variant hover:text-primary transition-colors font-label-sm" href="#">Privacy Policy</a></li>
-            <li><a class="text-on-surface-variant hover:text-primary transition-colors font-label-sm" href="#">Terms of Service</a></li>
-            <li><a class="text-on-surface-variant hover:text-primary transition-colors font-label-sm" href="#">Contact Us</a></li>
-            <li><a class="text-on-surface-variant hover:text-primary transition-colors font-label-sm" href="#">FAQ</a></li>
-        </ul>
-    </div>
-    <div class="space-y-md">
-        <h5 class="font-bold text-on-surface font-label-md">Layanan</h5>
-        <ul class="space-y-xs">
-            <li><a class="text-on-surface-variant hover:text-primary transition-colors font-label-sm" href="../layanan/layanan.php">Laundry Kiloan</a></li>
-            <li><a class="text-on-surface-variant hover:text-primary transition-colors font-label-sm" href="../layanan/layanan.php">Laundry Satuan</a></li>
-            <li><a class="text-on-surface-variant hover:text-primary transition-colors font-label-sm" href="../layanan/layanan.php">Cuci Sepatu</a></li>
-            <li><a class="text-on-surface-variant hover:text-primary transition-colors font-label-sm" href="../layanan/layanan.php">Dry Cleaning</a></li>
-        </ul>
-    </div>
-    <div class="space-y-md">
-        <h5 class="font-bold text-on-surface font-label-md">Follow Us</h5>
-        <div class="flex space-x-md">
-            <a class="w-10 h-10 rounded-full bg-surface-container-high flex items-center justify-center hover:bg-primary hover:text-on-primary transition-all" href="#">
-                <span class="material-symbols-outlined text-[20px]">share</span>
-            </a>
-            <a class="w-10 h-10 rounded-full bg-surface-container-high flex items-center justify-center hover:bg-primary hover:text-on-primary transition-all" href="#">
-                <span class="material-symbols-outlined text-[20px]">public</span>
-            </a>
+
+        <!-- Company Links -->
+        <div class="space-y-md md:pl-lg">
+            <h5 class="font-bold text-white font-label-md tracking-wider uppercase text-xs">Perusahaan</h5>
+            <ul class="space-y-sm text-body-md">
+                <li>
+                    <a href="#" class="hover:text-primary transition-all duration-300 hover:translate-x-1 inline-block">Tentang Kami</a>
+                </li>
+                <li>
+                    <a href="#" class="hover:text-primary transition-all duration-300 hover:translate-x-1 inline-block">Bantuan &amp; FAQ</a>
+                </li>
+                <li>
+                    <a href="#" class="hover:text-primary transition-all duration-300 hover:translate-x-1 inline-block">Kontak Kami</a>
+                </li>
+                <li>
+                    <a href="#" class="hover:text-primary transition-all duration-300 hover:translate-x-1 inline-block">Syarat &amp; Ketentuan</a>
+                </li>
+            </ul>
         </div>
-        <p class="text-label-sm text-on-surface-variant opacity-80 mt-lg">© 2026 MataramWash. Freshness delivered to your doorstep.</p>
+
+        <!-- Service Links -->
+        <div class="space-y-md">
+            <h5 class="font-bold text-white font-label-md tracking-wider uppercase text-xs">Layanan Kami</h5>
+            <ul class="space-y-sm text-body-md">
+                <li>
+                    <a href="../layanan/layanan.php" class="hover:text-primary transition-all duration-300 hover:translate-x-1 inline-block">Laundry Kiloan</a>
+                </li>
+                <li>
+                    <a href="../layanan/layanan.php" class="hover:text-primary transition-all duration-300 hover:translate-x-1 inline-block">Laundry Satuan</a>
+                </li>
+                <li>
+                    <a href="../layanan/layanan.php" class="hover:text-primary transition-all duration-300 hover:translate-x-1 inline-block">Cuci Sepatu Premium</a>
+                </li>
+                <li>
+                    <a href="../layanan/layanan.php" class="hover:text-primary transition-all duration-300 hover:translate-x-1 inline-block">Express Delivery</a>
+                </li>
+            </ul>
+        </div>
+
+        <!-- Follow & Payments -->
+        <div class="space-y-md">
+            <h5 class="font-bold text-white font-label-md tracking-wider uppercase text-xs">Ikuti Kami</h5>
+            <div class="flex space-x-sm">
+                <a class="w-9 h-9 rounded-full bg-slate-900 border border-slate-800 text-slate-300 hover:bg-primary hover:text-white hover:border-primary transition-all duration-300 flex items-center justify-center" href="#" aria-label="Instagram">
+                    <svg class="w-4 h-4 fill-current" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+                        <path d="M12 2.163c3.204 0 3.584.012 4.85.07 3.252.148 4.771 1.691 4.919 4.919.058 1.265.069 1.645.069 4.849 0 3.205-.012 3.584-.069 4.849-.149 3.225-1.664 4.771-4.919 4.919-1.266.058-1.644.07-4.85.07-3.204 0-3.584-.012-4.849-.07-3.26-.149-4.771-1.699-4.919-4.92-.058-1.265-.07-1.644-.07-4.849 0-3.204.013-3.583.07-4.849.149-3.227 1.664-4.771 4.919-4.919 1.266-.057 1.645-.069 4.849-.069zM12 0C8.741 0 8.333.014 7.053.072 2.695.272.273 2.69.073 7.051C.014 8.333 0 8.741 0 12c0 3.259.014 3.668.072 4.948.2 4.358 2.618 6.78 6.98 6.98 1.281.058 1.689.072 4.948.072 3.259 0 3.668-.014 4.948-.072 4.354-.2 6.782-2.618 6.979-6.98.059-1.28.073-1.689.073-4.948 0-3.259-.014-3.667-.072-4.947-.196-4.354-2.617-6.78-6.979-6.98C15.668.014 15.259 0 12 0zm0 5.838a6.162 6.162 0 100 12.324 6.162 6.162 0 000-12.324zM12 16a4 4 0 110-8 4 4 0 010 8zm6.406-11.845a1.44 1.44 0 100 2.881 1.44 1.44 0 000-2.881z"/>
+                    </svg>
+                </a>
+                <a class="w-9 h-9 rounded-full bg-slate-900 border border-slate-800 text-slate-300 hover:bg-primary hover:text-white hover:border-primary transition-all duration-300 flex items-center justify-center" href="#" aria-label="TikTok">
+                    <svg class="w-4 h-4 fill-current" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+                        <path d="M12.525.02c1.31-.02 2.61-.01 3.91-.02.08 1.53.63 3.09 1.75 4.17 1.12 1.11 2.7 1.62 4.24 1.79v4.03c-1.44-.17-2.86-.74-3.99-1.72-.08-.07-.17-.17-.25-.26v6.52c-.03 2.32-.83 4.67-2.61 6.13-1.89 1.56-4.52 2.1-6.91 1.62-2.73-.55-5.17-2.45-6.07-5.13-.99-2.94-.3-6.42 1.83-8.66 1.73-1.83 4.37-2.68 6.81-2.28v4.11c-1.12-.22-2.34-.05-3.32.54-.99.6-1.63 1.65-1.79 2.79-.27 1.93.99 3.88 2.89 4.26 1.43.29 2.99-.14 3.89-1.27.46-.57.69-1.29.69-2v-12.3c0-.02 0-.03-.01-.05z"/>
+                    </svg>
+                </a>
+                <a class="w-9 h-9 rounded-full bg-slate-900 border border-slate-800 text-slate-300 hover:bg-primary hover:text-white hover:border-primary transition-all duration-300 flex items-center justify-center" href="#" aria-label="WhatsApp">
+                    <svg class="w-4 h-4 fill-current" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+                        <path d="M.057 24l1.687-6.163c-1.041-1.804-1.588-3.849-1.587-5.946C.06 5.348 5.397.01 12.008.01c3.202.001 6.212 1.248 8.477 3.517 2.266 2.268 3.507 5.28 3.505 8.484-.004 6.657-5.34 11.997-11.953 11.997-2.005-.001-3.973-.502-5.724-1.455L0 24zm6.59-4.846c1.66.986 3.278 1.488 5.339 1.49 5.485-.002 9.948-4.469 9.95-9.956.002-2.657-1.02-5.155-2.877-7.017C17.18 1.81 14.685.787 12.03.785 6.544.787 2.08 5.253 2.078 10.743c-.001 2.045.513 3.626 1.486 5.23L2.553 21.64l5.885-1.543-.791.757z"/>
+                    </svg>
+                </a>
+            </div>
+            <div class="space-y-xs pt-xs">
+                <h6 class="text-white font-bold text-xs uppercase tracking-wider">Metode Pembayaran</h6>
+                <div class="flex flex-wrap gap-xs">
+                    <span class="px-2 py-1 text-[9px] font-bold rounded bg-slate-900 border border-slate-800 text-slate-400">MIDTRANS</span>
+                    <span class="px-2 py-1 text-[9px] font-bold rounded bg-slate-900 border border-slate-800 text-slate-400">QRIS</span>
+                    <span class="px-2 py-1 text-[9px] font-bold rounded bg-slate-900 border border-slate-800 text-slate-400">GOPAY</span>
+                    <span class="px-2 py-1 text-[9px] font-bold rounded bg-slate-900 border border-slate-800 text-slate-400">OVO</span>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Bottom Bar -->
+    <div class="border-t border-slate-900 py-md text-xs text-slate-500 bg-slate-950">
+        <div class="max-w-7xl mx-auto px-gutter flex flex-col md:flex-row justify-between items-center gap-xs">
+            <span>&copy; 2026 MataramWash. Semua Hak Dilindungi.</span>
+            <div class="flex space-x-md">
+                <a href="#" class="hover:text-primary transition-colors">Kebijakan Privasi</a>
+                <span>&bull;</span>
+                <a href="#" class="hover:text-primary transition-colors">Syarat &amp; Ketentuan</a>
+            </div>
+        </div>
     </div>
 </footer>
 

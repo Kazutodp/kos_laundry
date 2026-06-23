@@ -14,7 +14,11 @@ class HomeController extends Controller
     public function index()
     {
         $mitra = MitraLaundry::where('status_buka', 1)->orderBy('rating', 'desc')->take(8)->get();
-        return view('welcome', compact('mitra'));
+        
+        // Ambil semua mitra untuk autocomplete search
+        $all_mitra = MitraLaundry::orderBy('rating', 'desc')->get();
+        
+        return view('welcome', compact('mitra', 'all_mitra'));
     }
 
     /**
