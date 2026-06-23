@@ -96,6 +96,15 @@
                     "label-sm": ["12px", {"lineHeight": "16px", "fontWeight": "600"}],
                     "headline-lg-mobile": ["28px", {"lineHeight": "36px", "letterSpacing": "-0.01em", "fontWeight": "700"}],
                     "body-md": ["16px", {"lineHeight": "24px", "fontWeight": "400"}]
+            },
+            animation: {
+                marquee: 'marquee 35s linear infinite',
+            },
+            keyframes: {
+                marquee: {
+                    '0%': { transform: 'translateX(0)' },
+                    '100%': { transform: 'translateX(-50%)' }
+                }
             }
           },
         },
@@ -403,78 +412,271 @@
         </div>
 
         <!-- Student Testimonials Sub-section -->
-        <div class="space-y-xl">
+        <div class="space-y-xl overflow-hidden">
             <div class="text-center space-y-sm">
                 <h2 class="text-headline-lg font-headline-lg text-primary">Apa Kata Anak Kos?</h2>
                 <p class="text-on-surface-variant font-body-md max-w-xl mx-auto">Dengarkan pengalaman nyata dari sesama mahasiswa yang telah mempercayakan cuciannya kepada kami.</p>
             </div>
-            <div class="grid grid-cols-1 md:grid-cols-3 gap-lg">
-                <div class="bg-surface-container-lowest p-lg rounded-2xl border border-outline-variant/60 shadow-sm flex flex-col justify-between space-y-lg hover:-translate-y-1 hover:shadow-md transition-all duration-200">
-                    <div class="space-y-md">
-                        <div class="flex text-amber-500 gap-[2px]">
-                            <span class="material-symbols-outlined text-[18px]" style="font-variation-settings: 'FILL' 1;">star</span>
-                            <span class="material-symbols-outlined text-[18px]" style="font-variation-settings: 'FILL' 1;">star</span>
-                            <span class="material-symbols-outlined text-[18px]" style="font-variation-settings: 'FILL' 1;">star</span>
-                            <span class="material-symbols-outlined text-[18px]" style="font-variation-settings: 'FILL' 1;">star</span>
-                            <span class="material-symbols-outlined text-[18px]" style="font-variation-settings: 'FILL' 1;">star</span>
+            
+            <div class="relative w-full overflow-hidden py-4">
+                <!-- Fade gradient overlays to soften edges -->
+                <div class="absolute inset-y-0 left-0 w-16 md:w-32 bg-gradient-to-r from-[#f0f3ff] to-transparent z-10 pointer-events-none"></div>
+                <div class="absolute inset-y-0 right-0 w-16 md:w-32 bg-gradient-to-l from-[#f0f3ff] to-transparent z-10 pointer-events-none"></div>
+
+                <div class="flex gap-lg w-max animate-marquee hover:[animation-play-state:paused] py-4">
+                    <!-- Original Set of 5 Cards -->
+                    <div class="flex gap-lg shrink-0">
+                        <!-- Testimonial 1 -->
+                        <div class="w-[300px] md:w-[380px] shrink-0 bg-surface-container-lowest p-lg rounded-2xl border border-outline-variant/60 shadow-sm flex flex-col justify-between space-y-lg hover:-translate-y-1 hover:shadow-md transition-all duration-200 whitespace-normal">
+                            <div class="space-y-md">
+                                <div class="flex text-amber-500 gap-[2px]">
+                                    <span class="material-symbols-outlined text-[18px]" style="font-variation-settings: 'FILL' 1;">star</span>
+                                    <span class="material-symbols-outlined text-[18px]" style="font-variation-settings: 'FILL' 1;">star</span>
+                                    <span class="material-symbols-outlined text-[18px]" style="font-variation-settings: 'FILL' 1;">star</span>
+                                    <span class="material-symbols-outlined text-[18px]" style="font-variation-settings: 'FILL' 1;">star</span>
+                                    <span class="material-symbols-outlined text-[18px]" style="font-variation-settings: 'FILL' 1;">star</span>
+                                </div>
+                                <p class="text-xs lg:text-sm text-on-surface-variant italic leading-relaxed">
+                                    "Sangat membantu pas lagi minggu UTS! Gak perlu pusing mikirin baju kotor menumpuk di kosan. Tinggal pesan lewat HP, kurir langsung jemput dan diantar lagi dalam kondisi wangi dan rapi."
+                                </p>
+                            </div>
+                            <div class="flex items-center gap-md border-t border-outline-variant/30 pt-md">
+                                <div class="w-10 h-10 bg-primary/10 rounded-full flex items-center justify-center font-bold text-primary text-sm">
+                                    AN
+                                </div>
+                                <div>
+                                    <h4 class="font-bold text-on-surface text-sm">Ahmad Naufal</h4>
+                                    <p class="text-[10px] text-outline uppercase font-bold tracking-wider">Mahasiswa UNRAM</p>
+                                </div>
+                            </div>
                         </div>
-                        <p class="text-xs lg:text-sm text-on-surface-variant italic leading-relaxed">
-                            "Sangat membantu pas lagi minggu UTS! Gak perlu pusing mikirin baju kotor menumpuk di kosan. Tinggal pesan lewat HP, kurir langsung jemput dan diantar lagi dalam kondisi wangi dan rapi."
-                        </p>
+
+                        <!-- Testimonial 2 -->
+                        <div class="w-[300px] md:w-[380px] shrink-0 bg-surface-container-lowest p-lg rounded-2xl border border-outline-variant/60 shadow-sm flex flex-col justify-between space-y-lg hover:-translate-y-1 hover:shadow-md transition-all duration-200 whitespace-normal">
+                            <div class="space-y-md">
+                                <div class="flex text-amber-500 gap-[2px]">
+                                    <span class="material-symbols-outlined text-[18px]" style="font-variation-settings: 'FILL' 1;">star</span>
+                                    <span class="material-symbols-outlined text-[18px]" style="font-variation-settings: 'FILL' 1;">star</span>
+                                    <span class="material-symbols-outlined text-[18px]" style="font-variation-settings: 'FILL' 1;">star</span>
+                                    <span class="material-symbols-outlined text-[18px]" style="font-variation-settings: 'FILL' 1;">star</span>
+                                    <span class="material-symbols-outlined text-[18px]" style="font-variation-settings: 'FILL' 1;">star</span>
+                                </div>
+                                <p class="text-xs lg:text-sm text-on-surface-variant italic leading-relaxed">
+                                    "Harganya beneran ramah di kantong mahasiswa. Pilihan mitranya banyak, jadi bisa cari yang terdekat biar ongkirnya gratis. Washtra Laundry Express juga mantap layanannya!"
+                                </p>
+                            </div>
+                            <div class="flex items-center gap-md border-t border-outline-variant/30 pt-md">
+                                <div class="w-10 h-10 bg-secondary/10 rounded-full flex items-center justify-center font-bold text-secondary text-sm">
+                                    SR
+                                </div>
+                                <div>
+                                    <h4 class="font-bold text-on-surface text-sm">Siti Rahma</h4>
+                                    <p class="text-[10px] text-outline uppercase font-bold tracking-wider">Mahasiswa UMM</p>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Testimonial 3 -->
+                        <div class="w-[300px] md:w-[380px] shrink-0 bg-surface-container-lowest p-lg rounded-2xl border border-outline-variant/60 shadow-sm flex flex-col justify-between space-y-lg hover:-translate-y-1 hover:shadow-md transition-all duration-200 whitespace-normal">
+                            <div class="space-y-md">
+                                <div class="flex text-amber-500 gap-[2px]">
+                                    <span class="material-symbols-outlined text-[18px]" style="font-variation-settings: 'FILL' 1;">star</span>
+                                    <span class="material-symbols-outlined text-[18px]" style="font-variation-settings: 'FILL' 1;">star</span>
+                                    <span class="material-symbols-outlined text-[18px]" style="font-variation-settings: 'FILL' 1;">star</span>
+                                    <span class="material-symbols-outlined text-[18px]" style="font-variation-settings: 'FILL' 1;">star</span>
+                                    <span class="material-symbols-outlined text-[18px]" style="font-variation-settings: 'FILL' 1;">star</span>
+                                </div>
+                                <p class="text-xs lg:text-sm text-on-surface-variant italic leading-relaxed">
+                                    "Layanan jemput antarnya juara! Baju disetrika rapi banget dan wanginya segar tahan lama. Sangat merekomendasikan MataramWash buat sesama anak kosan."
+                                </p>
+                            </div>
+                            <div class="flex items-center gap-md border-t border-outline-variant/30 pt-md">
+                                <div class="w-10 h-10 bg-[#7c3aed]/10 rounded-full flex items-center justify-center font-bold text-[#7c3aed] text-sm">
+                                    DP
+                                </div>
+                                <div>
+                                    <h4 class="font-bold text-on-surface text-sm">Dwi Prasetyo</h4>
+                                    <p class="text-[10px] text-outline uppercase font-bold tracking-wider">Mahasiswa IKIP</p>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Testimonial 4 -->
+                        <div class="w-[300px] md:w-[380px] shrink-0 bg-surface-container-lowest p-lg rounded-2xl border border-outline-variant/60 shadow-sm flex flex-col justify-between space-y-lg hover:-translate-y-1 hover:shadow-md transition-all duration-200 whitespace-normal">
+                            <div class="space-y-md">
+                                <div class="flex text-amber-500 gap-[2px]">
+                                    <span class="material-symbols-outlined text-[18px]" style="font-variation-settings: 'FILL' 1;">star</span>
+                                    <span class="material-symbols-outlined text-[18px]" style="font-variation-settings: 'FILL' 1;">star</span>
+                                    <span class="material-symbols-outlined text-[18px]" style="font-variation-settings: 'FILL' 1;">star</span>
+                                    <span class="material-symbols-outlined text-[18px]" style="font-variation-settings: 'FILL' 1;">star</span>
+                                    <span class="material-symbols-outlined text-[18px]" style="font-variation-settings: 'FILL' 1;">star</span>
+                                </div>
+                                <p class="text-xs lg:text-sm text-on-surface-variant italic leading-relaxed">
+                                    "Fitur deteksi laundry terdekatnya keren banget! Begitu saya aktifkan lokasi, langsung muncul rekomendasi mitra laundry terdekat dari kos saya. Bayar pakai QRIS juga instan."
+                                </p>
+                            </div>
+                            <div class="flex items-center gap-md border-t border-outline-variant/30 pt-md">
+                                <div class="w-10 h-10 bg-amber-500/10 rounded-full flex items-center justify-center font-bold text-amber-600 text-sm">
+                                    RH
+                                </div>
+                                <div>
+                                    <h4 class="font-bold text-on-surface text-sm">Rian Hidayat</h4>
+                                    <p class="text-[10px] text-outline uppercase font-bold tracking-wider">Mahasiswa UIN</p>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Testimonial 5 -->
+                        <div class="w-[300px] md:w-[380px] shrink-0 bg-surface-container-lowest p-lg rounded-2xl border border-outline-variant/60 shadow-sm flex flex-col justify-between space-y-lg hover:-translate-y-1 hover:shadow-md transition-all duration-200 whitespace-normal">
+                            <div class="space-y-md">
+                                <div class="flex text-amber-500 gap-[2px]">
+                                    <span class="material-symbols-outlined text-[18px]" style="font-variation-settings: 'FILL' 1;">star</span>
+                                    <span class="material-symbols-outlined text-[18px]" style="font-variation-settings: 'FILL' 1;">star</span>
+                                    <span class="material-symbols-outlined text-[18px]" style="font-variation-settings: 'FILL' 1;">star</span>
+                                    <span class="material-symbols-outlined text-[18px]" style="font-variation-settings: 'FILL' 1;">star</span>
+                                    <span class="material-symbols-outlined text-[18px]" style="font-variation-settings: 'FILL' 1;">star</span>
+                                </div>
+                                <p class="text-xs lg:text-sm text-on-surface-variant italic leading-relaxed">
+                                    "Sering cuci sepatu premium di Mate Shoes Care lewat aplikasi ini. Hasilnya bersih banget seperti baru, pengerjaan cepat, dan harga sangat terjangkau dibanding tempat lain."
+                                </p>
+                            </div>
+                            <div class="flex items-center gap-md border-t border-outline-variant/30 pt-md">
+                                <div class="w-10 h-10 bg-pink-500/10 rounded-full flex items-center justify-center font-bold text-pink-600 text-sm">
+                                    SA
+                                </div>
+                                <div>
+                                    <h4 class="font-bold text-on-surface text-sm">Sarah Amanda</h4>
+                                    <p class="text-[10px] text-outline uppercase font-bold tracking-wider">Mahasiswa STIKES</p>
+                                </div>
+                            </div>
+                        </div>
                     </div>
-                    <div class="flex items-center gap-md border-t border-outline-variant/30 pt-md">
-                        <div class="w-10 h-10 bg-primary/10 rounded-full flex items-center justify-center font-bold text-primary text-sm">
-                            AN
+
+                    <!-- Duplicate Set of 5 Cards for seamless wrapping -->
+                    <div class="flex gap-lg shrink-0" aria-hidden="true">
+                        <!-- Testimonial 1 -->
+                        <div class="w-[300px] md:w-[380px] shrink-0 bg-surface-container-lowest p-lg rounded-2xl border border-outline-variant/60 shadow-sm flex flex-col justify-between space-y-lg hover:-translate-y-1 hover:shadow-md transition-all duration-200 whitespace-normal">
+                            <div class="space-y-md">
+                                <div class="flex text-amber-500 gap-[2px]">
+                                    <span class="material-symbols-outlined text-[18px]" style="font-variation-settings: 'FILL' 1;">star</span>
+                                    <span class="material-symbols-outlined text-[18px]" style="font-variation-settings: 'FILL' 1;">star</span>
+                                    <span class="material-symbols-outlined text-[18px]" style="font-variation-settings: 'FILL' 1;">star</span>
+                                    <span class="material-symbols-outlined text-[18px]" style="font-variation-settings: 'FILL' 1;">star</span>
+                                    <span class="material-symbols-outlined text-[18px]" style="font-variation-settings: 'FILL' 1;">star</span>
+                                </div>
+                                <p class="text-xs lg:text-sm text-on-surface-variant italic leading-relaxed">
+                                    "Sangat membantu pas lagi minggu UTS! Gak perlu pusing mikirin baju kotor menumpuk di kosan. Tinggal pesan lewat HP, kurir langsung jemput dan diantar lagi dalam kondisi wangi dan rapi."
+                                </p>
+                            </div>
+                            <div class="flex items-center gap-md border-t border-outline-variant/30 pt-md">
+                                <div class="w-10 h-10 bg-primary/10 rounded-full flex items-center justify-center font-bold text-primary text-sm">
+                                    AN
+                                </div>
+                                <div>
+                                    <h4 class="font-bold text-on-surface text-sm">Ahmad Naufal</h4>
+                                    <p class="text-[10px] text-outline uppercase font-bold tracking-wider">Mahasiswa UNRAM</p>
+                                </div>
+                            </div>
                         </div>
-                        <div>
-                            <h4 class="font-bold text-on-surface text-sm">Ahmad Naufal</h4>
-                            <p class="text-[10px] text-outline uppercase font-bold tracking-wider">Mahasiswa UNRAM</p>
+
+                        <!-- Testimonial 2 -->
+                        <div class="w-[300px] md:w-[380px] shrink-0 bg-surface-container-lowest p-lg rounded-2xl border border-outline-variant/60 shadow-sm flex flex-col justify-between space-y-lg hover:-translate-y-1 hover:shadow-md transition-all duration-200 whitespace-normal">
+                            <div class="space-y-md">
+                                <div class="flex text-amber-500 gap-[2px]">
+                                    <span class="material-symbols-outlined text-[18px]" style="font-variation-settings: 'FILL' 1;">star</span>
+                                    <span class="material-symbols-outlined text-[18px]" style="font-variation-settings: 'FILL' 1;">star</span>
+                                    <span class="material-symbols-outlined text-[18px]" style="font-variation-settings: 'FILL' 1;">star</span>
+                                    <span class="material-symbols-outlined text-[18px]" style="font-variation-settings: 'FILL' 1;">star</span>
+                                    <span class="material-symbols-outlined text-[18px]" style="font-variation-settings: 'FILL' 1;">star</span>
+                                </div>
+                                <p class="text-xs lg:text-sm text-on-surface-variant italic leading-relaxed">
+                                    "Harganya beneran ramah di kantong mahasiswa. Pilihan mitranya banyak, jadi bisa cari yang terdekat biar ongkirnya gratis. Washtra Laundry Express juga mantap layanannya!"
+                                </p>
+                            </div>
+                            <div class="flex items-center gap-md border-t border-outline-variant/30 pt-md">
+                                <div class="w-10 h-10 bg-secondary/10 rounded-full flex items-center justify-center font-bold text-secondary text-sm">
+                                    SR
+                                </div>
+                                <div>
+                                    <h4 class="font-bold text-on-surface text-sm">Siti Rahma</h4>
+                                    <p class="text-[10px] text-outline uppercase font-bold tracking-wider">Mahasiswa UMM</p>
+                                </div>
+                            </div>
                         </div>
-                    </div>
-                </div>
-                <div class="bg-surface-container-lowest p-lg rounded-2xl border border-outline-variant/60 shadow-sm flex flex-col justify-between space-y-lg hover:-translate-y-1 hover:shadow-md transition-all duration-200">
-                    <div class="space-y-md">
-                        <div class="flex text-amber-500 gap-[2px]">
-                            <span class="material-symbols-outlined text-[18px]" style="font-variation-settings: 'FILL' 1;">star</span>
-                            <span class="material-symbols-outlined text-[18px]" style="font-variation-settings: 'FILL' 1;">star</span>
-                            <span class="material-symbols-outlined text-[18px]" style="font-variation-settings: 'FILL' 1;">star</span>
-                            <span class="material-symbols-outlined text-[18px]" style="font-variation-settings: 'FILL' 1;">star</span>
-                            <span class="material-symbols-outlined text-[18px]" style="font-variation-settings: 'FILL' 1;">star</span>
+
+                        <!-- Testimonial 3 -->
+                        <div class="w-[300px] md:w-[380px] shrink-0 bg-surface-container-lowest p-lg rounded-2xl border border-outline-variant/60 shadow-sm flex flex-col justify-between space-y-lg hover:-translate-y-1 hover:shadow-md transition-all duration-200 whitespace-normal">
+                            <div class="space-y-md">
+                                <div class="flex text-amber-500 gap-[2px]">
+                                    <span class="material-symbols-outlined text-[18px]" style="font-variation-settings: 'FILL' 1;">star</span>
+                                    <span class="material-symbols-outlined text-[18px]" style="font-variation-settings: 'FILL' 1;">star</span>
+                                    <span class="material-symbols-outlined text-[18px]" style="font-variation-settings: 'FILL' 1;">star</span>
+                                    <span class="material-symbols-outlined text-[18px]" style="font-variation-settings: 'FILL' 1;">star</span>
+                                    <span class="material-symbols-outlined text-[18px]" style="font-variation-settings: 'FILL' 1;">star</span>
+                                </div>
+                                <p class="text-xs lg:text-sm text-on-surface-variant italic leading-relaxed">
+                                    "Layanan jemput antarnya juara! Baju disetrika rapi banget dan wanginya segar tahan lama. Sangat merekomendasikan MataramWash buat sesama anak kosan."
+                                </p>
+                            </div>
+                            <div class="flex items-center gap-md border-t border-outline-variant/30 pt-md">
+                                <div class="w-10 h-10 bg-[#7c3aed]/10 rounded-full flex items-center justify-center font-bold text-[#7c3aed] text-sm">
+                                    DP
+                                </div>
+                                <div>
+                                    <h4 class="font-bold text-on-surface text-sm">Dwi Prasetyo</h4>
+                                    <p class="text-[10px] text-outline uppercase font-bold tracking-wider">Mahasiswa IKIP</p>
+                                </div>
+                            </div>
                         </div>
-                        <p class="text-xs lg:text-sm text-on-surface-variant italic leading-relaxed">
-                            "Harganya beneran ramah di kantong mahasiswa. Pilihan mitranya banyak, jadi bisa cari yang terdekat biar ongkirnya gratis. Washtra Laundry Express juga mantap layanannya!"
-                        </p>
-                    </div>
-                    <div class="flex items-center gap-md border-t border-outline-variant/30 pt-md">
-                        <div class="w-10 h-10 bg-secondary/10 rounded-full flex items-center justify-center font-bold text-secondary text-sm">
-                            SR
+
+                        <!-- Testimonial 4 -->
+                        <div class="w-[300px] md:w-[380px] shrink-0 bg-surface-container-lowest p-lg rounded-2xl border border-outline-variant/60 shadow-sm flex flex-col justify-between space-y-lg hover:-translate-y-1 hover:shadow-md transition-all duration-200 whitespace-normal">
+                            <div class="space-y-md">
+                                <div class="flex text-amber-500 gap-[2px]">
+                                    <span class="material-symbols-outlined text-[18px]" style="font-variation-settings: 'FILL' 1;">star</span>
+                                    <span class="material-symbols-outlined text-[18px]" style="font-variation-settings: 'FILL' 1;">star</span>
+                                    <span class="material-symbols-outlined text-[18px]" style="font-variation-settings: 'FILL' 1;">star</span>
+                                    <span class="material-symbols-outlined text-[18px]" style="font-variation-settings: 'FILL' 1;">star</span>
+                                    <span class="material-symbols-outlined text-[18px]" style="font-variation-settings: 'FILL' 1;">star</span>
+                                </div>
+                                <p class="text-xs lg:text-sm text-on-surface-variant italic leading-relaxed">
+                                    "Fitur deteksi laundry terdekatnya keren banget! Begitu saya aktifkan lokasi, langsung muncul rekomendasi mitra laundry terdekat dari kos saya. Bayar pakai QRIS juga instan."
+                                </p>
+                            </div>
+                            <div class="flex items-center gap-md border-t border-outline-variant/30 pt-md">
+                                <div class="w-10 h-10 bg-amber-500/10 rounded-full flex items-center justify-center font-bold text-amber-600 text-sm">
+                                    RH
+                                </div>
+                                <div>
+                                    <h4 class="font-bold text-on-surface text-sm">Rian Hidayat</h4>
+                                    <p class="text-[10px] text-outline uppercase font-bold tracking-wider">Mahasiswa UIN</p>
+                                </div>
+                            </div>
                         </div>
-                        <div>
-                            <h4 class="font-bold text-on-surface text-sm">Siti Rahma</h4>
-                            <p class="text-[10px] text-outline uppercase font-bold tracking-wider">Mahasiswa UMM</p>
-                        </div>
-                    </div>
-                </div>
-                <div class="bg-surface-container-lowest p-lg rounded-2xl border border-outline-variant/60 shadow-sm flex flex-col justify-between space-y-lg hover:-translate-y-1 hover:shadow-md transition-all duration-200">
-                    <div class="space-y-md">
-                        <div class="flex text-amber-500 gap-[2px]">
-                            <span class="material-symbols-outlined text-[18px]" style="font-variation-settings: 'FILL' 1;">star</span>
-                            <span class="material-symbols-outlined text-[18px]" style="font-variation-settings: 'FILL' 1;">star</span>
-                            <span class="material-symbols-outlined text-[18px]" style="font-variation-settings: 'FILL' 1;">star</span>
-                            <span class="material-symbols-outlined text-[18px]" style="font-variation-settings: 'FILL' 1;">star</span>
-                            <span class="material-symbols-outlined text-[18px]" style="font-variation-settings: 'FILL' 1;">star</span>
-                        </div>
-                        <p class="text-xs lg:text-sm text-on-surface-variant italic leading-relaxed">
-                            "Layanan jemput antarnya juara! Baju disetrika rapi banget dan wanginya segar tahan lama. Sangat merekomendasikan MataramWash buat sesama anak kosan."
-                        </p>
-                    </div>
-                    <div class="flex items-center gap-md border-t border-outline-variant/30 pt-md">
-                        <div class="w-10 h-10 bg-[#7c3aed]/10 rounded-full flex items-center justify-center font-bold text-[#7c3aed] text-sm">
-                            DP
-                        </div>
-                        <div>
-                            <h4 class="font-bold text-on-surface text-sm">Dwi Prasetyo</h4>
-                            <p class="text-[10px] text-outline uppercase font-bold tracking-wider">Mahasiswa IKIP</p>
+
+                        <!-- Testimonial 5 -->
+                        <div class="w-[300px] md:w-[380px] shrink-0 bg-surface-container-lowest p-lg rounded-2xl border border-outline-variant/60 shadow-sm flex flex-col justify-between space-y-lg hover:-translate-y-1 hover:shadow-md transition-all duration-200 whitespace-normal">
+                            <div class="space-y-md">
+                                <div class="flex text-amber-500 gap-[2px]">
+                                    <span class="material-symbols-outlined text-[18px]" style="font-variation-settings: 'FILL' 1;">star</span>
+                                    <span class="material-symbols-outlined text-[18px]" style="font-variation-settings: 'FILL' 1;">star</span>
+                                    <span class="material-symbols-outlined text-[18px]" style="font-variation-settings: 'FILL' 1;">star</span>
+                                    <span class="material-symbols-outlined text-[18px]" style="font-variation-settings: 'FILL' 1;">star</span>
+                                    <span class="material-symbols-outlined text-[18px]" style="font-variation-settings: 'FILL' 1;">star</span>
+                                </div>
+                                <p class="text-xs lg:text-sm text-on-surface-variant italic leading-relaxed">
+                                    "Sering cuci sepatu premium di Mate Shoes Care lewat aplikasi ini. Hasilnya bersih banget seperti baru, pengerjaan cepat, dan harga sangat terjangkau dibanding tempat lain."
+                                </p>
+                            </div>
+                            <div class="flex items-center gap-md border-t border-outline-variant/30 pt-md">
+                                <div class="w-10 h-10 bg-pink-500/10 rounded-full flex items-center justify-center font-bold text-pink-600 text-sm">
+                                    SA
+                                </div>
+                                <div>
+                                    <h4 class="font-bold text-on-surface text-sm">Sarah Amanda</h4>
+                                    <p class="text-[10px] text-outline uppercase font-bold tracking-wider">Mahasiswa STIKES</p>
+                                </div>
+                            </div>
                         </div>
                     </div>
                 </div>
