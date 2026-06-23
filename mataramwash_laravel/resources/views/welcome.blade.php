@@ -390,22 +390,22 @@
             <div class="grid grid-cols-2 lg:grid-cols-4 gap-lg">
                 <div class="bg-surface-container-lowest p-lg rounded-2xl border border-outline-variant/60 shadow-sm flex flex-col items-center text-center space-y-xs hover:shadow-md transition-shadow">
                     <span class="material-symbols-outlined text-primary text-3xl">check_circle</span>
-                    <span class="text-3xl lg:text-4xl font-extrabold text-primary">5.000+</span>
+                    <span class="stat-number text-3xl lg:text-4xl font-extrabold text-primary" data-target="5000" data-suffix="+">0+</span>
                     <span class="text-xs lg:text-sm text-on-surface-variant font-medium">Cucian Diselesaikan</span>
                 </div>
                 <div class="bg-surface-container-lowest p-lg rounded-2xl border border-outline-variant/60 shadow-sm flex flex-col items-center text-center space-y-xs hover:shadow-md transition-shadow">
                     <span class="material-symbols-outlined text-secondary text-3xl">handshake</span>
-                    <span class="text-3xl lg:text-4xl font-extrabold text-secondary">15+</span>
+                    <span class="stat-number text-3xl lg:text-4xl font-extrabold text-secondary" data-target="15" data-suffix="+">0+</span>
                     <span class="text-xs lg:text-sm text-on-surface-variant font-medium">Mitra Terpercaya</span>
                 </div>
                 <div class="bg-surface-container-lowest p-lg rounded-2xl border border-outline-variant/60 shadow-sm flex flex-col items-center text-center space-y-xs hover:shadow-md transition-shadow">
                     <span class="material-symbols-outlined text-[#7c3aed] text-3xl">groups</span>
-                    <span class="text-3xl lg:text-4xl font-extrabold text-[#7c3aed]">2.500+</span>
+                    <span class="stat-number text-3xl lg:text-4xl font-extrabold text-[#7c3aed]" data-target="2500" data-suffix="+">0+</span>
                     <span class="text-xs lg:text-sm text-on-surface-variant font-medium">Mahasiswa Terbantu</span>
                 </div>
                 <div class="bg-surface-container-lowest p-lg rounded-2xl border border-outline-variant/60 shadow-sm flex flex-col items-center text-center space-y-xs hover:shadow-md transition-shadow">
                     <span class="material-symbols-outlined text-amber-500 text-3xl">star</span>
-                    <span class="text-3xl lg:text-4xl font-extrabold text-amber-500">4.8/5.0</span>
+                    <span class="stat-number text-3xl lg:text-4xl font-extrabold text-amber-500" data-target="4.8" data-decimal="1" data-suffix="/5.0">0/5.0</span>
                     <span class="text-xs lg:text-sm text-on-surface-variant font-medium">Rating Ulasan Kepuasan</span>
                 </div>
             </div>
@@ -803,6 +803,66 @@
             nav.classList.remove('shadow-md');
         }
     });
+
+    // Count-up animation for stats
+    function animateCounters() {
+        const counters = document.querySelectorAll('.stat-number');
+        
+        const countUp = (counter) => {
+            const target = parseFloat(counter.getAttribute('data-target'));
+            const suffix = counter.getAttribute('data-suffix') || '';
+            const decimals = parseInt(counter.getAttribute('data-decimal') || '0');
+            const duration = 2000; // 2 seconds
+            const startTime = performance.now();
+            
+            const updateCount = (timestamp) => {
+                const elapsed = timestamp - startTime;
+                const progress = Math.min(elapsed / duration, 1);
+                
+                // Ease out quad
+                const easeProgress = progress * (2 - progress);
+                const currentVal = easeProgress * target;
+                
+                let formattedVal = "";
+                if (decimals > 0) {
+                    formattedVal = currentVal.toFixed(decimals);
+                } else {
+                    formattedVal = Math.floor(currentVal).toLocaleString('id-ID');
+                }
+                
+                counter.innerText = formattedVal + suffix;
+                
+                if (progress < 1) {
+                    requestAnimationFrame(updateCount);
+                } else {
+                    if (decimals > 0) {
+                        counter.innerText = target.toFixed(decimals) + suffix;
+                    } else {
+                        counter.innerText = Math.floor(target).toLocaleString('id-ID') + suffix;
+                    }
+                }
+            };
+            
+            requestAnimationFrame(updateCount);
+        };
+
+        const observer = new IntersectionObserver((entries) => {
+            entries.forEach(entry => {
+                if (entry.isIntersecting) {
+                    countUp(entry.target);
+                    observer.unobserve(entry.target);
+                }
+            });
+        }, { threshold: 0.1 });
+
+        counters.forEach(counter => observer.observe(counter));
+    }
+
+    if (document.readyState === 'loading') {
+        document.addEventListener('DOMContentLoaded', animateCounters);
+    } else {
+        animateCounters();
+    }
 
     // Geolocation and sorting logic
     function findNearestLaundry(button) {
