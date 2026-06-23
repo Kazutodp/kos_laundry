@@ -445,26 +445,34 @@ try {
             </div>
             <div class="grid grid-cols-2 lg:grid-cols-4 gap-lg">
                 <!-- Stat 1 -->
-                <div class="bg-surface-container-lowest p-lg rounded-2xl border border-outline-variant/60 shadow-sm flex flex-col items-center text-center space-y-xs hover:shadow-md transition-shadow">
-                    <span class="material-symbols-outlined text-primary text-3xl">check_circle</span>
+                <div class="bg-surface-container-lowest p-lg rounded-2xl border border-outline-variant/60 shadow-sm flex flex-col items-center text-center space-y-xs hover:shadow-xl hover:shadow-primary/15 hover:-translate-y-2 transition-all duration-300">
+                    <div class="w-14 h-14 bg-primary/10 rounded-2xl flex items-center justify-center text-primary mb-xs">
+                        <span class="material-symbols-outlined text-3xl">check_circle</span>
+                    </div>
                     <span class="stat-number text-3xl lg:text-4xl font-extrabold text-primary" data-target="5000" data-suffix="+">0+</span>
                     <span class="text-xs lg:text-sm text-on-surface-variant font-medium">Cucian Diselesaikan</span>
                 </div>
                 <!-- Stat 2 -->
-                <div class="bg-surface-container-lowest p-lg rounded-2xl border border-outline-variant/60 shadow-sm flex flex-col items-center text-center space-y-xs hover:shadow-md transition-shadow">
-                    <span class="material-symbols-outlined text-secondary text-3xl">handshake</span>
+                <div class="bg-surface-container-lowest p-lg rounded-2xl border border-outline-variant/60 shadow-sm flex flex-col items-center text-center space-y-xs hover:shadow-xl hover:shadow-secondary/15 hover:-translate-y-2 transition-all duration-300">
+                    <div class="w-14 h-14 bg-secondary/10 rounded-2xl flex items-center justify-center text-secondary mb-xs">
+                        <span class="material-symbols-outlined text-3xl">handshake</span>
+                    </div>
                     <span class="stat-number text-3xl lg:text-4xl font-extrabold text-secondary" data-target="15" data-suffix="+">0+</span>
                     <span class="text-xs lg:text-sm text-on-surface-variant font-medium">Mitra Terpercaya</span>
                 </div>
                 <!-- Stat 3 -->
-                <div class="bg-surface-container-lowest p-lg rounded-2xl border border-outline-variant/60 shadow-sm flex flex-col items-center text-center space-y-xs hover:shadow-md transition-shadow">
-                    <span class="material-symbols-outlined text-[#7c3aed] text-3xl">groups</span>
+                <div class="bg-surface-container-lowest p-lg rounded-2xl border border-outline-variant/60 shadow-sm flex flex-col items-center text-center space-y-xs hover:shadow-xl hover:shadow-[#7c3aed]/15 hover:-translate-y-2 transition-all duration-300">
+                    <div class="w-14 h-14 bg-[#7c3aed]/10 rounded-2xl flex items-center justify-center text-[#7c3aed] mb-xs">
+                        <span class="material-symbols-outlined text-3xl">groups</span>
+                    </div>
                     <span class="stat-number text-3xl lg:text-4xl font-extrabold text-[#7c3aed]" data-target="2500" data-suffix="+">0+</span>
                     <span class="text-xs lg:text-sm text-on-surface-variant font-medium">Mahasiswa Terbantu</span>
                 </div>
                 <!-- Stat 4 -->
-                <div class="bg-surface-container-lowest p-lg rounded-2xl border border-outline-variant/60 shadow-sm flex flex-col items-center text-center space-y-xs hover:shadow-md transition-shadow">
-                    <span class="material-symbols-outlined text-amber-500 text-3xl">star</span>
+                <div class="bg-surface-container-lowest p-lg rounded-2xl border border-outline-variant/60 shadow-sm flex flex-col items-center text-center space-y-xs hover:shadow-xl hover:shadow-amber-500/15 hover:-translate-y-2 transition-all duration-300">
+                    <div class="w-14 h-14 bg-amber-500/10 rounded-2xl flex items-center justify-center text-amber-500 mb-xs">
+                        <span class="material-symbols-outlined text-3xl">star</span>
+                    </div>
                     <span class="stat-number text-3xl lg:text-4xl font-extrabold text-amber-500" data-target="4.8" data-decimal="1" data-suffix="/5.0">0/5.0</span>
                     <span class="text-xs lg:text-sm text-on-surface-variant font-medium">Rating Ulasan Kepuasan</span>
                 </div>
