@@ -262,14 +262,11 @@ try {
                 <span class="text-secondary">Kosan Nyaman</span>
             </h1>
             <p class="text-body-lg text-on-surface-variant max-w-lg">
-                Urusan baju kotor serahkan ke kami. Jemput antar murah (hanya 1.500), proses cepat, dan hasil wangi segar seperti baru. Fokus pada studi dan karir Anda, biarkan kami yang mencuci.
+                Pilih dan pesan jasa laundry kiloan, satuan, hingga cuci sepatu dari puluhan mitra terpercaya di sekitar Mataram. Nikmati layanan antar-jemput murah hanya Rp 1.500 dan pembayaran instan yang aman.
             </p>
             <div class="flex flex-wrap gap-md pt-md">
-                <button onclick="window.location.href='<?= $is_logged_in ? $dashboard_url : 'login/daftar.php'; ?>'" class="px-xl py-md bg-primary text-on-primary rounded-xl font-bold text-body-md shadow-lg hover:shadow-primary/20 transition-all active:scale-95">
-                    Pesan Sekarang
-                </button>
-                <button onclick="window.location.href='layanan/layanan.php'" class="px-xl py-md border-2 border-primary text-primary rounded-xl font-bold text-body-md hover:bg-primary-fixed transition-all">
-                    Lihat Menu &amp; Harga
+                <button onclick="findNearestLaundry(this)" class="px-xl py-md bg-primary text-on-primary rounded-xl font-bold text-body-md shadow-lg hover:shadow-primary/20 transition-all active:scale-95">
+                    Cari Laundry Terdekat
                 </button>
             </div>
         </div>
@@ -316,7 +313,7 @@ try {
 </section>
 
 <!-- Recommended Shops -->
-<section class="py-xl bg-surface-container-high px-container-margin">
+<section id="laundry-section" class="py-xl bg-surface-container-high px-container-margin">
     <div class="max-w-7xl mx-auto">
         <div class="flex flex-col md:flex-row justify-between items-end mb-xl gap-md">
             <div class="space-y-sm">
@@ -328,7 +325,7 @@ try {
                 <span class="material-symbols-outlined group-hover:translate-x-1 transition-transform">arrow_forward</span>
             </a>
         </div>
-        <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-lg">
+        <div id="laundry-list" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-lg">
             <?php foreach ($mitra_list as $mitra): ?>
                 <?php
                 $is_washtra = strpos(strtolower($mitra['nama_mitra']), 'washtra') !== false;
@@ -337,7 +334,7 @@ try {
                 $jarak = $is_washtra ? '1.5 km' : '1.2 km';
                 ?>
                 <!-- Shop Card -->
-                <div class="group bg-surface rounded-xl overflow-hidden shadow-sm border border-outline-variant hover:shadow-md transition-all">
+                <div class="group bg-surface rounded-xl overflow-hidden shadow-sm border border-outline-variant hover:shadow-md transition-all laundry-card" data-lat="<?= htmlspecialchars($mitra['latitude']); ?>" data-lng="<?= htmlspecialchars($mitra['longitude']); ?>">
                     <div class="h-48 relative overflow-hidden bg-slate-100 flex items-center justify-center">
                         <img src="<?= htmlspecialchars($foto); ?>" alt="<?= htmlspecialchars($mitra['nama_mitra']); ?>" class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300">
                         <?php if ($is_washtra): ?>
@@ -357,7 +354,7 @@ try {
                         <div class="flex items-center space-x-md text-on-surface-variant text-label-sm">
                             <div class="flex items-center">
                                 <span class="material-symbols-outlined text-[16px] mr-1">location_on</span>
-                                <span class=""><?= $jarak; ?></span>
+                                <span class="distance-text"><?= $jarak; ?></span>
                             </div>
                             <div class="flex items-center">
                                 <span class="material-symbols-outlined text-[16px] mr-1">schedule</span>
@@ -619,6 +616,112 @@ try {
             nav.classList.remove('shadow-md');
         }
     });
+
+    // Geolocation and sorting logic
+    function findNearestLaundry(button) {
+        const originalText = button.innerHTML;
+        button.innerHTML = `
+            <span class="inline-flex items-center gap-xs">
+                <svg class="animate-spin h-5 w-5 text-white" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
+                    <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
+                    <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
+                </svg>
+                Mendeteksi Lokasi...
+            </span>
+        `;
+        button.disabled = true;
+
+        // Default location: Universitas Mataram (Unram)
+        const defaultLat = -8.589808;
+        const defaultLng = 116.096316;
+
+        if (!navigator.geolocation) {
+            alert("Geolocation tidak didukung oleh browser Anda. Menggunakan lokasi default (Universitas Mataram).");
+            processLocation(defaultLat, defaultLng);
+            resetButton();
+        } else {
+            navigator.geolocation.getCurrentPosition(
+                (position) => {
+                    const lat = position.coords.latitude;
+                    const lng = position.coords.longitude;
+                    processLocation(lat, lng);
+                    resetButton();
+                },
+                (error) => {
+                    console.warn("Geolocation error:", error);
+                    let msg = "Akses lokasi ditolak atau tidak tersedia. Menggunakan lokasi default (Universitas Mataram).";
+                    if (error.code === error.PERMISSION_DENIED) {
+                        msg = "Izin akses lokasi ditolak. Menggunakan lokasi default (Universitas Mataram).";
+                    }
+                    alert(msg);
+                    processLocation(defaultLat, defaultLng);
+                    resetButton();
+                },
+                { enableHighAccuracy: true, timeout: 8000, maximumAge: 0 }
+            );
+        }
+
+        function resetButton() {
+            button.innerHTML = originalText;
+            button.disabled = false;
+            
+            // Scroll smoothly to laundry section
+            const targetSection = document.getElementById('laundry-section');
+            if (targetSection) {
+                targetSection.scrollIntoView({ behavior: 'smooth' });
+            }
+        }
+
+        function processLocation(userLat, userLng) {
+            const container = document.getElementById('laundry-list');
+            if (!container) return;
+
+            const cards = Array.from(container.querySelectorAll('.laundry-card'));
+            const upcomingCards = Array.from(container.querySelectorAll('.group:not(.laundry-card)'));
+
+            // Calculate distance for each card
+            cards.forEach(card => {
+                const lat = parseFloat(card.getAttribute('data-lat'));
+                const lng = parseFloat(card.getAttribute('data-lng'));
+                
+                if (!isNaN(lat) && !isNaN(lng)) {
+                    const distance = calculateDistance(userLat, userLng, lat, lng);
+                    card.dataset.distance = distance;
+                    
+                    // Update distance text inside the card
+                    const distanceSpan = card.querySelector('.distance-text');
+                    if (distanceSpan) {
+                        distanceSpan.textContent = distance.toFixed(1) + ' km';
+                    }
+                } else {
+                    card.dataset.distance = 999999;
+                }
+            });
+
+            // Sort active cards ascending by distance
+            cards.sort((a, b) => parseFloat(a.dataset.distance) - parseFloat(b.dataset.distance));
+
+            // Re-append sorted cards and then upcoming cards
+            cards.forEach(card => container.appendChild(card));
+            upcomingCards.forEach(card => container.appendChild(card));
+        }
+
+        function calculateDistance(lat1, lon1, lat2, lon2) {
+            const R = 6371; // Radius of the Earth in km
+            const dLat = deg2rad(lat2 - lat1);
+            const dLon = deg2rad(lon2 - lon1);
+            const a = 
+                Math.sin(dLat/2) * Math.sin(dLat/2) +
+                Math.cos(deg2rad(lat1)) * Math.cos(deg2rad(lat2)) * 
+                Math.sin(dLon/2) * Math.sin(dLon/2);
+            const c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1 - a));
+            return R * c; // Distance in km
+        }
+
+        function deg2rad(deg) {
+            return deg * (Math.PI/180);
+        }
+    }
 </script>
 
 </body>
