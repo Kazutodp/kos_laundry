@@ -1,0 +1,560 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="utf-8">
+    <meta content="width=device-width, initial-scale=1.0" name="viewport">
+    <title>MataramWash - Laundry Bersih, Kosan Nyaman</title>
+    <script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&amp;display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet">
+    <script id="tailwind-config">
+      tailwind.config = {
+        darkMode: "class",
+        theme: {
+          extend: {
+            "colors": {
+                    "on-surface-variant": "#424754",
+                    "surface-container-low": "#f0f3ff",
+                    "tertiary-container": "#a36700",
+                    "on-background": "#151c27",
+                    "surface-bright": "#f9f9ff",
+                    "outline-variant": "#c2c6d6",
+                    "surface-container-lowest": "#ffffff",
+                    "secondary-container": "#6df5e1",
+                    "outline": "#727785",
+                    "on-tertiary-fixed": "#2a1700",
+                    "inverse-surface": "#2a313d",
+                    "on-primary-fixed-variant": "#004395",
+                    "surface-container": "#e7eefe",
+                    "primary": "#0058be",
+                    "on-secondary": "#ffffff",
+                    "on-primary-fixed": "#001a42",
+                    "primary-container": "#2170e4",
+                    "background": "#f9f9ff",
+                    "on-tertiary": "#ffffff",
+                    "surface-variant": "#dce2f3",
+                    "secondary": "#006b5f",
+                    "secondary-fixed": "#71f8e4",
+                    "error-container": "#ffdad6",
+                    "surface": "#f9f9ff",
+                    "surface-dim": "#d3daea",
+                    "on-surface": "#151c27",
+                    "error": "#ba1a1a",
+                    "inverse-on-surface": "#ebf1ff",
+                    "on-error": "#ffffff",
+                    "tertiary-fixed-dim": "#ffb95f",
+                    "secondary-fixed-dim": "#4fdbc8",
+                    "surface-container-highest": "#dce2f3",
+                    "tertiary": "#825100",
+                    "on-error-container": "#93000a",
+                    "surface-tint": "#005ac2",
+                    "on-primary-container": "#fefcff",
+                    "on-tertiary-container": "#fffbff",
+                    "on-secondary-container": "#006f64",
+                    "on-secondary-fixed-variant": "#005048",
+                    "surface-container-high": "#e2e8f8",
+                    "on-primary": "#ffffff",
+                    "inverse-primary": "#adc6ff",
+                    "primary-fixed": "#d8e2ff",
+                    "primary-fixed-dim": "#adc6ff",
+                    "on-secondary-fixed": "#00201c",
+                    "on-tertiary-fixed-variant": "#653e00",
+                    "tertiary-fixed": "#ffddb8"
+            },
+            "borderRadius": {
+                    "DEFAULT": "0.25rem",
+                    "lg": "0.5rem",
+                    "xl": "0.75rem",
+                    "full": "9999px"
+            },
+            "spacing": {
+                    "xl": "32px",
+                    "base": "4px",
+                    "gutter": "16px",
+                    "container-margin": "20px",
+                    "xs": "8px",
+                    "sm": "12px",
+                    "md": "16px",
+                    "lg": "24px"
+            },
+            "fontFamily": {
+                    "label-md": ["Inter"],
+                    "headline-md": ["Inter"],
+                    "body-lg": ["Inter"],
+                    "display-lg": ["Inter"],
+                    "headline-lg": ["Inter"],
+                    "label-sm": ["Inter"],
+                    "headline-lg-mobile": ["Inter"],
+                    "body-md": ["Inter"]
+            },
+            "fontSize": {
+                    "label-md": ["14px", {"lineHeight": "20px", "letterSpacing": "0.01em", "fontWeight": "500"}],
+                    "headline-md": ["24px", {"lineHeight": "32px", "fontWeight": "600"}],
+                    "body-lg": ["18px", {"lineHeight": "28px", "fontWeight": "400"}],
+                    "display-lg": ["48px", {"lineHeight": "56px", "letterSpacing": "-0.02em", "fontWeight": "700"}],
+                    "headline-lg": ["32px", {"lineHeight": "40px", "letterSpacing": "-0.01em", "fontWeight": "700"}],
+                    "label-sm": ["12px", {"lineHeight": "16px", "fontWeight": "600"}],
+                    "headline-lg-mobile": ["28px", {"lineHeight": "36px", "letterSpacing": "-0.01em", "fontWeight": "700"}],
+                    "body-md": ["16px", {"lineHeight": "24px", "fontWeight": "400"}]
+            }
+          },
+        },
+      }
+    </script>
+    <style>
+        .material-symbols-outlined {
+            font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 24;
+        }
+        .bento-card {
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+        .bento-card:hover {
+            transform: translateY(-4px);
+            box-shadow: 0 10px 30px rgba(0, 88, 190, 0.1);
+        }
+    </style>
+</head>
+<body class="bg-background text-on-background font-body-md overflow-x-hidden">
+
+<!-- TopNavBar -->
+<nav class="sticky top-0 w-full z-50 bg-surface shadow-sm transition-all duration-300">
+    <div class="max-w-7xl mx-auto px-gutter py-md flex justify-between items-center">
+        <div class="flex items-center space-x-md lg:space-x-lg">
+            <a class="flex items-center space-x-xs text-headline-md font-headline-md font-bold text-primary" href="{{ route('home') }}">
+                <img alt="MataramWash Logo" class="h-10 w-10 object-contain" src="{{ asset('logo.png') }}">
+                <span class="">MataramWash</span>
+            </a>
+            <div class="hidden md:block relative w-72 lg:w-96">
+                <div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
+                    <svg class="h-5 w-5 text-slate-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" stroke-linecap="round" stroke-linejoin="round" stroke-width="2"></path>
+                    </svg>
+                </div>
+                <input class="block w-full pl-10 pr-3 py-2.5 border border-slate-300 rounded-xl bg-white text-sm placeholder-slate-400 focus:outline-none focus:ring-2 focus:ring-primary/20 focus:border-primary transition-all shadow-sm" placeholder="Cari layanan atau mitra..." type="text">
+            </div>
+        </div>
+        <div class="flex items-center space-x-md">
+            <!-- Desktop Nav moved to right -->
+            <div class="hidden md:flex space-x-lg items-center mr-lg">
+                <a class="text-primary font-bold border-b-2 border-primary pb-1 font-label-md" href="{{ route('home') }}">Beranda</a>
+                <a class="text-on-surface-variant hover:text-primary transition-colors font-label-md" href="#">Layanan</a>
+                <a class="text-on-surface-variant hover:text-primary transition-colors font-label-md" href="#">Lokasi</a>
+                <a class="text-on-surface-variant hover:text-primary transition-colors font-label-md" href="#">Bantuan</a>
+            </div>
+            @auth
+                <!-- Profile Indicator with Hover Dropdown -->
+                <div class="relative group" id="profile-dropdown-container">
+                    <button class="flex items-center justify-center w-10 h-10 rounded-full border border-outline-variant focus:outline-none select-none overflow-hidden bg-primary text-on-primary font-bold text-body-lg shadow-sm hover:scale-105 transition-all">
+                        @if(Auth::user()->foto_profil)
+                            <img src="{{ Auth::user()->foto_profil }}" alt="Avatar" class="w-full h-full object-cover">
+                        @else
+                            {{ strtoupper(substr(Auth::user()->nama, 0, 1)) }}
+                        @endif
+                    </button>
+                    <!-- Dropdown Menu -->
+                    <div class="absolute right-0 mt-xs w-48 bg-surface-container-lowest border border-outline-variant rounded-xl shadow-lg py-xs z-50 transform origin-top-right scale-95 opacity-0 pointer-events-none group-hover:scale-100 group-hover:opacity-100 group-hover:pointer-events-auto transition-all duration-200">
+                        <a href="{{ route('profile.edit') }}" class="flex items-center gap-xs px-md py-sm text-body-md text-on-surface hover:bg-surface-container transition-colors">
+                            <span class="material-symbols-outlined text-[20px] text-outline">edit</span>
+                            <span>Edit Profil</span>
+                        </a>
+                        <a href="#" class="flex items-center gap-xs px-md py-sm text-body-md text-on-surface hover:bg-surface-container transition-colors">
+                            <span class="material-symbols-outlined text-[20px] text-outline">history</span>
+                            <span>Riwayat Pesanan</span>
+                        </a>
+                        <div class="border-t border-outline-variant my-xs"></div>
+                        <form method="POST" action="{{ route('logout') }}">
+                            @csrf
+                            <button type="submit" class="w-full flex items-center gap-xs px-md py-sm text-body-md text-error hover:bg-error-container/10 transition-colors text-left">
+                                <span class="material-symbols-outlined text-[20px] text-error">logout</span>
+                                <span>Keluar</span>
+                            </button>
+                        </form>
+                    </div>
+                </div>
+            @else
+                <div class="flex items-center space-x-xs sm:space-x-sm">
+                    <button onclick="window.location.href='{{ route('login') }}'" class="px-lg py-xs border-2 border-primary text-primary rounded-xl font-bold hover:bg-primary-fixed transition-all active:scale-95 duration-150 text-sm">Masuk</button>
+                    <button onclick="window.location.href='{{ route('register') }}'" class="px-lg py-xs bg-primary text-on-primary rounded-xl font-bold hover:bg-primary-container transition-all active:scale-95 duration-150 text-sm shadow-sm">Daftar</button>
+                </div>
+            @endauth
+            <button class="md:hidden flex items-center">
+                <span class="material-symbols-outlined">menu</span>
+            </button>
+        </div>
+    </div>
+</nav>
+
+<main>
+<!-- Hero Section -->
+<section class="relative min-h-[calc(100vh-72px)] flex items-center px-container-margin overflow-hidden bg-surface-container-low">
+    <!-- Background Image with low opacity -->
+    <div class="absolute inset-0 bg-cover bg-center opacity-40 pointer-events-none" style="background-image: url('{{ asset('uploads/laundry_hero_bg.png') }}');"></div>
+    
+    <div class="max-w-7xl mx-auto w-full grid lg:grid-cols-2 gap-xl items-center py-xl relative z-10">
+        <div class="space-y-lg animate-fade-in">
+            <div class="inline-flex items-center space-x-xs px-md py-xs bg-secondary-container rounded-full text-on-secondary-container font-label-sm">
+                <span class="material-symbols-outlined text-[18px]">verified</span>
+                <span class="">#1 Laundry Khusus Mahasiswa &amp; Profesional</span>
+            </div>
+            <h1 class="text-display-lg text-primary leading-tight font-display-lg">
+                Laundry Bersih,<br>
+                <span class="text-secondary">Kosan Nyaman</span>
+            </h1>
+            <p class="text-body-lg text-on-surface-variant max-w-lg">
+                Urusan baju kotor serahkan ke kami. Jemput antar murah (hanya 1.500), proses cepat, dan hasil wangi segar seperti baru. Fokus pada studi dan karir Anda, biarkan kami yang mencuci.
+            </p>
+            <div class="flex flex-wrap gap-md pt-md">
+                <button onclick="window.location.href='{{ Auth::check() ? route('dashboard') : route('register') }}'" class="px-xl py-md bg-primary text-on-primary rounded-xl font-bold text-body-md shadow-lg hover:shadow-primary/20 transition-all active:scale-95">
+                    Pesan Sekarang
+                </button>
+                <button href="#" class="px-xl py-md border-2 border-primary text-primary rounded-xl font-bold text-body-md hover:bg-primary-fixed transition-all">
+                    Lihat Menu &amp; Harga
+                </button>
+            </div>
+        </div>
+        
+        <div class="relative hidden lg:block">
+            <!-- Premium Laundry Room Photo -->
+            <div class="h-[450px] w-full rounded-[2.5rem] overflow-hidden shadow-2xl relative bg-cover bg-center border border-outline-variant/30" style="background-image: url('{{ asset('uploads/clean_washer_hero.png') }}');">
+            </div>
+        </div>
+    </div>
+    <!-- Decorative circle -->
+    <div class="absolute -top-24 -right-24 w-96 h-96 bg-primary-fixed-dim/30 rounded-full blur-3xl"></div>
+</section>
+
+<!-- Key Benefits -->
+<section class="py-xl px-container-margin max-w-7xl mx-auto">
+    <div class="text-center mb-xl space-y-md">
+        <h2 class="text-headline-lg font-headline-lg text-primary">Mengapa MataramWash?</h2>
+        <p class="text-on-surface-variant max-w-2xl mx-auto font-body-md">Kami memberikan layanan terbaik untuk memastikan pakaian Anda tetap awet dan bersih maksimal.</p>
+    </div>
+    <div class="grid md:grid-cols-3 gap-lg">
+        <div class="bento-card p-xl bg-surface-container-lowest rounded-xl border border-outline-variant">
+            <div class="w-12 h-12 bg-primary-container text-on-primary-container rounded-lg flex items-center justify-center mb-md">
+                <span class="material-symbols-outlined">bolt</span>
+            </div>
+            <h3 class="text-headline-md font-headline-md mb-xs">Fast Delivery</h3>
+            <p class="text-on-surface-variant font-body-md">Layanan kilat jemput antar. Baju kotor di pagi hari, bersih di sore hari.</p>
+        </div>
+        <div class="bento-card p-xl bg-surface-container-lowest rounded-xl border border-outline-variant">
+            <div class="w-12 h-12 bg-secondary-container text-on-secondary-container rounded-lg flex items-center justify-center mb-md">
+                <span class="material-symbols-outlined">payments</span>
+            </div>
+            <h3 class="text-headline-md font-headline-md mb-xs">Affordable Prices</h3>
+            <p class="text-on-surface-variant font-body-md">Harga ramah di kantong mahasiswa mulai dari Rp 6.000 per kg tanpa biaya tersembunyi.</p>
+        </div>
+        <div class="bento-card p-xl bg-surface-container-lowest rounded-xl border border-outline-variant">
+            <div class="w-12 h-12 bg-tertiary-fixed text-on-tertiary-fixed-variant rounded-lg flex items-center justify-center mb-md">
+                <span class="material-symbols-outlined">high_quality</span>
+            </div>
+            <h3 class="text-headline-md font-headline-md mb-xs">High-Quality Cleaning</h3>
+            <p class="text-on-surface-variant font-body-md">Detergen premium dan setrika uap modern untuk menjaga serat kain dan keharuman tahan lama.</p>
+        </div>
+    </div>
+</section>
+
+<!-- Recommended Shops -->
+<section class="py-xl bg-surface-container-high px-container-margin">
+    <div class="max-w-7xl mx-auto">
+        <div class="flex flex-col md:flex-row justify-between items-end mb-xl gap-md">
+            <div class="space-y-sm">
+                <h2 class="text-headline-lg font-headline-lg text-on-surface">Rekomendasi Laundry Terdekat</h2>
+                <p class="text-on-surface-variant font-body-md">Mitra terpercaya di sekitar area kosan Anda.</p>
+            </div>
+            <a class="text-primary font-bold flex items-center space-x-xs group" href="#">
+                <span class="">Lihat Semua Toko</span>
+                <span class="material-symbols-outlined group-hover:translate-x-1 transition-transform">arrow_forward</span>
+            </a>
+        </div>
+        <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-lg">
+            @foreach ($mitra as $m)
+                @php
+                $is_washtra = strpos(strtolower($m->nama_mitra), 'washtra') !== false;
+                $foto = $m->foto_toko ? asset($m->foto_toko) : asset('uploads/mitra_1.png');
+                $jarak = $is_washtra ? '1.5 km' : '1.2 km';
+                @endphp
+                <!-- Shop Card -->
+                <div class="group bg-surface rounded-xl overflow-hidden shadow-sm border border-outline-variant hover:shadow-md transition-all">
+                    <div class="h-48 relative overflow-hidden bg-slate-100 flex items-center justify-center">
+                        <img src="{{ $foto }}" alt="{{ $m->nama_mitra }}" class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300">
+                        @if ($is_washtra)
+                            <div class="absolute top-md right-md bg-secondary-fixed text-on-secondary-fixed px-sm py-[2px] rounded-full text-label-sm font-bold shadow-sm">Self Service</div>
+                        @elseif ($m->icon_type === 'sepatu')
+                            <div class="absolute top-md right-md bg-[#7c3aed] text-white px-sm py-[2px] rounded-full text-label-sm font-bold shadow-sm">Shoe Care</div>
+                        @endif
+                    </div>
+                    <div class="p-md space-y-md">
+                        <div class="flex justify-between items-start">
+                            <h4 class="font-headline-md text-on-surface text-base font-bold">{{ $m->nama_mitra }}</h4>
+                            <div class="flex items-center text-tertiary font-bold">
+                                <span class="material-symbols-outlined text-[18px] mr-1" style="font-variation-settings: 'FILL' 1;">star</span>
+                                <span class="text-label-md">{{ $m->rating }}</span>
+                            </div>
+                        </div>
+                        <div class="flex items-center space-x-md text-on-surface-variant text-label-sm">
+                            <div class="flex items-center">
+                                <span class="material-symbols-outlined text-[16px] mr-1">location_on</span>
+                                <span class="">{{ $jarak }}</span>
+                            </div>
+                            <div class="flex items-center">
+                                <span class="material-symbols-outlined text-[16px] mr-1">schedule</span>
+                                <span class="">{{ $m->jam_buka }}</span>
+                            </div>
+                        </div>
+                        <div class="pt-md border-t border-outline-variant flex justify-between items-center">
+                            <div class="bg-tertiary-container/10 px-md py-xs rounded-full">
+                                <span class="text-tertiary font-bold text-label-md">
+                                    @if ($m->icon_type === 'sepatu')
+                                        Rp {{ number_format($m->harga_per_kg, 0, ',', '.') }}/pasang
+                                    @else
+                                        {{ $is_washtra ? 'Rp ' . number_format($m->harga_per_kg, 0, ',', '.') . ' Flat' : 'Rp ' . number_format($m->harga_per_kg, 0, ',', '.') . '/kg' }}
+                                    @endif
+                                </span>
+                            </div>
+                            <a href="{{ route('mitra.show', $m->id) }}" class="text-primary font-bold text-label-md hover:underline">Pilih</a>
+                        </div>
+                    </div>
+                </div>
+            @endforeach
+            
+            @php
+            $upcoming_cards = [
+                ['nama' => 'Mitra Baru Mataram', 'icon' => 'store', 'area' => 'Area Mataram', 'color' => 'text-primary/40'],
+                ['nama' => 'Clean & Fresh Express', 'icon' => 'local_laundry_service', 'area' => 'Area Sekarbela', 'color' => 'text-secondary/40'],
+                ['nama' => 'Shoes Clinic & Care', 'icon' => 'dry_cleaning', 'area' => 'Area Ampenan', 'color' => 'text-[#7c3aed]/40'],
+                ['nama' => 'MataramWash Outlet #8', 'icon' => 'handshake', 'area' => 'Area Pagutan', 'color' => 'text-amber-600/40']
+            ];
+            $upcoming_count_needed = max(0, 8 - count($mitra));
+            @endphp
+            
+            @for ($i = 0; $i < $upcoming_count_needed; $i++)
+                @php $uc = $upcoming_cards[$i % count($upcoming_cards)]; @endphp
+                <!-- Upcoming Shop Card -->
+                <div class="group bg-surface rounded-xl overflow-hidden shadow-sm border border-outline-variant/60 opacity-85 hover:shadow-md transition-all flex flex-col justify-between">
+                    <div class="h-48 relative overflow-hidden bg-slate-100 flex items-center justify-center">
+                        <div class="w-full h-full bg-gradient-to-br from-primary-fixed/30 to-secondary-fixed/30 flex flex-col items-center justify-center text-outline gap-xs">
+                            <span class="material-symbols-outlined text-4xl {{ $uc['color'] }} animate-pulse">{{ $uc['icon'] }}</span>
+                        </div>
+                        <div class="absolute top-md right-md bg-primary-container text-on-primary-container px-sm py-[2px] rounded-full text-label-sm font-bold shadow-sm">Upcoming</div>
+                    </div>
+                    <div class="p-md space-y-md flex-1 flex flex-col justify-between">
+                        <div>
+                            <div class="flex justify-between items-start mb-1">
+                                <h4 class="font-headline-md text-on-surface/85 text-base font-bold">{{ $uc['nama'] }}</h4>
+                                <div class="flex items-center text-outline/50 font-bold">
+                                    <span class="material-symbols-outlined text-[18px] mr-1">star</span>
+                                    <span class="text-label-md">-.-</span>
+                                </div>
+                            </div>
+                            <div class="flex items-center space-x-md text-on-surface-variant text-label-sm">
+                                <div class="flex items-center">
+                                    <span class="material-symbols-outlined text-[16px] mr-1 text-outline">location_on</span>
+                                    <span class="">{{ $uc['area'] }}</span>
+                                </div>
+                                <div class="flex items-center">
+                                    <span class="material-symbols-outlined text-[16px] mr-1 text-outline">schedule</span>
+                                    <span class="">TBA</span>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="pt-md border-t border-outline-variant/60 flex justify-between items-center">
+                            <div class="bg-surface-container px-md py-xs rounded-full">
+                                <span class="text-on-surface-variant/70 font-bold text-label-md">Tarif TBA</span>
+                            </div>
+                            <span class="text-outline text-label-md font-bold select-none">Segera Hadir</span>
+                        </div>
+                    </div>
+                </div>
+            @endfor
+        </div>
+    </div>
+</section>
+
+<!-- Stats & Testimonials Section -->
+<section class="py-20 bg-surface-container-low px-container-margin border-t border-outline-variant/30">
+    <div class="max-w-7xl mx-auto space-y-20">
+        
+        <!-- Platform Stats Sub-section -->
+        <div class="space-y-xl text-center">
+            <div class="space-y-sm">
+                <h2 class="text-headline-lg font-headline-lg text-primary text-center">MataramWash Dalam Angka</h2>
+                <p class="text-on-surface-variant font-body-md max-w-xl mx-auto">Kepercayaan mahasiswa dan kualitas layanan mitra adalah prioritas utama kami.</p>
+            </div>
+            <div class="grid grid-cols-2 lg:grid-cols-4 gap-lg">
+                <div class="bg-surface-container-lowest p-lg rounded-2xl border border-outline-variant/60 shadow-sm flex flex-col items-center text-center space-y-xs hover:shadow-md transition-shadow">
+                    <span class="material-symbols-outlined text-primary text-3xl">check_circle</span>
+                    <span class="text-3xl lg:text-4xl font-extrabold text-primary">5.000+</span>
+                    <span class="text-xs lg:text-sm text-on-surface-variant font-medium">Cucian Diselesaikan</span>
+                </div>
+                <div class="bg-surface-container-lowest p-lg rounded-2xl border border-outline-variant/60 shadow-sm flex flex-col items-center text-center space-y-xs hover:shadow-md transition-shadow">
+                    <span class="material-symbols-outlined text-secondary text-3xl">handshake</span>
+                    <span class="text-3xl lg:text-4xl font-extrabold text-secondary">15+</span>
+                    <span class="text-xs lg:text-sm text-on-surface-variant font-medium">Mitra Terpercaya</span>
+                </div>
+                <div class="bg-surface-container-lowest p-lg rounded-2xl border border-outline-variant/60 shadow-sm flex flex-col items-center text-center space-y-xs hover:shadow-md transition-shadow">
+                    <span class="material-symbols-outlined text-[#7c3aed] text-3xl">groups</span>
+                    <span class="text-3xl lg:text-4xl font-extrabold text-[#7c3aed]">2.500+</span>
+                    <span class="text-xs lg:text-sm text-on-surface-variant font-medium">Mahasiswa Terbantu</span>
+                </div>
+                <div class="bg-surface-container-lowest p-lg rounded-2xl border border-outline-variant/60 shadow-sm flex flex-col items-center text-center space-y-xs hover:shadow-md transition-shadow">
+                    <span class="material-symbols-outlined text-amber-500 text-3xl">star</span>
+                    <span class="text-3xl lg:text-4xl font-extrabold text-amber-500">4.8/5.0</span>
+                    <span class="text-xs lg:text-sm text-on-surface-variant font-medium">Rating Ulasan Kepuasan</span>
+                </div>
+            </div>
+        </div>
+
+        <!-- Student Testimonials Sub-section -->
+        <div class="space-y-xl">
+            <div class="text-center space-y-sm">
+                <h2 class="text-headline-lg font-headline-lg text-primary">Apa Kata Anak Kos?</h2>
+                <p class="text-on-surface-variant font-body-md max-w-xl mx-auto">Dengarkan pengalaman nyata dari sesama mahasiswa yang telah mempercayakan cuciannya kepada kami.</p>
+            </div>
+            <div class="grid grid-cols-1 md:grid-cols-3 gap-lg">
+                <div class="bg-surface-container-lowest p-lg rounded-2xl border border-outline-variant/60 shadow-sm flex flex-col justify-between space-y-lg hover:-translate-y-1 hover:shadow-md transition-all duration-200">
+                    <div class="space-y-md">
+                        <div class="flex text-amber-500 gap-[2px]">
+                            <span class="material-symbols-outlined text-[18px]" style="font-variation-settings: 'FILL' 1;">star</span>
+                            <span class="material-symbols-outlined text-[18px]" style="font-variation-settings: 'FILL' 1;">star</span>
+                            <span class="material-symbols-outlined text-[18px]" style="font-variation-settings: 'FILL' 1;">star</span>
+                            <span class="material-symbols-outlined text-[18px]" style="font-variation-settings: 'FILL' 1;">star</span>
+                            <span class="material-symbols-outlined text-[18px]" style="font-variation-settings: 'FILL' 1;">star</span>
+                        </div>
+                        <p class="text-xs lg:text-sm text-on-surface-variant italic leading-relaxed">
+                            "Sangat membantu pas lagi minggu UTS! Gak perlu pusing mikirin baju kotor menumpuk di kosan. Tinggal pesan lewat HP, kurir langsung jemput dan diantar lagi dalam kondisi wangi dan rapi."
+                        </p>
+                    </div>
+                    <div class="flex items-center gap-md border-t border-outline-variant/30 pt-md">
+                        <div class="w-10 h-10 bg-primary/10 rounded-full flex items-center justify-center font-bold text-primary text-sm">
+                            AN
+                        </div>
+                        <div>
+                            <h4 class="font-bold text-on-surface text-sm">Ahmad Naufal</h4>
+                            <p class="text-[10px] text-outline uppercase font-bold tracking-wider">Mahasiswa UNRAM</p>
+                        </div>
+                    </div>
+                </div>
+                <div class="bg-surface-container-lowest p-lg rounded-2xl border border-outline-variant/60 shadow-sm flex flex-col justify-between space-y-lg hover:-translate-y-1 hover:shadow-md transition-all duration-200">
+                    <div class="space-y-md">
+                        <div class="flex text-amber-500 gap-[2px]">
+                            <span class="material-symbols-outlined text-[18px]" style="font-variation-settings: 'FILL' 1;">star</span>
+                            <span class="material-symbols-outlined text-[18px]" style="font-variation-settings: 'FILL' 1;">star</span>
+                            <span class="material-symbols-outlined text-[18px]" style="font-variation-settings: 'FILL' 1;">star</span>
+                            <span class="material-symbols-outlined text-[18px]" style="font-variation-settings: 'FILL' 1;">star</span>
+                            <span class="material-symbols-outlined text-[18px]" style="font-variation-settings: 'FILL' 1;">star</span>
+                        </div>
+                        <p class="text-xs lg:text-sm text-on-surface-variant italic leading-relaxed">
+                            "Harganya beneran ramah di kantong mahasiswa. Pilihan mitranya banyak, jadi bisa cari yang terdekat biar ongkirnya gratis. Washtra Laundry Express juga mantap layanannya!"
+                        </p>
+                    </div>
+                    <div class="flex items-center gap-md border-t border-outline-variant/30 pt-md">
+                        <div class="w-10 h-10 bg-secondary/10 rounded-full flex items-center justify-center font-bold text-secondary text-sm">
+                            SR
+                        </div>
+                        <div>
+                            <h4 class="font-bold text-on-surface text-sm">Siti Rahma</h4>
+                            <p class="text-[10px] text-outline uppercase font-bold tracking-wider">Mahasiswa UMM</p>
+                        </div>
+                    </div>
+                </div>
+                <div class="bg-surface-container-lowest p-lg rounded-2xl border border-outline-variant/60 shadow-sm flex flex-col justify-between space-y-lg hover:-translate-y-1 hover:shadow-md transition-all duration-200">
+                    <div class="space-y-md">
+                        <div class="flex text-amber-500 gap-[2px]">
+                            <span class="material-symbols-outlined text-[18px]" style="font-variation-settings: 'FILL' 1;">star</span>
+                            <span class="material-symbols-outlined text-[18px]" style="font-variation-settings: 'FILL' 1;">star</span>
+                            <span class="material-symbols-outlined text-[18px]" style="font-variation-settings: 'FILL' 1;">star</span>
+                            <span class="material-symbols-outlined text-[18px]" style="font-variation-settings: 'FILL' 1;">star</span>
+                            <span class="material-symbols-outlined text-[18px]" style="font-variation-settings: 'FILL' 1;">star</span>
+                        </div>
+                        <p class="text-xs lg:text-sm text-on-surface-variant italic leading-relaxed">
+                            "Layanan jemput antarnya juara! Baju disetrika rapi banget dan wanginya segar tahan lama. Sangat merekomendasikan MataramWash buat sesama anak kosan."
+                        </p>
+                    </div>
+                    <div class="flex items-center gap-md border-t border-outline-variant/30 pt-md">
+                        <div class="w-10 h-10 bg-[#7c3aed]/10 rounded-full flex items-center justify-center font-bold text-[#7c3aed] text-sm">
+                            DP
+                        </div>
+                        <div>
+                            <h4 class="font-bold text-on-surface text-sm">Dwi Prasetyo</h4>
+                            <p class="text-[10px] text-outline uppercase font-bold tracking-wider">Mahasiswa IKIP</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+    </div>
+</section>
+</main>
+
+<!-- Footer -->
+<footer class="w-full py-xl px-gutter grid grid-cols-1 md:grid-cols-4 gap-lg bg-surface-container-highest mt-xl">
+    <div class="space-y-md">
+        <div class="flex items-center gap-xs">
+            <img alt="MataramWash Logo" class="h-8 w-8 object-contain" src="{{ asset('logo.png') }}">
+            <span class="text-headline-sm font-headline-md font-bold text-primary">MataramWash</span>
+        </div>
+        <p class="text-on-surface-variant font-body-md">Freshness delivered to your doorstep. Laundry solusi cerdas untuk hidup lebih produktif.</p>
+    </div>
+    <div class="space-y-md">
+        <h5 class="font-bold text-on-surface font-label-md">Company</h5>
+        <ul class="space-y-xs">
+            <li class=""><a class="text-on-surface-variant hover:text-primary transition-colors font-label-sm" href="#">Privacy Policy</a></li>
+            <li class=""><a class="text-on-surface-variant hover:text-primary transition-colors font-label-sm" href="#">Terms of Service</a></li>
+            <li class=""><a class="text-on-surface-variant hover:text-primary transition-colors font-label-sm" href="#">Contact Us</a></li>
+            <li class=""><a class="text-on-surface-variant hover:text-primary transition-colors font-label-sm" href="#">FAQ</a></li>
+        </ul>
+    </div>
+    <div class="space-y-md">
+        <h5 class="font-bold text-on-surface font-label-md">Layanan</h5>
+        <ul class="space-y-xs">
+            <li class=""><a class="text-on-surface-variant hover:text-primary transition-colors font-label-sm" href="#">Laundry Kiloan</a></li>
+            <li class=""><a class="text-on-surface-variant hover:text-primary transition-colors font-label-sm" href="#">Laundry Satuan</a></li>
+            <li class=""><a class="text-on-surface-variant hover:text-primary transition-colors font-label-sm" href="#">Cuci Sepatu</a></li>
+            <li class=""><a class="text-on-surface-variant hover:text-primary transition-colors font-label-sm" href="#">Dry Cleaning</a></li>
+        </ul>
+    </div>
+    <div class="space-y-md">
+        <h5 class="font-bold text-on-surface font-label-md">Follow Us</h5>
+        <div class="flex space-x-md">
+            <a class="w-10 h-10 rounded-full bg-surface-container-high flex items-center justify-center hover:bg-primary hover:text-on-primary transition-all" href="#">
+                <span class="material-symbols-outlined text-[20px]">share</span>
+            </a>
+            <a class="w-10 h-10 rounded-full bg-surface-container-high flex items-center justify-center hover:bg-primary hover:text-on-primary transition-all" href="#">
+                <span class="material-symbols-outlined text-[20px]">public</span>
+            </a>
+        </div>
+        <p class="text-label-sm text-on-surface-variant opacity-80 mt-lg">© 2026 MataramWash. Freshness delivered to your doorstep.</p>
+    </div>
+</footer>
+
+<script>
+    // Smooth scroll implementation
+    document.querySelectorAll('a[href^="#"]').forEach(anchor => {
+        anchor.addEventListener('click', function (e) {
+            e.preventDefault();
+            const target = document.querySelector(this.getAttribute('href'));
+            if(target) {
+              target.scrollIntoView({
+                  behavior: 'smooth'
+              });
+            }
+        });
+    });
+
+    // Sticky header transparency effect
+    const nav = document.querySelector('nav');
+    window.addEventListener('scroll', () => {
+        if (window.scrollY > 20) {
+            nav.classList.add('shadow-md');
+            nav.classList.remove('shadow-sm');
+        } else {
+            nav.classList.add('shadow-sm');
+            nav.classList.remove('shadow-md');
+        }
+    });
+</script>
+
+</body>
+</html>
