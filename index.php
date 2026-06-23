@@ -7,6 +7,33 @@ $is_logged_in = isset($_SESSION['user_id']);
 $dashboard_url = "dashboard.php";
 $login_url = "login/login.php";
 
+$upcoming_cards = [
+    [
+        'nama' => 'Mitra Baru Mataram',
+        'icon' => 'store',
+        'area' => 'Area Mataram',
+        'color' => 'text-primary/40'
+    ],
+    [
+        'nama' => 'Clean & Fresh Express',
+        'icon' => 'local_laundry_service',
+        'area' => 'Area Sekarbela',
+        'color' => 'text-secondary/40'
+    ],
+    [
+        'nama' => 'Shoes Clinic & Care',
+        'icon' => 'dry_cleaning',
+        'area' => 'Area Ampenan',
+        'color' => 'text-[#7c3aed]/40'
+    ],
+    [
+        'nama' => 'MataramWash Outlet #8',
+        'icon' => 'handshake',
+        'area' => 'Area Pagutan',
+        'color' => 'text-amber-600/40'
+    ]
+];
+
 // Fetch mitra laundry whose profile files exist and are marked for homepage recommendation
 try {
     $stmt = $pdo->query("SELECT * FROM mitra_laundry WHERE is_rekomendasi = 1 ORDER BY rating DESC");
@@ -26,37 +53,11 @@ try {
     // Calculate upcoming cards needed to fill the 8-card grid
     $active_count = count($mitra_list);
     $upcoming_count_needed = max(0, 8 - $active_count);
-    
-    $upcoming_cards = [
-        [
-            'nama' => 'Mitra Baru Mataram',
-            'icon' => 'store',
-            'area' => 'Area Mataram',
-            'color' => 'text-primary/40'
-        ],
-        [
-            'nama' => 'Clean & Fresh Express',
-            'icon' => 'local_laundry_service',
-            'area' => 'Area Sekarbela',
-            'color' => 'text-secondary/40'
-        ],
-        [
-            'nama' => 'Shoes Clinic & Care',
-            'icon' => 'dry_cleaning',
-            'area' => 'Area Ampenan',
-            'color' => 'text-[#7c3aed]/40'
-        ],
-        [
-            'nama' => 'MataramWash Outlet #8',
-            'icon' => 'handshake',
-            'area' => 'Area Pagutan',
-            'color' => 'text-amber-600/40'
-        ]
-    ];
 } catch (PDOException $e) {
     $mitra_list = [];
     $upcoming_count_needed = 8;
 }
+
 ?>
 <!DOCTYPE html>
 <html lang="id">

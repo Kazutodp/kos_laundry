@@ -24,6 +24,7 @@ return new class extends Migration
             $table->string('jam_buka', 50)->nullable();
             $table->boolean('status_buka')->default(true);
             $table->string('icon_type', 50)->default('kiloan');
+            $table->boolean('is_rekomendasi')->default(true);
             $table->timestamps();
         });
     }
