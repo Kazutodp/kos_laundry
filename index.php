@@ -440,8 +440,8 @@ try {
         <!-- Platform Stats Sub-section -->
         <div class="space-y-xl text-center">
             <div class="space-y-sm">
-                <h2 class="text-headline-lg font-headline-lg text-primary text-center">MataramWash Dalam Angka</h2>
-                <p class="text-on-surface-variant font-body-md max-w-xl mx-auto">Kepercayaan mahasiswa dan kualitas layanan mitra adalah prioritas utama kami.</p>
+                <h2 class="text-headline-lg font-headline-lg text-primary text-center">Bukti Nyata Kepercayaan Anda</h2>
+                <p class="text-on-surface-variant font-body-md max-w-2xl mx-auto">Setiap angka di bawah ini adalah dedikasi kami untuk menjaga pakaian Anda tetap wangi, rapi, dan siap pakai setiap hari.</p>
             </div>
             <div class="grid grid-cols-2 lg:grid-cols-4 gap-lg">
                 <!-- Stat 1 -->
