@@ -392,29 +392,34 @@ $logo_url = $partner_logos[$id_mitra] ?? $partner_logos[1];
 
     <!-- Service Information Bar -->
     <section class="grid grid-cols-1 md:grid-cols-2 gap-md mb-xl">
-        <div class="bg-surface-container-lowest p-md rounded-xl border border-outline-variant flex items-center gap-md shadow-sm">
-            <div class="bg-primary/10 p-md rounded-xl">
-                <span class="material-symbols-outlined text-primary text-[32px]">local_shipping</span>
+        <!-- Delivery Card -->
+        <div class="group bg-gradient-to-br from-primary/5 to-surface-container-lowest p-lg rounded-2xl border border-outline-variant/60 flex items-center gap-md shadow-sm hover:shadow-md hover:shadow-primary/5 hover:-translate-y-1 transition-all duration-300 hover:border-primary/30">
+            <div class="bg-primary/10 p-md rounded-2xl group-hover:scale-105 transition-transform duration-300">
+                <span class="material-symbols-outlined text-primary text-[32px] block">local_shipping</span>
             </div>
             <div>
-                <div class="flex items-center gap-sm mb-xs">
-                    <p class="font-label-md text-on-surface-variant uppercase tracking-wider"><?= htmlspecialchars($delivery_label); ?></p>
+                <div class="flex items-center gap-sm mb-1">
+                    <p class="text-xs font-bold text-on-surface-variant uppercase tracking-wider"><?= htmlspecialchars($delivery_label); ?></p>
                     <?php if ($is_self_service): ?>
-                        <span class="bg-amber-100 text-amber-800 px-xs py-[2px] rounded text-[10px] font-bold">Self-Service</span>
+                        <span class="inline-flex items-center gap-[2px] px-2 py-[2px] bg-amber-50 text-amber-700 text-[10px] font-extrabold rounded-full border border-amber-200 select-none">Self-Service</span>
                     <?php else: ?>
-                        <span class="bg-secondary-container text-on-secondary-container px-xs py-[2px] rounded text-[10px] font-bold">Tersedia</span>
+                        <span class="inline-flex items-center gap-[2px] px-2 py-[2px] bg-emerald-50 text-emerald-700 text-[10px] font-extrabold rounded-full border border-emerald-200 select-none">
+                            <span class="w-1.5 h-1.5 rounded-full bg-emerald-500 animate-pulse"></span>
+                            Tersedia
+                        </span>
                     <?php endif; ?>
                 </div>
-                <p class="font-headline-md text-on-surface"><?= htmlspecialchars($delivery_advice); ?></p>
+                <p class="font-bold text-on-surface text-base md:text-lg tracking-tight"><?= htmlspecialchars($delivery_advice); ?></p>
             </div>
         </div>
-        <div class="bg-surface-container-lowest p-md rounded-xl border border-outline-variant flex items-center gap-md shadow-sm">
-            <div class="bg-primary/10 p-md rounded-xl">
-                <span class="material-symbols-outlined text-primary text-[32px]">schedule</span>
+        <!-- Time Estimation Card -->
+        <div class="group bg-gradient-to-br from-primary/5 to-surface-container-lowest p-lg rounded-2xl border border-outline-variant/60 flex items-center gap-md shadow-sm hover:shadow-md hover:shadow-primary/5 hover:-translate-y-1 transition-all duration-300 hover:border-primary/30">
+            <div class="bg-primary/10 p-md rounded-2xl group-hover:scale-105 transition-transform duration-300">
+                <span class="material-symbols-outlined text-primary text-[32px] block">schedule</span>
             </div>
             <div>
-                <p class="font-label-md text-on-surface-variant uppercase tracking-wider mb-xs">Estimasi Pengerjaan</p>
-                <p class="font-headline-md text-on-surface"><?= $is_self_service ? '1 - 2 Jam (Selesai Langsung)' : '1 - 3 Jam'; ?></p>
+                <p class="text-xs font-bold text-on-surface-variant uppercase tracking-wider mb-1">Estimasi Pengerjaan</p>
+                <p class="font-bold text-on-surface text-base md:text-lg tracking-tight"><?= $is_self_service ? '1 - 2 Jam (Selesai Langsung)' : '1 - 3 Jam'; ?></p>
             </div>
         </div>
     </section>
