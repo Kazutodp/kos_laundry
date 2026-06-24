@@ -955,7 +955,7 @@ $logo_url = $partner_logos[$id_mitra] ?? $partner_logos[1];
                                     <div class="bg-slate-50 p-md rounded-xl border-l-4 border-primary flex items-start gap-sm mt-md shadow-xs">
                                         <span class="material-symbols-outlined text-primary text-[20px] mt-[2px] select-none">storefront</span>
                                         <div>
-                                            <p class="text-[12px] font-extrabold text-primary mb-[2px]">Respon Penjual (<?= htmlspecialchars($nama_mitra); ?>)</p>
+                                            <p class="text-[12px] font-extrabold text-primary mb-[2px]"><?= htmlspecialchars($nama_mitra); ?></p>
                                             <p class="text-on-surface-variant leading-relaxed text-sm"><?= htmlspecialchars($rev['response']); ?></p>
                                         </div>
                                     </div>

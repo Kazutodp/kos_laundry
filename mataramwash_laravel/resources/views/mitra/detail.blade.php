@@ -586,11 +586,15 @@
                                     @endif
                                     
                                     @if (!empty($rev['response']))
-                                        <div class="bg-surface-container p-md rounded-lg">
-                                            <p class="text-label-sm font-bold text-primary mb-xs">Respon Penjual:</p>
-                                            <p class="text-body-md text-on-surface-variant">{{ $rev['response'] }}</p>
-                                        </div>
-                                    @endif
+                                         <!-- Seller Response Thread -->
+                                         <div class="bg-slate-50 p-md rounded-xl border-l-4 border-primary flex items-start gap-sm mt-md shadow-xs">
+                                             <span class="material-symbols-outlined text-primary text-[20px] mt-[2px] select-none">storefront</span>
+                                             <div>
+                                                 <p class="text-[12px] font-extrabold text-primary mb-[2px]">{{ $nama_mitra }}</p>
+                                                 <p class="text-on-surface-variant leading-relaxed text-sm">{{ $rev['response'] }}</p>
+                                             </div>
+                                         </div>
+                                     @endif
                                 </div>
                             </div>
                         </div>
