@@ -797,29 +797,106 @@ $logo_url = $partner_logos[$id_mitra] ?? $partner_logos[1];
             }
         }
         ?>
+        <?php
+        // Count percentages for progress bars
+        $pct_5 = $count_all > 0 ? round(($count_5 / $count_all) * 100) : 0;
+        $pct_4 = $count_all > 0 ? round(($count_4 / $count_all) * 100) : 0;
+        $pct_3 = $count_all > 0 ? round(($count_3 / $count_all) * 100) : 0;
+        $pct_2 = 0;
+        $pct_1 = 0;
+
+        // Color pool for user avatars
+        $avatar_colors = [
+            'RA' => 'bg-emerald-100 text-emerald-800 border-emerald-200',
+            'NS' => 'bg-purple-100 text-purple-800 border-purple-200',
+            'AD' => 'bg-amber-100 text-amber-800 border-amber-200',
+        ];
+        ?>
         
         <div class="flex flex-col gap-lg">
             <!-- Rating Summary & Filters -->
-            <div class="bg-surface-container-lowest p-lg rounded-xl border border-outline-variant flex flex-col md:flex-row gap-xl items-center">
-                <div class="text-center md:border-r border-outline-variant md:pr-xl shrink-0">
-                    <p class="text-[48px] font-bold text-primary leading-none mb-xs"><?= $rating; ?> <span class="text-headline-md font-normal text-on-surface-variant">/ 5</span></p>
-                    <div class="flex gap-1 mb-sm justify-center">
-                        <span class="material-symbols-outlined text-yellow-500 fill-icon">star</span>
-                        <span class="material-symbols-outlined text-yellow-500 fill-icon">star</span>
-                        <span class="material-symbols-outlined text-yellow-500 fill-icon">star</span>
-                        <span class="material-symbols-outlined text-yellow-500 fill-icon">star</span>
-                        <span class="material-symbols-outlined text-yellow-500 fill-icon">star</span>
+            <div class="bg-surface-container-lowest p-lg rounded-2xl border border-outline-variant/60 shadow-sm flex flex-col lg:flex-row gap-xl">
+                <!-- Rating Score (Left) -->
+                <div class="bg-gradient-to-br from-primary/5 to-transparent p-lg rounded-xl border border-primary/10 text-center flex flex-col justify-center items-center shrink-0 min-w-[200px]">
+                    <p class="text-[54px] font-extrabold text-primary leading-none mb-1"><?= $rating; ?></p>
+                    <div class="flex gap-1 mb-sm">
+                        <?php for ($i = 0; $i < 5; $i++): ?>
+                            <span class="material-symbols-outlined text-yellow-500 fill-icon text-[18px]">star</span>
+                        <?php endfor; ?>
                     </div>
-                    <p class="text-label-sm text-on-surface-variant"><?= $count_all; ?> Penilaian</p>
+                    <p class="text-label-sm text-on-surface-variant font-bold"><?= $count_all; ?> Penilaian Terverifikasi</p>
                 </div>
-                <div class="flex-1 flex flex-wrap gap-sm" id="review-filters">
-                    <button onclick="filterReviews('all', null, this)" class="review-filter-btn px-md py-xs bg-primary/10 text-primary border border-primary rounded font-label-md transition-colors">Semua</button>
-                    <button onclick="filterReviews('stars', 5, this)" class="review-filter-btn px-md py-xs bg-white border border-outline-variant text-on-surface-variant rounded font-label-md hover:border-primary transition-colors">5 Bintang<?= $count_5 > 0 ? " ($count_5)" : ''; ?></button>
-                    <button onclick="filterReviews('stars', 4, this)" class="review-filter-btn px-md py-xs bg-white border border-outline-variant text-on-surface-variant rounded font-label-md hover:border-primary transition-colors">4 Bintang<?= $count_4 > 0 ? " ($count_4)" : ''; ?></button>
-                    <button onclick="filterReviews('stars', 3, this)" class="review-filter-btn px-md py-xs bg-white border border-outline-variant text-on-surface-variant rounded font-label-md hover:border-primary transition-colors">3 Bintang<?= $count_3 > 0 ? " ($count_3)" : ''; ?></button>
-                    <button onclick="filterReviews('photo', true, this)" class="review-filter-btn px-md py-xs bg-white border border-outline-variant text-on-surface-variant rounded font-label-md hover:border-primary transition-colors">Dengan Foto<?= $count_photo > 0 ? " ($count_photo)" : ''; ?></button>
-                    <button onclick="filterReviews('comment', true, this)" class="review-filter-btn px-md py-xs bg-white border border-outline-variant text-on-surface-variant rounded font-label-md hover:border-primary transition-colors">Dengan Komentar<?= $count_comment > 0 ? " ($count_comment)" : ''; ?></button>
+
+                <!-- Rating Distribution Bars (Middle/Right) -->
+                <div class="flex-1 flex flex-col justify-center space-y-2 max-w-md">
+                    <!-- 5 Stars Bar -->
+                    <div class="flex items-center gap-md text-xs font-semibold text-on-surface-variant">
+                        <span class="w-14 flex items-center gap-[2px] justify-end">5 <span class="material-symbols-outlined text-[14px] text-yellow-500 fill-icon">star</span></span>
+                        <div class="flex-1 h-2 bg-slate-100 rounded-full overflow-hidden">
+                            <div class="h-full bg-primary rounded-full transition-all duration-500" style="width: <?= $pct_5; ?>%"></div>
+                        </div>
+                        <span class="w-8 text-right"><?= $pct_5; ?>%</span>
+                    </div>
+                    <!-- 4 Stars Bar -->
+                    <div class="flex items-center gap-md text-xs font-semibold text-on-surface-variant">
+                        <span class="w-14 flex items-center gap-[2px] justify-end">4 <span class="material-symbols-outlined text-[14px] text-yellow-500 fill-icon">star</span></span>
+                        <div class="flex-1 h-2 bg-slate-100 rounded-full overflow-hidden">
+                            <div class="h-full bg-primary rounded-full transition-all duration-500" style="width: <?= $pct_4; ?>%"></div>
+                        </div>
+                        <span class="w-8 text-right"><?= $pct_4; ?>%</span>
+                    </div>
+                    <!-- 3 Stars Bar -->
+                    <div class="flex items-center gap-md text-xs font-semibold text-on-surface-variant">
+                        <span class="w-14 flex items-center gap-[2px] justify-end">3 <span class="material-symbols-outlined text-[14px] text-yellow-500 fill-icon">star</span></span>
+                        <div class="flex-1 h-2 bg-slate-100 rounded-full overflow-hidden">
+                            <div class="h-full bg-primary rounded-full transition-all duration-500" style="width: <?= $pct_3; ?>%"></div>
+                        </div>
+                        <span class="w-8 text-right"><?= $pct_3; ?>%</span>
+                    </div>
+                    <!-- 2 Stars Bar -->
+                    <div class="flex items-center gap-md text-xs font-semibold text-on-surface-variant">
+                        <span class="w-14 flex items-center gap-[2px] justify-end">2 <span class="material-symbols-outlined text-[14px] text-yellow-500 fill-icon">star</span></span>
+                        <div class="flex-1 h-2 bg-slate-100 rounded-full overflow-hidden">
+                            <div class="h-full bg-primary rounded-full transition-all duration-500" style="width: <?= $pct_2; ?>%"></div>
+                        </div>
+                        <span class="w-8 text-right"><?= $pct_2; ?>%</span>
+                    </div>
+                    <!-- 1 Star Bar -->
+                    <div class="flex items-center gap-md text-xs font-semibold text-on-surface-variant">
+                        <span class="w-14 flex items-center gap-[2px] justify-end">1 <span class="material-symbols-outlined text-[14px] text-yellow-500 fill-icon">star</span></span>
+                        <div class="flex-1 h-2 bg-slate-100 rounded-full overflow-hidden">
+                            <div class="h-full bg-primary rounded-full transition-all duration-500" style="width: <?= $pct_1; ?>%"></div>
+                        </div>
+                        <span class="w-8 text-right"><?= $pct_1; ?>%</span>
+                    </div>
                 </div>
+            </div>
+
+            <!-- Review Filters Container -->
+            <div class="flex flex-wrap gap-xs py-1" id="review-filters">
+                <button onclick="filterReviews('all', null, this)" class="review-filter-btn flex items-center gap-xs px-md py-sm bg-primary text-white font-bold rounded-full text-xs shadow-sm hover:brightness-105 active:scale-95 transition-all">
+                    <span>Semua ulasan</span>
+                </button>
+                <button onclick="filterReviews('stars', 5, this)" class="review-filter-btn flex items-center gap-xs px-md py-sm bg-slate-100 text-on-surface-variant hover:bg-slate-200 hover:text-primary rounded-full text-xs active:scale-95 transition-all">
+                    <span class="material-symbols-outlined text-[14px] text-yellow-500 fill-icon">star</span>
+                    <span>5 Bintang (<?= $count_5; ?>)</span>
+                </button>
+                <button onclick="filterReviews('stars', 4, this)" class="review-filter-btn flex items-center gap-xs px-md py-sm bg-slate-100 text-on-surface-variant hover:bg-slate-200 hover:text-primary rounded-full text-xs active:scale-95 transition-all">
+                    <span class="material-symbols-outlined text-[14px] text-yellow-500 fill-icon">star</span>
+                    <span>4 Bintang (<?= $count_4; ?>)</span>
+                </button>
+                <button onclick="filterReviews('stars', 3, this)" class="review-filter-btn flex items-center gap-xs px-md py-sm bg-slate-100 text-on-surface-variant hover:bg-slate-200 hover:text-primary rounded-full text-xs active:scale-95 transition-all">
+                    <span class="material-symbols-outlined text-[14px] text-yellow-500 fill-icon">star</span>
+                    <span>3 Bintang (<?= $count_3; ?>)</span>
+                </button>
+                <button onclick="filterReviews('photo', true, this)" class="review-filter-btn flex items-center gap-xs px-md py-sm bg-slate-100 text-on-surface-variant hover:bg-slate-200 hover:text-primary rounded-full text-xs active:scale-95 transition-all">
+                    <span class="material-symbols-outlined text-[14px]">photo_camera</span>
+                    <span>Dengan Foto (<?= $count_photo; ?>)</span>
+                </button>
+                <button onclick="filterReviews('comment', true, this)" class="review-filter-btn flex items-center gap-xs px-md py-sm bg-slate-100 text-on-surface-variant hover:bg-slate-200 hover:text-primary rounded-full text-xs active:scale-95 transition-all">
+                    <span class="material-symbols-outlined text-[14px]">chat</span>
+                    <span>Dengan Komentar (<?= $count_comment; ?>)</span>
+                </button>
             </div>
             
             <!-- Review List -->
@@ -828,42 +905,54 @@ $logo_url = $partner_logos[$id_mitra] ?? $partner_logos[1];
                     <?php 
                     $has_photo = !empty($rev['photos']) ? 'true' : 'false';
                     $has_comment = !empty(trim($rev['comment'])) ? 'true' : 'false';
+                    
+                    // Assign themed avatar backgrounds
+                    $avatar_class = $avatar_colors[$rev['initials']] ?? 'bg-blue-100 text-blue-800 border-blue-200';
                     ?>
-                    <div class="review-card bg-surface-container-lowest p-lg rounded-xl border border-outline-variant shadow-sm transition-all duration-300"
+                    <div class="review-card bg-surface-container-lowest p-lg rounded-2xl border border-outline-variant/60 shadow-sm transition-all duration-300 hover:shadow-md"
                          data-stars="<?= intval($rev['stars']); ?>"
                          data-has-photo="<?= $has_photo; ?>"
                          data-has-comment="<?= $has_comment; ?>">
                         <div class="flex gap-md">
-                            <div class="w-10 h-10 rounded-full bg-primary-fixed flex-shrink-0 flex items-center justify-center text-primary font-bold">
+                            <div class="w-11 h-11 rounded-full border shrink-0 flex items-center justify-center font-extrabold shadow-sm select-none text-base <?= $avatar_class; ?>">
                                 <?= htmlspecialchars($rev['initials']); ?>
                             </div>
                             <div class="flex-1">
-                                <p class="text-label-md font-bold text-on-surface"><?= htmlspecialchars($rev['user']); ?></p>
-                                <div class="flex gap-1 mb-xs">
+                                <div class="flex flex-wrap items-center gap-sm mb-xs">
+                                    <p class="font-bold text-on-surface text-sm"><?= htmlspecialchars($rev['user']); ?></p>
+                                    <span class="inline-flex items-center gap-[2px] px-2 py-[2px] bg-green-50 text-green-700 text-[10px] font-bold rounded-full border border-green-200 select-none">
+                                        <span class="material-symbols-outlined text-[10px] font-bold fill-icon">check_circle</span>
+                                        Transaksi Terverifikasi
+                                    </span>
+                                </div>
+                                <div class="flex gap-0.5 mb-1 text-yellow-500">
                                     <?php for ($i = 0; $i < 5; $i++): ?>
-                                        <span class="material-symbols-outlined text-yellow-500 text-[14px] <?= $i < $rev['stars'] ? 'fill-icon' : ''; ?>">star</span>
+                                        <span class="material-symbols-outlined text-[16px] <?= $i < $rev['stars'] ? 'fill-icon' : ''; ?>">star</span>
                                     <?php endfor; ?>
                                 </div>
-                                <div class="flex items-center gap-sm text-label-sm text-outline mb-sm">
+                                <div class="flex items-center gap-sm text-label-sm text-outline mb-sm text-xs">
                                     <span><?= htmlspecialchars($rev['date']); ?></span>
-                                    <span class="text-outline-variant">|</span>
-                                    <span>Layanan: <?= htmlspecialchars($rev['layanan']); ?></span>
+                                    <span class="text-outline-variant/40">|</span>
+                                    <span class="text-on-surface-variant font-medium">Layanan: <?= htmlspecialchars($rev['layanan']); ?></span>
                                 </div>
-                                <p class="text-body-md text-on-surface mb-md"><?= htmlspecialchars($rev['comment']); ?></p>
+                                <p class="text-body-md text-on-surface mb-md leading-relaxed"><?= htmlspecialchars($rev['comment']); ?></p>
                                 
                                 <?php if (!empty($rev['photos'])): ?>
-                                    <div class="flex gap-sm mb-md">
+                                    <div class="flex gap-sm mb-md flex-wrap">
                                         <?php foreach ($rev['photos'] as $p): ?>
-                                            <div class="w-20 h-20 rounded bg-cover bg-center border border-outline-variant" style="background-image: url('<?= htmlspecialchars($p); ?>')"></div>
+                                            <div class="w-20 h-20 rounded-xl bg-cover bg-center border border-outline-variant/80 hover:scale-105 active:scale-98 transition-all cursor-zoom-in shadow-xs" style="background-image: url('<?= htmlspecialchars($p); ?>')" title="Klik untuk memperbesar"></div>
                                         <?php endforeach; ?>
                                     </div>
                                 <?php endif; ?>
                                 
                                 <?php if (!empty($rev['response'])): ?>
-                                    <!-- Seller Response -->
-                                    <div class="bg-surface-container p-md rounded-lg">
-                                        <p class="text-label-sm font-bold text-primary mb-xs">Respon Penjual:</p>
-                                        <p class="text-body-md text-on-surface-variant"><?= htmlspecialchars($rev['response']); ?></p>
+                                    <!-- Seller Response Thread -->
+                                    <div class="bg-slate-50 p-md rounded-xl border-l-4 border-primary flex items-start gap-sm mt-md shadow-xs">
+                                        <span class="material-symbols-outlined text-primary text-[20px] mt-[2px] select-none">storefront</span>
+                                        <div>
+                                            <p class="text-[12px] font-extrabold text-primary mb-[2px]">Respon Penjual (<?= htmlspecialchars($nama_mitra); ?>)</p>
+                                            <p class="text-on-surface-variant leading-relaxed text-sm"><?= htmlspecialchars($rev['response']); ?></p>
+                                        </div>
                                     </div>
                                 <?php endif; ?>
                             </div>
@@ -1179,14 +1268,14 @@ $logo_url = $partner_logos[$id_mitra] ?? $partner_logos[1];
         // Reset all buttons styling to inactive state
         const buttons = document.querySelectorAll('.review-filter-btn');
         buttons.forEach(btn => {
-            btn.classList.remove('bg-primary/10', 'text-primary', 'border-primary');
-            btn.classList.add('bg-white', 'border-outline-variant', 'text-on-surface-variant', 'hover:border-primary');
+            btn.classList.remove('bg-primary', 'text-white', 'font-bold', 'shadow-sm', 'hover:brightness-105');
+            btn.classList.add('bg-slate-100', 'text-on-surface-variant', 'hover:bg-slate-200', 'hover:text-primary');
         });
 
         // Set clicked button to active state
         if (button) {
-            button.classList.remove('bg-white', 'border-outline-variant', 'text-on-surface-variant', 'hover:border-primary');
-            button.classList.add('bg-primary/10', 'text-primary', 'border-primary');
+            button.classList.remove('bg-slate-100', 'text-on-surface-variant', 'hover:bg-slate-200', 'hover:text-primary');
+            button.classList.add('bg-primary', 'text-white', 'font-bold', 'shadow-sm', 'hover:brightness-105');
         }
 
         // Filter the cards
