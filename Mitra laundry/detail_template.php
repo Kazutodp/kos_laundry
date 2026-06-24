@@ -114,38 +114,146 @@ $harga_satuan_selimut = 20000;
 $harga_satuan_bed_cover = 30000;
 
 // Render different reviews depending on the shop
-$reviews_pool = [
-    [
-        'user' => 'r*****a',
-        'initials' => 'RA',
-        'stars' => 5,
-        'date' => '2026-06-18 14:30',
-        'layanan' => 'Cuci Lipat Reguler',
-        'comment' => 'Sangat puas! Wangi parfumnya tahan lama dan lipatannya rapi banget. Jemput antarnya juga on time.',
-        'photos' => ['../uploads/mitra_1.png', '../uploads/mitra_2.png'],
-        'response' => 'Terima kasih Kak Rizky atas ulasannya! Senang bisa membantu. Ditunggu orderan selanjutnya ya Kak! :)'
-    ],
-    [
-        'user' => 'n*****a',
-        'initials' => 'NS',
-        'stars' => 5,
-        'date' => '2026-06-17 09:15',
-        'layanan' => 'Cuci Express',
-        'comment' => 'Layanan express-nya benar-benar membantu saat butuh cepat. Pakaian tetap wangi walau prosesnya cepat.',
-        'photos' => [],
-        'response' => ''
-    ],
-    [
-        'user' => 'a*****d',
-        'initials' => 'AD',
-        'stars' => 4,
-        'date' => '2026-06-15 11:20',
-        'layanan' => 'Cuci Setrika Reguler',
-        'comment' => 'Setrikanya rapi sekali, baju langsung siap pakai. Pelayanan ramah.',
-        'photos' => [],
-        'response' => 'Terima kasih ulasannya Kak! Kami selalu menjaga kualitas untuk kepuasan pelanggan.'
-    ]
-];
+$is_shoes = (strpos(strtolower($nama_mitra), 'shoes') !== false || strpos(strtolower($nama_mitra), 'sepatu') !== false);
+$is_self = $is_self_service || (strpos(strtolower($nama_mitra), 'washtra') !== false);
+
+if ($is_shoes) {
+    $reviews_pool = [
+        [
+            'user' => 'd*****n',
+            'initials' => 'DN',
+            'stars' => 5,
+            'date' => '2026-06-20 16:45',
+            'layanan' => 'Deep Clean Sepatu',
+            'comment' => 'Sepatu putih saya yang tadinya dekil banget bisa bersih lagi kaya baru! Pengerjaan juga cepat dan rapi.',
+            'photos' => ['../uploads/mitra_3.png'],
+            'response' => 'Terima kasih banyak Kak Dani atas ulasannya! Kami selalu berusaha memberikan hasil terbaik untuk sepatu kesayangan pelanggan.'
+        ],
+        [
+            'user' => 'v*****a',
+            'initials' => 'VA',
+            'stars' => 5,
+            'date' => '2026-06-19 10:15',
+            'layanan' => 'Leather Care Tas',
+            'comment' => 'Cuci tas kulit kesayangan di sini hasilnya memuaskan sekali. Kulitnya jadi bersih, wangi, dan terawat tanpa ada cacat.',
+            'photos' => [],
+            'response' => 'Terima kasih Kak Vanya! Perawatan kulit memang memerlukan teknik khusus, senang mendengarkan Kakak puas dengan hasilnya.'
+        ],
+        [
+            'user' => 'r*****y',
+            'initials' => 'RY',
+            'stars' => 4,
+            'date' => '2026-06-15 13:20',
+            'layanan' => 'Fast Clean Sepatu',
+            'comment' => 'Bagus hasil cuci sepatunya. Hanya saja pas weekend antreannya agak panjang, tapi worth it banget sih dengan harganya.',
+            'photos' => [],
+            'response' => 'Mohon maaf atas antreannya ya Kak Rizky. Kami akan terus meningkatkan kapasitas pengerjaan agar layanan semakin cepat!'
+        ]
+    ];
+} elseif ($is_self) {
+    $reviews_pool = [
+        [
+            'user' => 'b*****o',
+            'initials' => 'BO',
+            'stars' => 5,
+            'date' => '2026-06-21 15:30',
+            'layanan' => 'Self Service Wash & Dry',
+            'comment' => 'Tempatnya nyaman, ber-AC, mesin cucinya banyak dan modern. Nyucinya gampang tinggal masukin koin, beres ± 90 menit langsung kering total.',
+            'photos' => ['../uploads/mitra_1.png'],
+            'response' => 'Terima kasih Kak Bambang! Kenyamanan pelanggan adalah prioritas kami. Ditunggu kunjungan self-service berikutnya!'
+        ],
+        [
+            'user' => 's*****i',
+            'initials' => 'SI',
+            'stars' => 5,
+            'date' => '2026-06-18 11:15',
+            'layanan' => 'Self Service Wash Only',
+            'comment' => 'Sangat ekonomis dan membantu buat kami para mahasiswa di sekitar Unram! Cuci kering langsung bisa dilipat tanpa perlu jemur lagi di kosan.',
+            'photos' => [],
+            'response' => 'Senang sekali bisa membantu rekan-rekan mahasiswa, Kak Sinta! Terima kasih banyak atas dukungannya.'
+        ],
+        [
+            'user' => 'm*****a',
+            'initials' => 'MA',
+            'stars' => 4,
+            'date' => '2026-06-14 17:40',
+            'layanan' => 'Self Service Dryer Only',
+            'comment' => 'Petugasnya ramah dan dengan sabar mengajari cara pakai mesinnya dari awal. Recommended buat yang mau cuci praktis.',
+            'photos' => [],
+            'response' => 'Terima kasih Kak Maulana! Staf kami selalu siap sedia membantu jika ada kesulitan mengoperasikan mesin koin.'
+        ]
+    ];
+} else {
+    // Default / LAUNDRY LOMBOK & MAULaundry
+    if (strpos(strtolower($nama_mitra), 'lombok') !== false) {
+        $reviews_pool = [
+            [
+                'user' => 'a*****n',
+                'initials' => 'AN',
+                'stars' => 5,
+                'date' => '2026-06-22 14:10',
+                'layanan' => 'Cuci Setrika Reguler',
+                'comment' => 'Harga di Laundry Lombok ini paling bersahabat di kantong. Cucian bersih, wangi parfumnya tahan berhari-hari.',
+                'photos' => ['../uploads/mitra_2.png'],
+                'response' => 'Terima kasih banyak Kak Anton atas ulasannya! Kami berkomitmen menjaga tarif tetap terjangkau dengan kualitas bintang lima.'
+            ],
+            [
+                'user' => 'k*****a',
+                'initials' => 'KA',
+                'stars' => 5,
+                'date' => '2026-06-19 09:45',
+                'layanan' => 'Cuci Lipat Reguler',
+                'comment' => 'Kualitas cuciannya mantap, lipatan sangat rapi dan wangi. Sangat recommended untuk langganan bulanan mahasiswa kosan.',
+                'photos' => [],
+                'response' => 'Terima kasih Kak Kartika! Paket langganan kami memang dirancang khusus untuk memenuhi kebutuhan mahasiswa. Ditunggu orderan berikutnya!'
+            ],
+            [
+                'user' => 'w*****u',
+                'initials' => 'WU',
+                'stars' => 4,
+                'date' => '2026-06-16 16:30',
+                'layanan' => 'Cuci Setrika Reguler',
+                'comment' => 'Cucian wangi dan bersih. Layanan antar jemputnya responsif dan cepat tanggap saat dihubungi via WA.',
+                'photos' => [],
+                'response' => 'Terima kasih Kak Wahyu! Kami akan selalu menjaga kecepatan respon tim kurir kami.'
+            ]
+        ];
+    } else {
+        // Default / MAULaundry Mataram
+        $reviews_pool = [
+            [
+                'user' => 'r*****a',
+                'initials' => 'RA',
+                'stars' => 5,
+                'date' => '2026-06-18 14:30',
+                'layanan' => 'Cuci Lipat Reguler',
+                'comment' => 'Sangat puas! Wangi parfumnya tahan lama dan lipatannya rapi banget. Jemput antarnya juga on time.',
+                'photos' => ['../uploads/mitra_1.png', '../uploads/mitra_2.png'],
+                'response' => 'Terima kasih Kak Rizky atas ulasannya! Senang bisa membantu. Ditunggu orderan selanjutnya ya Kak! :)'
+            ],
+            [
+                'user' => 'n*****a',
+                'initials' => 'NS',
+                'stars' => 5,
+                'date' => '2026-06-17 09:15',
+                'layanan' => 'Cuci Express',
+                'comment' => 'Layanan express-nya benar-benar membantu saat butuh cepat. Pakaian tetap wangi walau prosesnya cepat.',
+                'photos' => [],
+                'response' => ''
+            ],
+            [
+                'user' => 'a*****d',
+                'initials' => 'AD',
+                'stars' => 4,
+                'date' => '2026-06-15 11:20',
+                'layanan' => 'Cuci Setrika Reguler',
+                'comment' => 'Setrikanya rapi sekali, baju langsung siap pakai. Pelayanan ramah.',
+                'photos' => [],
+                'response' => 'Terima kasih ulasannya Kak! Kami selalu menjaga kualitas untuk kepuasan pelanggan.'
+            ]
+        ];
+    }
+}
 
 // Custom logo per partner (using nice icons or images)
 $partner_logos = [
