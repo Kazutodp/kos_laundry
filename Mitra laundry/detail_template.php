@@ -5,6 +5,24 @@ if (session_status() === PHP_SESSION_NONE) {
 }
 require_once '../db_connect.php';
 
+// Helper function to resolve Material Symbol icons for tab IDs/Labels
+function getTabIcon($tab_id, $tab_label) {
+    $id = strtolower($tab_id);
+    $label = strtolower($tab_label);
+    if (strpos($id, 'self') !== false || strpos($label, 'mandiri') !== false) {
+        return 'local_laundry_service';
+    } elseif (strpos($id, 'kiloan') !== false || strpos($label, 'kiloan') !== false) {
+        return 'scale';
+    } elseif (strpos($id, 'satuan') !== false || strpos($label, 'satuan') !== false || strpos($id, 'sepatu') !== false) {
+        return 'dry_cleaning';
+    } elseif (strpos($id, 'facility') !== false || strpos($label, 'keunggulan') !== false || strpos($id, 'keunggulan') !== false) {
+        return 'workspace_premium';
+    } elseif (strpos($id, 'express') !== false || strpos($label, 'express') !== false) {
+        return 'bolt';
+    }
+    return 'category';
+}
+
 // Load configuration
 $config_file = '../admin/settings_config.json';
 $config = [
@@ -181,11 +199,6 @@ $logo_url = $partner_logos[$id_mitra] ?? $partner_logos[1];
         }
         ::-webkit-scrollbar-thumb:hover {
             background: #94a3b8;
-        }
-        .tab-btn.active {
-            border-bottom-color: #0058be;
-            color: #0058be;
-            font-weight: 700;
         }
     </style>
     <script id="tailwind-config">
@@ -412,18 +425,43 @@ $logo_url = $partner_logos[$id_mitra] ?? $partner_logos[1];
             <div>
                 <h2 class="font-headline-md text-on-surface mb-md">Menu Layanan</h2>
                 <!-- Tabs -->
-                <div class="flex gap-md border-b border-outline-variant mb-lg overflow-x-auto pb-1">
+                <div class="flex p-1 bg-surface-container rounded-2xl mb-lg overflow-x-auto gap-1 select-none">
                     <?php if (isset($custom_tabs) && is_array($custom_tabs)): ?>
                         <?php $first = true; foreach ($custom_tabs as $tab_id => $tab_label): ?>
-                            <button id="tab-<?= $tab_id; ?>" onclick="switchTab('<?= $tab_id; ?>')" class="tab-btn px-md py-sm border-b-2 border-transparent text-on-surface-variant hover:text-primary transition-colors whitespace-nowrap <?= $first ? 'active' : ''; ?>"><?= htmlspecialchars($tab_label); ?></button>
+                            <?php $icon = getTabIcon($tab_id, $tab_label); ?>
+                            <button id="tab-<?= $tab_id; ?>" onclick="switchTab('<?= $tab_id; ?>')" 
+                                    class="tab-btn flex items-center gap-2 px-5 py-2.5 rounded-xl text-sm font-semibold transition-all duration-200 whitespace-nowrap active:scale-95 <?= $first ? 'bg-primary text-white shadow-md shadow-primary/10 font-bold' : 'text-on-surface-variant hover:text-primary hover:bg-white/50'; ?>">
+                                <span class="material-symbols-outlined text-[20px] select-none"><?= $icon; ?></span>
+                                <span><?= htmlspecialchars($tab_label); ?></span>
+                            </button>
                         <?php $first = false; endforeach; ?>
                     <?php elseif ($is_self_service): ?>
-                        <button id="tab-self" onclick="switchTab('self')" class="tab-btn px-md py-sm border-b-2 border-transparent text-on-surface-variant hover:text-primary transition-colors whitespace-nowrap active">Self Service</button>
-                        <button id="tab-facility" onclick="switchTab('facility')" class="tab-btn px-md py-sm border-b-2 border-transparent text-on-surface-variant hover:text-primary transition-colors whitespace-nowrap">Fasilitas & Keunggulan</button>
+                        <button id="tab-self" onclick="switchTab('self')" 
+                                class="tab-btn flex items-center gap-2 px-5 py-2.5 rounded-xl text-sm font-semibold transition-all duration-200 whitespace-nowrap active:scale-95 bg-primary text-white shadow-md shadow-primary/10 font-bold">
+                            <span class="material-symbols-outlined text-[20px] select-none">local_laundry_service</span>
+                            <span>Self Service</span>
+                        </button>
+                        <button id="tab-facility" onclick="switchTab('facility')" 
+                                class="tab-btn flex items-center gap-2 px-5 py-2.5 rounded-xl text-sm font-semibold transition-all duration-200 whitespace-nowrap active:scale-95 text-on-surface-variant hover:text-primary hover:bg-white/50">
+                            <span class="material-symbols-outlined text-[20px] select-none">workspace_premium</span>
+                            <span>Fasilitas & Keunggulan</span>
+                        </button>
                     <?php else: ?>
-                        <button id="tab-kiloan" onclick="switchTab('kiloan')" class="tab-btn px-md py-sm border-b-2 border-transparent text-on-surface-variant hover:text-primary transition-colors whitespace-nowrap active">Cuci Kiloan</button>
-                        <button id="tab-satuan" onclick="switchTab('satuan')" class="tab-btn px-md py-sm border-b-2 border-transparent text-on-surface-variant hover:text-primary transition-colors whitespace-nowrap">Cuci Satuan</button>
-                        <button id="tab-express" onclick="switchTab('express')" class="tab-btn px-md py-sm border-b-2 border-transparent text-on-surface-variant hover:text-primary transition-colors whitespace-nowrap">Cuci Express</button>
+                        <button id="tab-kiloan" onclick="switchTab('kiloan')" 
+                                class="tab-btn flex items-center gap-2 px-5 py-2.5 rounded-xl text-sm font-semibold transition-all duration-200 whitespace-nowrap active:scale-95 bg-primary text-white shadow-md shadow-primary/10 font-bold">
+                            <span class="material-symbols-outlined text-[20px] select-none">scale</span>
+                            <span>Cuci Kiloan</span>
+                        </button>
+                        <button id="tab-satuan" onclick="switchTab('satuan')" 
+                                class="tab-btn flex items-center gap-2 px-5 py-2.5 rounded-xl text-sm font-semibold transition-all duration-200 whitespace-nowrap active:scale-95 text-on-surface-variant hover:text-primary hover:bg-white/50">
+                            <span class="material-symbols-outlined text-[20px] select-none">dry_cleaning</span>
+                            <span>Cuci Satuan</span>
+                        </button>
+                        <button id="tab-express" onclick="switchTab('express')" 
+                                class="tab-btn flex items-center gap-2 px-5 py-2.5 rounded-xl text-sm font-semibold transition-all duration-200 whitespace-nowrap active:scale-95 text-on-surface-variant hover:text-primary hover:bg-white/50">
+                            <span class="material-symbols-outlined text-[20px] select-none">bolt</span>
+                            <span>Cuci Express</span>
+                        </button>
                     <?php endif; ?>
                 </div>
                 
@@ -959,18 +997,23 @@ $logo_url = $partner_logos[$id_mitra] ?? $partner_logos[1];
     // Switch Tabs
     function switchTab(tabId) {
         document.querySelectorAll('.tab-btn').forEach(btn => {
-            btn.classList.remove('active', 'border-primary', 'text-primary', 'font-bold');
-            btn.classList.add('border-transparent', 'text-on-surface-variant');
+            btn.classList.remove('bg-primary', 'text-white', 'shadow-md', 'shadow-primary/10', 'font-bold');
+            btn.classList.add('text-on-surface-variant', 'hover:text-primary', 'hover:bg-white/50');
         });
         
         const activeBtn = document.getElementById('tab-' + tabId);
-        activeBtn.classList.add('active', 'border-primary', 'text-primary', 'font-bold');
-        activeBtn.classList.remove('border-transparent', 'text-on-surface-variant');
+        if (activeBtn) {
+            activeBtn.classList.add('bg-primary', 'text-white', 'shadow-md', 'shadow-primary/10', 'font-bold');
+            activeBtn.classList.remove('text-on-surface-variant', 'hover:text-primary', 'hover:bg-white/50');
+        }
         
         document.querySelectorAll('.grid-content').forEach(grid => {
             grid.classList.add('hidden');
         });
-        document.getElementById('grid-' + tabId).classList.remove('hidden');
+        const targetGrid = document.getElementById('grid-' + tabId);
+        if (targetGrid) {
+            targetGrid.classList.remove('hidden');
+        }
     }
 
     // Set initial active tab styling & Map initialization
