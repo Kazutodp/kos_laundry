@@ -171,55 +171,56 @@ try {
 </head>
 <body class="bg-surface text-on-surface min-h-screen flex overflow-hidden">
     <!-- SideNavBar -->
-    <aside class="hidden lg:flex flex-col h-screen sticky top-0 p-md space-y-md bg-surface-container-low border-r border-outline-variant w-64 shrink-0">
-        <div class="flex items-center gap-xs px-xs py-sm">
-            <img alt="MataramWash Logo" class="h-8 w-8 object-contain" src="../logo.png?v=3">
-            <span class="text-headline-sm font-headline-md font-bold text-primary">MataramWash</span>
-        </div>
-        <div class="flex flex-col gap-xs py-md border-b border-outline-variant">
-            <p class="px-md text-label-sm text-outline uppercase tracking-widest">Main Menu</p>
-            <a class="flex items-center gap-sm px-md py-sm text-on-surface-variant hover:bg-surface-container-high rounded-lg transition-all" href="dashboard_admin.php">
-                <span class="material-symbols-outlined">dashboard</span>
-                <span class="text-label-md font-label-md">Dashboard</span>
-            </a>
-            <a class="flex items-center gap-sm px-md py-sm bg-primary-container text-on-primary-container rounded-lg font-bold translate-x-1 transition-transform" href="manajemen_mitra.php">
-                <span class="material-symbols-outlined" style="font-variation-settings: 'FILL' 1;">group</span>
-                <span class="text-label-md font-label-md">Manajemen Mitra</span>
-            </a>
-            <a class="flex items-center gap-sm px-md py-sm text-on-surface-variant hover:bg-surface-container-high rounded-lg transition-all" href="operational_area.php">
-                <span class="material-symbols-outlined">map</span>
-                <span class="text-label-md font-label-md">Wilayah Operasional</span>
-            </a>
-            <a class="flex items-center gap-sm px-md py-sm text-on-surface-variant hover:bg-surface-container-high rounded-lg transition-all" href="analitik_kemitraan.php">
-                <span class="material-symbols-outlined">analytics</span>
-                <span class="text-label-md font-label-md">Analitik Kemitraan</span>
-            </a>
-            <a class="flex items-center gap-sm px-md py-sm text-on-surface-variant hover:bg-surface-container-high rounded-lg transition-all" href="financial_statements.php">
-                <span class="material-symbols-outlined">payments</span>
-                <span class="text-label-md font-label-md">Laporan Keuangan</span>
-            </a>
-            <a class="flex items-center gap-sm px-md py-sm text-on-surface-variant hover:bg-surface-container-high rounded-lg transition-all" href="settings.php">
-                <span class="material-symbols-outlined">settings</span>
-                <span class="text-label-md font-label-md">Settings</span>
-            </a>
-        </div>
-        <div class="flex-grow"></div>
-        <div class="flex flex-col gap-xs py-md">
-            <a class="flex items-center gap-sm px-md py-sm text-on-surface-variant hover:bg-surface-container-high rounded-lg transition-all" href="../bantuan/bantuan.php">
-                <span class="material-symbols-outlined">help</span>
-                <span class="text-label-md font-label-md">Help</span>
-            </a>
-            <a class="flex items-center gap-sm px-md py-sm text-on-surface-variant hover:bg-surface-container-high rounded-lg transition-all" href="logout_admin.php">
-                <span class="material-symbols-outlined text-error">logout</span>
-                <span class="text-label-md font-label-md text-error">Logout</span>
-            </a>
-        </div>
-    </aside>
+    <!-- SideNavBar -->
+<aside class="hidden lg:flex flex-col h-screen sticky top-0 p-md space-y-md bg-slate-900 border-r border-slate-800 w-64 shrink-0 text-slate-300">
+<div class="flex items-center gap-xs px-xs py-sm border-b border-slate-800">
+<img alt="MataramWash Logo" class="h-8 w-8 object-contain brightness-110 filter" src="../logo.png?v=3">
+<span class="text-headline-sm font-headline-md font-extrabold text-white">MataramWash</span>
+</div>
+<div class="flex flex-col gap-xs py-md border-b border-slate-800">
+<p class="px-md text-[10px] font-extrabold text-slate-500 uppercase tracking-widest mb-xs">Main Menu</p>
+<a class="flex items-center gap-sm px-md py-sm text-slate-400 hover:text-white hover:bg-slate-800 rounded-xl transition-all duration-200" href="dashboard_admin.php">
+<span class="material-symbols-outlined text-[20px]" style="font-variation-settings: 'FILL' 1;">dashboard</span>
+<span class="text-label-md font-label-md">Dashboard</span>
+</a>
+<a class="flex items-center gap-sm px-md py-sm bg-blue-600 text-white rounded-xl font-bold border-l-4 border-blue-400 shadow-lg shadow-blue-900/30 transition-all duration-200" href="manajemen_mitra.php">
+<span class="material-symbols-outlined text-[20px]">group</span>
+<span class="text-label-md font-label-md">Manajemen Mitra</span>
+</a>
+<a class="flex items-center gap-sm px-md py-sm text-slate-400 hover:text-white hover:bg-slate-800 rounded-xl transition-all duration-200" href="operational_area.php">
+<span class="material-symbols-outlined text-[20px]">map</span>
+<span class="text-label-md font-label-md">Wilayah Operasional</span>
+</a>
+<a class="flex items-center gap-sm px-md py-sm text-slate-400 hover:text-white hover:bg-slate-800 rounded-xl transition-all duration-200" href="analitik_kemitraan.php">
+<span class="material-symbols-outlined text-[20px]">analytics</span>
+<span class="text-label-md font-label-md">Analitik Kemitraan</span>
+</a>
+<a class="flex items-center gap-sm px-md py-sm text-slate-400 hover:text-white hover:bg-slate-800 rounded-xl transition-all duration-200" href="financial_statements.php">
+<span class="material-symbols-outlined text-[20px]">payments</span>
+<span class="text-label-md font-label-md">Laporan Keuangan</span>
+</a>
+<a class="flex items-center gap-sm px-md py-sm text-slate-400 hover:text-white hover:bg-slate-800 rounded-xl transition-all duration-200" href="settings.php">
+<span class="material-symbols-outlined text-[20px]">settings</span>
+<span class="text-label-md font-label-md">Settings</span>
+</a>
+</div>
+<div class="flex-grow"></div>
+<div class="flex flex-col gap-xs py-md">
+<a class="flex items-center gap-sm px-md py-sm text-slate-400 hover:text-white hover:bg-slate-800 rounded-xl transition-all duration-200" href="../bantuan/bantuan.php">
+<span class="material-symbols-outlined text-[20px]">help</span>
+<span class="text-label-md font-label-md">Help Center</span>
+</a>
+<a class="flex items-center gap-sm px-md py-sm text-rose-400 hover:text-rose-300 hover:bg-rose-500/10 rounded-xl transition-all duration-200" href="logout_admin.php">
+<span class="material-symbols-outlined text-[20px] text-rose-400">logout</span>
+<span class="text-label-md font-label-md text-rose-400 font-bold">Logout</span>
+</a>
+</div>
+</aside>
 
     <!-- Main Content Canvas -->
     <main class="flex-grow flex flex-col h-screen overflow-hidden">
         <!-- TopAppBar -->
-        <header class="sticky top-0 w-full z-50 flex justify-between items-center px-lg py-md bg-surface shadow-sm max-w-none">
+        <header class="sticky top-0 w-full z-40 flex justify-between items-center px-lg py-md bg-white border-b border-slate-100 max-w-none">
             <div class="flex items-center gap-md flex-1">
                 <div class="lg:hidden">
                     <span class="material-symbols-outlined text-on-surface-variant">menu</span>
@@ -229,7 +230,7 @@ try {
             <div class="flex items-center gap-md">
                 <div class="flex items-center gap-sm">
                     <p class="text-label-md font-bold leading-none hidden sm:block"><?= htmlspecialchars($_SESSION['admin_nama'] ?? 'Admin'); ?></p>
-                    <img alt="Admin profile" class="w-9 h-9 rounded-full object-cover border border-outline-variant" src="https://lh3.googleusercontent.com/aida-public/AB6AXuAVvTfpl6gmSbn7utdVTjVT1ZrHaIbCt76OBU9jA9oc3rue19H1ElhbliNLU8FUVfCMZWMCOXO6ZI0EBlE68GvL7TdpDcdz05FrUqtzRUVrrTQKcC_MwtAKGFkV_XAbFOxIpl3JRF93_22IuQMGYGKqzXSHUZRnab8I7P_AWzrPQKLrh9PmQd4pqpbRW8v-5sKU_uUJt1jpvrX5bWXDDQshtNQtM9DcfB5GsKwZW-zFy6P6DnFBWUY_oCDubbBHW4BXb1p5RWiXyyg">
+                    <img alt="Admin profile" class="w-9 h-9 rounded-full object-cover border-2 border-slate-100 shadow-sm" src="https://lh3.googleusercontent.com/aida-public/AB6AXuAVvTfpl6gmSbn7utdVTjVT1ZrHaIbCt76OBU9jA9oc3rue19H1ElhbliNLU8FUVfCMZWMCOXO6ZI0EBlE68GvL7TdpDcdz05FrUqtzRUVrrTQKcC_MwtAKGFkV_XAbFOxIpl3JRF93_22IuQMGYGKqzXSHUZRnab8I7P_AWzrPQKLrh9PmQd4pqpbRW8v-5sKU_uUJt1jpvrX5bWXDDQshtNQtM9DcfB5GsKwZW-zFy6P6DnFBWUY_oCDubbBHW4BXb1p5RWiXyyg">
                 </div>
             </div>
         </header>
@@ -384,13 +385,14 @@ try {
         </div>
 
         <!-- Footer -->
-        <footer class="w-full py-md px-lg bg-surface-container-highest flex justify-between items-center text-on-surface-variant">
-            <p class="text-label-sm">© 2024 MataramWash Provincial Partnership Program. Freshness across the region.</p>
-            <div class="flex gap-lg">
-                <a class="text-label-sm hover:text-primary transition-colors" href="../bantuan/bantuan.php">Pusat Bantuan</a>
-                <a class="text-label-sm hover:text-primary transition-colors" href="#">Kebijakan Kemitraan</a>
-            </div>
-        </footer>
+        <!-- Footer -->
+<footer class="w-full py-md px-lg bg-slate-50 border-t border-slate-100 flex justify-between items-center text-slate-400">
+<p class="text-label-sm">© 2024 MataramWash Provincial Partnership Program. Freshness across the region.</p>
+<div class="flex gap-lg">
+<a class="text-label-sm hover:text-blue-600 transition-colors" href="../bantuan/bantuan.php">Pusat Bantuan</a>
+<a class="text-label-sm hover:text-blue-600 transition-colors" href="#">Kebijakan Kemitraan</a>
+</div>
+</footer>
     </main>
 
     <script>
