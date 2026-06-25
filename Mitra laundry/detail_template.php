@@ -795,39 +795,43 @@ $logo_url = $partner_logos[$id_mitra] ?? $partner_logos[1];
                 Informasi Toko
             </h2>
             <!-- Location & Shop Info Card -->
-            <div class="bg-surface-container-lowest p-lg rounded-xl border border-outline-variant shadow-sm space-y-md">
+            <div class="bg-surface-container-lowest p-lg rounded-2xl border border-outline-variant/60 shadow-sm space-y-md hover:shadow-md transition-all duration-300">
                 
                 <!-- Interactive Map Container -->
-                <div class="aspect-video bg-surface-container rounded-lg overflow-hidden relative shadow-inner border border-outline-variant/30">
+                <div class="aspect-video bg-surface-container rounded-2xl overflow-hidden relative border border-outline-variant/50 shadow-inner">
                     <div id="partner-map" class="w-full h-full z-10"></div>
                 </div>
                 
                 <div class="space-y-sm">
                     <!-- Address Block -->
-                    <div class="flex items-start justify-between p-sm bg-surface-container/30 hover:bg-surface-container/50 rounded-xl transition-all group">
+                    <div class="flex items-start justify-between p-sm bg-slate-50/50 hover:bg-slate-50 border border-slate-100 rounded-2xl transition-all group">
                         <div class="flex gap-sm items-start">
-                            <span class="material-symbols-outlined text-primary mt-[2px] text-[20px]">location_on</span>
+                            <div class="bg-primary/5 text-primary p-1.5 rounded-xl flex items-center justify-center shrink-0">
+                                <span class="material-symbols-outlined text-[20px]">location_on</span>
+                            </div>
                             <div>
                                 <p class="text-[10px] text-outline leading-none mb-[4px] uppercase font-bold tracking-wider">Alamat Lengkap</p>
                                 <p class="text-body-md text-on-surface text-sm leading-relaxed pr-xs"><?= htmlspecialchars($alamat); ?></p>
                             </div>
                         </div>
-                        <button onclick="navigator.clipboard.writeText('<?= addslashes($alamat); ?>').then(() => alert('Alamat disalin!'))" class="w-8 h-8 rounded-lg bg-slate-100 hover:bg-slate-200 text-slate-500 hover:text-on-surface flex items-center justify-center transition-all shrink-0" title="Salin Alamat">
+                        <button onclick="navigator.clipboard.writeText('<?= addslashes($alamat); ?>').then(() => alert('Alamat disalin!'))" class="w-8 h-8 rounded-xl bg-white border border-slate-200 hover:bg-slate-50 text-slate-500 hover:text-on-surface flex items-center justify-center transition-all shrink-0 shadow-xs" title="Salin Alamat">
                             <span class="material-symbols-outlined text-[16px]">content_copy</span>
                         </button>
                     </div>
 
                     <!-- Phone Block -->
-                    <div class="flex items-center justify-between p-sm bg-surface-container/30 hover:bg-surface-container/50 rounded-xl transition-all group">
+                    <div class="flex items-center justify-between p-sm bg-slate-50/50 hover:bg-slate-50 border border-slate-100 rounded-2xl transition-all group">
                         <div class="flex gap-sm items-center">
-                            <span class="material-symbols-outlined text-primary text-[20px]">phone</span>
+                            <div class="bg-primary/5 text-primary p-1.5 rounded-xl flex items-center justify-center shrink-0">
+                                <span class="material-symbols-outlined text-[20px]">phone</span>
+                            </div>
                             <div>
                                 <p class="text-[10px] text-outline leading-none mb-[2px] uppercase font-bold tracking-wider">Nomor Telepon</p>
                                 <p class="text-body-md text-on-surface font-semibold text-sm"><?= htmlspecialchars($no_telp); ?></p>
                             </div>
                         </div>
                         <div class="flex gap-xs">
-                            <a href="tel:<?= preg_replace('/[^0-9+]/', '', $no_telp); ?>" class="w-8 h-8 rounded-lg bg-primary/10 text-primary flex items-center justify-center hover:bg-primary hover:text-white transition-all" title="Panggil">
+                            <a href="tel:<?= preg_replace('/[^0-9+]/', '', $no_telp); ?>" class="w-8 h-8 rounded-xl bg-white border border-slate-200 text-primary flex items-center justify-center hover:bg-primary hover:text-white transition-all shadow-xs" title="Panggil">
                                 <span class="material-symbols-outlined text-[18px]">call</span>
                             </a>
                             <?php 
@@ -836,7 +840,7 @@ $logo_url = $partner_logos[$id_mitra] ?? $partner_logos[1];
                                 $wa_number = '628' . substr($wa_number, 2);
                             }
                             ?>
-                            <a href="https://wa.me/<?= $wa_number; ?>" target="_blank" class="w-8 h-8 rounded-lg bg-green-500/10 text-green-600 flex items-center justify-center hover:bg-green-500 hover:text-white transition-all" title="WhatsApp">
+                            <a href="https://wa.me/<?= $wa_number; ?>" target="_blank" class="w-8 h-8 rounded-xl bg-white border border-slate-200 text-green-600 flex items-center justify-center hover:bg-green-500 hover:text-white transition-all shadow-xs" title="WhatsApp">
                                 <span class="material-symbols-outlined text-[18px]">chat</span>
                             </a>
                         </div>
@@ -844,14 +848,14 @@ $logo_url = $partner_logos[$id_mitra] ?? $partner_logos[1];
                 </div>
 
                 <!-- Action Button -->
-                <a href="https://maps.google.com/?q=<?= $mitra['latitude']; ?>,<?= $mitra['longitude']; ?>" target="_blank" class="flex items-center justify-center gap-xs w-full text-center py-sm bg-primary text-on-primary rounded-xl font-bold hover:brightness-110 active:scale-[0.98] transition-all shadow-md shadow-primary/10">
+                <a href="https://maps.google.com/?q=<?= $mitra['latitude']; ?>,<?= $mitra['longitude']; ?>" target="_blank" class="flex items-center justify-center gap-xs w-full text-center py-3 bg-primary text-on-primary rounded-xl font-bold hover:brightness-110 active:scale-[0.98] transition-all shadow-md shadow-primary/10 hover:shadow-lg hover:shadow-primary/20 hover:-translate-y-0.5">
                     <span class="material-symbols-outlined text-[20px]">directions</span>
                     Petunjuk Arah di Maps
                 </a>
 
                 <!-- Jam Operasional Segment -->
-                <div class="border-t border-outline-variant/60 pt-md mt-md">
-                    <h4 class="font-headline-md text-[14px] text-on-surface font-bold mb-xs flex items-center gap-xs">
+                <div class="border-t border-slate-100 pt-md mt-md">
+                    <h4 class="font-semibold text-[14px] text-on-surface flex items-center gap-xs mb-sm">
                         <span class="material-symbols-outlined text-primary text-[18px]">schedule</span>
                         Jam Operasional
                     </h4>
