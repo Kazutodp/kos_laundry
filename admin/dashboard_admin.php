@@ -184,98 +184,121 @@ try {
         }
         .bento-card {
             background-color: #ffffff;
-            box-shadow: 0px 4px 20px rgba(0, 0, 0, 0.05);
-            border: 1px solid #e5e7eb;
-            transition: transform 0.2s ease, box-shadow 0.2s ease;
+            box-shadow: 0px 4px 20px rgba(0, 0, 0, 0.02);
+            border: 1px solid rgba(226, 232, 240, 0.8);
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
         }
-        .bento-card:hover {
-            transform: translateY(-2px);
-            box-shadow: 0px 8px 30px rgba(0, 0, 0, 0.08);
+        .bento-card-blue:hover {
+            transform: translateY(-4px);
+            box-shadow: 0 12px 24px -10px rgba(59, 130, 246, 0.18), 0 8px 16px -8px rgba(59, 130, 246, 0.18);
+            border-color: rgba(59, 130, 246, 0.4);
+        }
+        .bento-card-emerald:hover {
+            transform: translateY(-4px);
+            box-shadow: 0 12px 24px -10px rgba(16, 185, 129, 0.18), 0 8px 16px -8px rgba(16, 185, 129, 0.18);
+            border-color: rgba(16, 185, 129, 0.4);
+        }
+        .bento-card-violet:hover {
+            transform: translateY(-4px);
+            box-shadow: 0 12px 24px -10px rgba(139, 92, 246, 0.18), 0 8px 16px -8px rgba(139, 92, 246, 0.18);
+            border-color: rgba(139, 92, 246, 0.4);
+        }
+        .bento-card-amber:hover {
+            transform: translateY(-4px);
+            box-shadow: 0 12px 24px -10px rgba(245, 158, 11, 0.18), 0 8px 16px -8px rgba(245, 158, 11, 0.18);
+            border-color: rgba(245, 158, 11, 0.4);
         }
         .custom-scrollbar::-webkit-scrollbar {
             width: 6px;
+            height: 6px;
         }
         .custom-scrollbar::-webkit-scrollbar-track {
             background: transparent;
         }
         .custom-scrollbar::-webkit-scrollbar-thumb {
-            background: #d1d5db;
+            background: rgba(203, 213, 225, 0.6);
             border-radius: 10px;
+        }
+        .custom-scrollbar::-webkit-scrollbar-thumb:hover {
+            background: rgba(148, 163, 184, 0.8);
+        }
+        .chart-grid {
+            background-image: linear-gradient(to top, #f1f5f9 1px, transparent 1px);
+            background-size: 100% 25%;
         }
     </style>
 </head>
 <body class="bg-surface text-on-surface min-h-screen flex overflow-hidden">
 <!-- SideNavBar -->
-<aside class="hidden lg:flex flex-col h-screen sticky top-0 p-md space-y-md bg-surface-container-low border-r border-outline-variant w-64 shrink-0">
-<div class="flex items-center gap-xs px-xs py-sm">
-<img alt="MataramWash Logo" class="h-8 w-8 object-contain" src="../logo.png?v=3">
-<span class="text-headline-sm font-headline-md font-bold text-primary">MataramWash</span>
+<aside class="hidden lg:flex flex-col h-screen sticky top-0 p-md space-y-md bg-slate-900 border-r border-slate-800 w-64 shrink-0 text-slate-300">
+<div class="flex items-center gap-xs px-xs py-sm border-b border-slate-800">
+<img alt="MataramWash Logo" class="h-8 w-8 object-contain brightness-110 filter" src="../logo.png?v=3">
+<span class="text-headline-sm font-headline-md font-extrabold text-white">MataramWash</span>
 </div>
-<div class="flex flex-col gap-xs py-md border-b border-outline-variant">
-<p class="px-md text-label-sm text-outline uppercase tracking-widest">Main Menu</p>
-<a class="flex items-center gap-sm px-md py-sm bg-primary-container text-on-primary-container rounded-lg font-bold translate-x-1 transition-transform" href="dashboard_admin.php">
-<span class="material-symbols-outlined" style="font-variation-settings: 'FILL' 1;">dashboard</span>
+<div class="flex flex-col gap-xs py-md border-b border-slate-800">
+<p class="px-md text-[10px] font-extrabold text-slate-500 uppercase tracking-widest mb-xs">Main Menu</p>
+<a class="flex items-center gap-sm px-md py-sm bg-blue-600 text-white rounded-xl font-bold border-l-4 border-blue-400 shadow-lg shadow-blue-900/30 transition-all duration-200" href="dashboard_admin.php">
+<span class="material-symbols-outlined text-[20px]" style="font-variation-settings: 'FILL' 1;">dashboard</span>
 <span class="text-label-md font-label-md">Dashboard</span>
 </a>
-<a class="flex items-center gap-sm px-md py-sm text-on-surface-variant hover:bg-surface-container-high rounded-lg transition-all" href="manajemen_mitra.php">
-<span class="material-symbols-outlined">group</span>
+<a class="flex items-center gap-sm px-md py-sm text-slate-400 hover:text-white hover:bg-slate-800 rounded-xl transition-all duration-200" href="manajemen_mitra.php">
+<span class="material-symbols-outlined text-[20px]">group</span>
 <span class="text-label-md font-label-md">Manajemen Mitra</span>
 </a>
-<a class="flex items-center gap-sm px-md py-sm text-on-surface-variant hover:bg-surface-container-high rounded-lg transition-all" href="operational_area.php">
-<span class="material-symbols-outlined">map</span>
+<a class="flex items-center gap-sm px-md py-sm text-slate-400 hover:text-white hover:bg-slate-800 rounded-xl transition-all duration-200" href="operational_area.php">
+<span class="material-symbols-outlined text-[20px]">map</span>
 <span class="text-label-md font-label-md">Wilayah Operasional</span>
 </a>
-<a class="flex items-center gap-sm px-md py-sm text-on-surface-variant hover:bg-surface-container-high rounded-lg transition-all" href="analitik_kemitraan.php">
-<span class="material-symbols-outlined">analytics</span>
+<a class="flex items-center gap-sm px-md py-sm text-slate-400 hover:text-white hover:bg-slate-800 rounded-xl transition-all duration-200" href="analitik_kemitraan.php">
+<span class="material-symbols-outlined text-[20px]">analytics</span>
 <span class="text-label-md font-label-md">Analitik Kemitraan</span>
 </a>
-<a class="flex items-center gap-sm px-md py-sm text-on-surface-variant hover:bg-surface-container-high rounded-lg transition-all" href="financial_statements.php">
-<span class="material-symbols-outlined">payments</span>
+<a class="flex items-center gap-sm px-md py-sm text-slate-400 hover:text-white hover:bg-slate-800 rounded-xl transition-all duration-200" href="financial_statements.php">
+<span class="material-symbols-outlined text-[20px]">payments</span>
 <span class="text-label-md font-label-md">Laporan Keuangan</span>
 </a>
-<a class="flex items-center gap-sm px-md py-sm text-on-surface-variant hover:bg-surface-container-high rounded-lg transition-all" href="settings.php">
-<span class="material-symbols-outlined">settings</span>
+<a class="flex items-center gap-sm px-md py-sm text-slate-400 hover:text-white hover:bg-slate-800 rounded-xl transition-all duration-200" href="settings.php">
+<span class="material-symbols-outlined text-[20px]">settings</span>
 <span class="text-label-md font-label-md">Settings</span>
 </a>
 </div>
 <div class="flex-grow"></div>
 <div class="flex flex-col gap-xs py-md">
-<a class="flex items-center gap-sm px-md py-sm text-on-surface-variant hover:bg-surface-container-high rounded-lg transition-all" href="../bantuan/bantuan.php">
-<span class="material-symbols-outlined">help</span>
-<span class="text-label-md font-label-md">Help</span>
+<a class="flex items-center gap-sm px-md py-sm text-slate-400 hover:text-white hover:bg-slate-800 rounded-xl transition-all duration-200" href="../bantuan/bantuan.php">
+<span class="material-symbols-outlined text-[20px]">help</span>
+<span class="text-label-md font-label-md">Help Center</span>
 </a>
-<a class="flex items-center gap-sm px-md py-sm text-on-surface-variant hover:bg-surface-container-high rounded-lg transition-all" href="logout_admin.php">
-<span class="material-symbols-outlined text-error">logout</span>
-<span class="text-label-md font-label-md text-error">Logout</span>
+<a class="flex items-center gap-sm px-md py-sm text-rose-400 hover:text-rose-300 hover:bg-rose-500/10 rounded-xl transition-all duration-200" href="logout_admin.php">
+<span class="material-symbols-outlined text-[20px] text-rose-400">logout</span>
+<span class="text-label-md font-label-md text-rose-400 font-bold">Logout</span>
 </a>
 </div>
-
 </aside>
 <!-- Main Content Canvas -->
 <main class="flex-grow flex flex-col h-screen overflow-hidden">
-<!-- TopAppBar -->
-<header class="sticky top-0 w-full z-50 flex justify-between items-center px-lg py-md bg-surface shadow-sm max-w-none">
+<header class="sticky top-0 w-full z-40 flex justify-between items-center px-lg py-md bg-white border-b border-slate-100 max-w-none">
 <div class="flex items-center gap-md flex-1">
-<div class="lg:hidden">
-<span class="material-symbols-outlined text-on-surface-variant">menu</span>
+<div class="lg:hidden cursor-pointer hover:text-primary transition-colors">
+<span class="material-symbols-outlined text-slate-600">menu</span>
 </div>
 <div class="relative max-w-md w-full">
-<span class="material-symbols-outlined absolute left-sm top-1/2 -translate-y-1/2 text-outline">search</span>
-<input class="w-full pl-xl pr-md py-xs bg-surface-container-low border-none rounded-xl focus:ring-2 focus:ring-primary text-body-md" placeholder="Cari mitra, wilayah, atau laporan..." type="text">
+<span class="material-symbols-outlined absolute left-sm top-1/2 -translate-y-1/2 text-slate-400">search</span>
+<input class="w-full pl-xl pr-md py-xs bg-slate-50 border border-slate-200 rounded-xl focus:bg-white focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500 text-body-md transition-all placeholder:text-slate-400 text-slate-700" placeholder="Cari mitra, wilayah, atau laporan..." type="text">
 </div>
 </div>
 <div class="flex items-center gap-md">
-<button class="w-10 h-10 flex items-center justify-center rounded-full hover:bg-surface-container-high transition-colors relative">
-<span class="material-symbols-outlined text-on-surface-variant">notifications</span>
-<span class="absolute top-2 right-2 w-2 h-2 bg-error rounded-full"></span>
+<button class="w-10 h-10 flex items-center justify-center rounded-xl hover:bg-slate-50 text-slate-600 hover:text-blue-500 transition-colors relative">
+<span class="material-symbols-outlined text-[22px]">notifications</span>
+<span class="absolute top-2.5 right-2.5 w-2 h-2 bg-rose-500 rounded-full animate-ping"></span>
+<span class="absolute top-2.5 right-2.5 w-2 h-2 bg-rose-500 rounded-full"></span>
 </button>
-<div class="h-8 w-[1px] bg-outline-variant mx-xs"></div>
+<div class="h-6 w-[1px] bg-slate-200 mx-xs"></div>
 <div class="flex items-center gap-sm">
 <div class="text-right hidden sm:block">
-<p class="text-label-md font-bold leading-none"><?= htmlspecialchars($_SESSION['admin_nama'] ?? 'Budi Santoso'); ?></p>
-<p class="text-label-sm text-outline leading-tight">Administrator</p>
+<p class="text-label-md font-extrabold text-slate-800 leading-none"><?= htmlspecialchars($_SESSION['admin_nama'] ?? 'Budi Santoso'); ?></p>
+<p class="text-label-sm text-slate-400 leading-tight mt-1">Administrator</p>
 </div>
-<img alt="Admin profile" class="w-9 h-9 rounded-full object-cover border border-outline-variant" src="https://lh3.googleusercontent.com/aida-public/AB6AXuAVvTfpl6gmSbn7utdVTjVT1ZrHaIbCt76OBU9jA9oc3rue19H1ElhbliNLU8FUVfCMZWMCOXO6ZI0EBlE68GvL7TdpDcdz05FrUqtzRUVrrTQKcC_MwtAKGFkV_XAbFOxIpl3JRF93_22IuQMGYGKqzXSHUZRnab8I7P_AWzrPQKLrh9PmQd4pqpbRW8v-5sKU_uUJt1jpvrX5bWXDDQshtNQtM9DcfB5GsKwZW-zFy6P6DnFBWUY_oCDubbBHW4BXb1p5RWiXyyg">
+<img alt="Admin profile" class="w-9 h-9 rounded-full object-cover border-2 border-slate-100 shadow-sm" src="https://lh3.googleusercontent.com/aida-public/AB6AXuAVvTfpl6gmSbn7utdVTjVT1ZrHaIbCt76OBU9jA9oc3rue19H1ElhbliNLU8FUVfCMZWMCOXO6ZI0EBlE68GvL7TdpDcdz05FrUqtzRUVrrTQKcC_MwtAKGFkV_XAbFOxIpl3JRF93_22IuQMGYGKqzXSHUZRnab8I7P_AWzrPQKLrh9PmQd4pqpbRW8v-5sKU_uUJt1jpvrX5bWXDDQshtNQtM9DcfB5GsKwZW-zFy6P6DnFBWUY_oCDubbBHW4BXb1p5RWiXyyg">
 </div>
 </div>
 </header>
@@ -285,123 +308,150 @@ try {
 <!-- Greeting Header -->
 <div class="flex flex-col md:flex-row md:items-end justify-between gap-md">
 <div>
-<h1 class="text-headline-lg font-headline-lg text-on-surface">Pusat Kendali Mitra MataramWash</h1>
-<p class="text-body-lg text-on-surface-variant">Monitor performa dan sebaran mitra di wilayah Mataram dan sekitarnya.</p>
+<h1 class="text-headline-lg font-headline-lg text-slate-800 font-extrabold">Pusat Kendali Mitra MataramWash</h1>
+<p class="text-body-lg text-slate-500 mt-1">Monitor performa dan sebaran mitra di wilayah Mataram dan sekitarnya.</p>
 </div>
 </div>
 <!-- Stats Grid -->
 <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-lg">
-<div class="bento-card p-lg rounded-xl flex items-center gap-lg">
-<div class="w-14 h-14 bg-primary-fixed text-primary rounded-full flex items-center justify-center">
-<span class="material-symbols-outlined text-[32px]">handshake</span>
+<!-- Card 1 -->
+<div class="bento-card bento-card-blue p-lg rounded-2xl flex items-center gap-lg bg-gradient-to-br from-blue-50/50 to-white border-blue-100/60 shadow-xs">
+<div class="w-14 h-14 bg-blue-500/10 text-blue-600 rounded-2xl flex items-center justify-center">
+<span class="material-symbols-outlined text-[32px] fill-icon">handshake</span>
 </div>
 <div>
-<p class="text-label-md text-on-surface-variant">Total Mitra Aktif</p>
-<p class="text-headline-md font-bold"><?= $active_mitras_count; ?></p>
+<p class="text-label-md text-slate-500 font-semibold">Total Mitra Aktif</p>
+<p class="text-headline-md font-extrabold text-slate-800 mt-0.5"><?= $active_mitras_count; ?></p>
+<span class="text-[11px] text-emerald-600 font-bold flex items-center gap-[2px] mt-1">
+  <span class="material-symbols-outlined text-[12px]">trending_up</span> +2 baru minggu ini
+</span>
 </div>
 </div>
-<div class="bento-card p-lg rounded-xl flex items-center gap-lg">
-<div class="w-14 h-14 bg-secondary-container text-secondary rounded-full flex items-center justify-center">
-<span class="material-symbols-outlined text-[32px]">orders</span>
-</div>
-<div>
-<p class="text-label-md text-on-surface-variant">Total Pesanan Provinsi</p>
-<p class="text-headline-md font-bold"><?= $active_mitras_count > 0 ? 120 + $active_mitras_count * 15 : 0; ?></p>
-</div>
-</div>
-<div class="bento-card p-lg rounded-xl flex items-center gap-lg">
-<div class="w-14 h-14 bg-tertiary-fixed text-tertiary rounded-full flex items-center justify-center">
-<span class="material-symbols-outlined text-[32px]">payments</span>
+<!-- Card 2 -->
+<div class="bento-card bento-card-emerald p-lg rounded-2xl flex items-center gap-lg bg-gradient-to-br from-emerald-50/50 to-white border-emerald-100/60 shadow-xs">
+<div class="w-14 h-14 bg-emerald-500/10 text-emerald-600 rounded-2xl flex items-center justify-center">
+<span class="material-symbols-outlined text-[32px] fill-icon">local_laundry_service</span>
 </div>
 <div>
-<p class="text-label-md text-on-surface-variant">Pendapatan Mitra</p>
-<p class="text-headline-md font-bold">Rp <?= number_format($active_mitras_count > 0 ? 1500000 + $active_mitras_count * 220000 : 0, 0, ',', '.'); ?></p>
+<p class="text-label-md text-slate-500 font-semibold">Total Pesanan Provinsi</p>
+<p class="text-headline-md font-extrabold text-slate-800 mt-0.5"><?= $active_mitras_count > 0 ? 120 + $active_mitras_count * 15 : 0; ?></p>
+<span class="text-[11px] text-emerald-600 font-bold flex items-center gap-[2px] mt-1">
+  <span class="material-symbols-outlined text-[12px]">trending_up</span> +14.2% vs bln lalu
+</span>
 </div>
 </div>
-<div class="bento-card p-lg rounded-xl flex items-center gap-lg">
-<div class="w-14 h-14 bg-surface-container-highest text-on-surface-variant rounded-full flex items-center justify-center">
-<span class="material-symbols-outlined text-[32px]">grade</span>
+<!-- Card 3 -->
+<div class="bento-card bento-card-violet p-lg rounded-2xl flex items-center gap-lg bg-gradient-to-br from-violet-50/50 to-white border-violet-100/60 shadow-xs">
+<div class="w-14 h-14 bg-violet-500/10 text-violet-600 rounded-2xl flex items-center justify-center">
+<span class="material-symbols-outlined text-[32px] fill-icon">payments</span>
 </div>
 <div>
-<p class="text-label-md text-on-surface-variant">Avg Rating Provinsi</p>
-<p class="text-headline-md font-bold"><?= $avg_rating; ?>/5</p>
+<p class="text-label-md text-slate-500 font-semibold">Pendapatan Mitra</p>
+<p class="text-headline-md font-extrabold text-slate-800 mt-0.5">Rp <?= number_format($active_mitras_count > 0 ? 1500000 + $active_mitras_count * 220000 : 0, 0, ',', '.'); ?></p>
+<span class="text-[11px] text-emerald-600 font-bold flex items-center gap-[2px] mt-1">
+  <span class="material-symbols-outlined text-[12px]">trending_up</span> +Rp 440rb bln ini
+</span>
+</div>
+</div>
+<!-- Card 4 -->
+<div class="bento-card bento-card-amber p-lg rounded-2xl flex items-center gap-lg bg-gradient-to-br from-amber-50/50 to-white border-amber-100/60 shadow-xs">
+<div class="w-14 h-14 bg-amber-500/10 text-amber-600 rounded-2xl flex items-center justify-center">
+<span class="material-symbols-outlined text-[32px] fill-icon">grade</span>
+</div>
+<div>
+<p class="text-label-md text-slate-500 font-semibold">Avg Rating Provinsi</p>
+<p class="text-headline-md font-extrabold text-slate-800 mt-0.5"><?= $avg_rating; ?>/5</p>
+<span class="text-[11px] text-amber-600 font-bold flex items-center gap-[2px] mt-1">
+  <span class="material-symbols-outlined text-[12px]">star</span> Sangat Baik
+</span>
 </div>
 </div>
 </div>
 <!-- Performance Section (Bento Layout) -->
 <div class="grid grid-cols-1 lg:grid-cols-3 gap-lg">
-<div class="lg:col-span-2 bento-card p-lg rounded-xl flex flex-col">
+<!-- Region Active Partners Chart -->
+<div class="lg:col-span-2 bento-card p-lg rounded-2xl flex flex-col border border-slate-100 shadow-xs">
 <div class="flex justify-between items-center mb-lg">
-<h2 class="text-headline-sm font-bold">Mitra Aktif Berdasarkan Wilayah</h2>
-<select class="bg-surface-container-low border-none rounded-lg text-label-sm py-xs pl-sm pr-lg focus:ring-primary">
+<h2 class="text-headline-sm font-extrabold text-slate-800 text-[18px]">Mitra Aktif Berdasarkan Wilayah</h2>
+<select class="bg-slate-50 border border-slate-200 rounded-xl text-label-sm py-xs pl-sm pr-lg text-slate-600 focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500">
 <option>Semua Wilayah</option>
 </select>
 </div>
-<div class="flex-grow flex items-end justify-between gap-md h-48 pt-md px-md">
+<div class="flex-grow flex items-end justify-between gap-md h-56 pt-md px-md chart-grid">
 <?php foreach ($chart_areas as $area): ?>
 <?php 
 $count = $sebaran_data[$area] ?? 0;
 $height = $max_count > 0 ? ($count / $max_count) * 80 : 0; 
 $is_max = ($max_count > 0 && $count === $max_count);
-$bg_class = $is_max ? 'bg-primary' : 'bg-primary-fixed hover:bg-primary/80';
-$font_class = $is_max ? 'font-bold text-on-surface' : 'text-outline';
+$bg_class = $is_max ? 'from-blue-500 to-blue-600 shadow-md shadow-blue-500/10' : 'from-blue-200 to-blue-300 hover:from-blue-300 hover:to-blue-400';
+$font_class = $is_max ? 'font-bold text-blue-600' : 'text-slate-400';
 ?>
-<div class="w-full flex flex-col items-center gap-xs group relative h-full justify-end">
+<div class="w-full flex flex-col items-center gap-xs group relative h-full justify-end cursor-pointer">
     <!-- Tooltip on hover -->
-    <div class="absolute bottom-full mb-xs bg-inverse-surface text-inverse-on-surface text-[11px] px-xs py-[2px] rounded opacity-0 group-hover:opacity-100 transition-opacity pointer-events-none whitespace-nowrap z-10 shadow-sm">
+    <div class="absolute bottom-full mb-xs bg-slate-800 text-white text-[11px] px-sm py-1 rounded-lg opacity-0 group-hover:opacity-100 transition-opacity pointer-events-none whitespace-nowrap z-10 shadow-md">
         <?= $count; ?> Mitra Aktif
     </div>
-    <div class="w-12 <?= $bg_class; ?> rounded-t-lg transition-all duration-300" style="height: <?= max(4, $height); ?>%;"></div>
+    <div class="w-8 bg-gradient-to-t <?= $bg_class; ?> rounded-t-lg transition-all duration-300 group-hover:scale-105" style="height: <?= max(4, $height); ?>%;"></div>
     <span class="text-[11px] <?= $font_class; ?> text-center truncate w-full mt-xs" title="<?= htmlspecialchars($area); ?>"><?= htmlspecialchars($area); ?></span>
 </div>
 <?php endforeach; ?>
 </div>
 </div>
-<div class="bento-card p-lg rounded-xl space-y-md flex flex-col justify-between">
-<h2 class="text-headline-sm font-bold">Sebaran Mitra</h2>
-<div class="space-y-xs overflow-y-auto max-h-48 custom-scrollbar">
+<!-- Region Distribution Gauges -->
+<div class="bento-card p-lg rounded-2xl flex flex-col justify-between border border-slate-100 shadow-xs">
+<h2 class="text-headline-sm font-extrabold text-slate-800 text-[18px] mb-md">Sebaran Mitra</h2>
+<div class="space-y-md overflow-y-auto max-h-56 custom-scrollbar pr-xs">
 <?php if (empty($sebaran_data)): ?>
-<div class="text-center py-10 text-on-surface-variant">
-<span class="material-symbols-outlined text-outline text-[40px] mb-2">location_off</span>
+<div class="text-center py-10 text-slate-400">
+<span class="material-symbols-outlined text-[40px] mb-2">location_off</span>
 <p class="text-label-md font-semibold">Belum ada sebaran mitra</p>
 </div>
 <?php else: ?>
-<?php foreach ($sebaran_data as $area => $count): ?>
-<div class="flex justify-between items-center p-sm bg-surface-container-low rounded-xl">
-<div class="flex items-center gap-xs">
-<span class="material-symbols-outlined text-primary text-[20px]">location_on</span>
-<span class="text-label-md font-semibold text-on-surface"><?= htmlspecialchars($area); ?></span>
-</div>
-<span class="px-sm py-[2px] bg-primary-container text-on-primary-container rounded-full font-bold text-label-sm text-[12px]"><?= $count; ?> Toko</span>
+<?php 
+$total_mitras = count($all_mitras);
+foreach ($sebaran_data as $area => $count): 
+$percentage = $total_mitras > 0 ? ($count / $total_mitras) * 100 : 0;
+?>
+<div class="space-y-xs">
+    <div class="flex justify-between items-center text-[12px]">
+        <span class="font-bold text-slate-700 flex items-center gap-1">
+            <span class="material-symbols-outlined text-blue-500 text-[18px]">location_on</span>
+            <?= htmlspecialchars($area); ?>
+        </span>
+        <span class="text-slate-500 font-semibold"><?= $count; ?> Mitra (<?= number_format($percentage, 0); ?>%)</span>
+    </div>
+    <div class="w-full bg-slate-100 h-2 rounded-full overflow-hidden">
+        <div class="bg-gradient-to-r from-blue-400 to-blue-600 h-full rounded-full" style="width: <?= $percentage; ?>%"></div>
+    </div>
 </div>
 <?php endforeach; ?>
 <?php endif; ?>
 </div>
-<a href="../lokasi/locations.php" class="block w-full text-center py-xs bg-surface-container hover:bg-surface-container-high text-primary font-bold text-label-md rounded-xl transition-colors">Detail Peta Wilayah</a>
+<a href="../lokasi/locations.php" class="block w-full text-center py-xs bg-slate-50 hover:bg-slate-100 text-blue-600 font-bold text-label-md rounded-xl border border-slate-200 mt-md transition-all">Detail Peta Wilayah</a>
 </div>
 </div>
 <!-- Recent Partners Table -->
-<div class="bento-card rounded-xl overflow-hidden">
-<div class="px-lg py-md flex justify-between items-center border-b border-outline-variant">
-<h2 class="text-headline-sm font-bold">Aktivitas Mitra Terkini</h2>
-<button class="text-primary font-bold text-label-md">Lihat Semua Mitra</button>
+<div class="bento-card rounded-2xl overflow-hidden border border-slate-100 shadow-xs">
+<div class="px-lg py-md flex justify-between items-center border-b border-slate-100">
+<h2 class="text-headline-sm font-extrabold text-slate-800 text-[18px]">Aktivitas Mitra Terkini</h2>
+<button class="text-blue-600 font-bold text-label-md hover:underline">Lihat Semua Mitra</button>
 </div>
 <div class="overflow-x-auto">
 <table class="w-full text-left border-collapse">
 <thead>
-<tr class="bg-surface-container-low">
-<th class="px-lg py-md text-label-sm text-on-surface-variant font-bold uppercase tracking-wider">Nama Mitra</th>
-<th class="px-lg py-md text-label-sm text-on-surface-variant font-bold uppercase tracking-wider">Wilayah</th>
-<th class="px-lg py-md text-label-sm text-on-surface-variant font-bold uppercase tracking-wider">Mesin Aktif</th>
-<th class="px-lg py-md text-label-sm text-on-surface-variant font-bold uppercase tracking-wider">Status</th>
-<th class="px-lg py-md text-label-sm text-on-surface-variant font-bold uppercase tracking-wider text-right">Skor Performa</th>
+<tr class="bg-slate-50 border-b border-slate-100">
+<th class="px-lg py-md text-[11px] font-bold text-slate-400 uppercase tracking-wider">Nama Mitra</th>
+<th class="px-lg py-md text-[11px] font-bold text-slate-400 uppercase tracking-wider">Wilayah</th>
+<th class="px-lg py-md text-[11px] font-bold text-slate-400 uppercase tracking-wider">Tipe Layanan</th>
+<th class="px-lg py-md text-[11px] font-bold text-slate-400 uppercase tracking-wider">Status</th>
+<th class="px-lg py-md text-[11px] font-bold text-slate-400 uppercase tracking-wider text-right">Skor Performa</th>
 </tr>
 </thead>
-<tbody class="divide-y divide-outline-variant">
+<tbody class="divide-y divide-slate-100">
 <?php if (empty($all_mitras)): ?>
 <tr>
-<td colspan="5" class="px-lg py-12 text-center text-on-surface-variant">
-<span class="material-symbols-outlined text-outline text-[48px] mb-2">storefront_off</span>
+<td colspan="5" class="px-lg py-12 text-center text-slate-400">
+<span class="material-symbols-outlined text-[48px] mb-2">storefront_off</span>
 <p class="text-body-md font-semibold">Belum ada aktivitas mitra saat ini</p>
 </td>
 </tr>
@@ -425,10 +475,10 @@ if (strlen($city) > 18) {
 $file_name = str_replace(' ', '_', $mitra['nama_mitra']) . '.php';
 $has_file = file_exists('../Mitra laundry/' . $file_name);
 ?>
-<tr class="hover:bg-surface-container-low transition-colors">
-<td class="px-lg py-md text-body-md font-bold text-on-surface"><?= htmlspecialchars($mitra['nama_mitra']); ?></td>
-<td class="px-lg py-md text-body-md text-on-surface-variant"><?= htmlspecialchars($city); ?></td>
-<td class="px-lg py-md text-body-md text-on-surface-variant">
+<tr class="hover:bg-slate-50/50 transition-colors">
+<td class="px-lg py-md text-body-md font-extrabold text-slate-800"><?= htmlspecialchars($mitra['nama_mitra']); ?></td>
+<td class="px-lg py-md text-body-md text-slate-500"><?= htmlspecialchars($city); ?></td>
+<td class="px-lg py-md text-body-md text-slate-500">
     <?php 
     if ($mitra['icon_type'] === 'sepatu') {
         echo 'Special Care';
@@ -439,16 +489,25 @@ $has_file = file_exists('../Mitra laundry/' . $file_name);
 </td>
 <td class="px-lg py-md">
     <?php if ($mitra['status_buka'] == 1 && $has_file): ?>
-        <span class="px-sm py-xs bg-emerald-50 text-emerald-700 rounded-full font-bold text-label-sm">Aktif / Buka</span>
+        <span class="px-sm py-1 bg-emerald-50 text-emerald-700 border border-emerald-200 rounded-full font-bold text-label-sm text-[12px] inline-flex items-center gap-1.5">
+            <span class="w-1.5 h-1.5 rounded-full bg-emerald-500 animate-pulse"></span>
+            Aktif / Buka
+        </span>
     <?php elseif (!$has_file): ?>
-        <span class="px-sm py-xs bg-amber-50 text-amber-700 rounded-full font-bold text-label-sm">Draft / Belum Rilis</span>
+        <span class="px-sm py-1 bg-amber-50 text-amber-700 border border-amber-200 rounded-full font-bold text-label-sm text-[12px] inline-flex items-center gap-1.5">
+            <span class="w-1.5 h-1.5 rounded-full bg-amber-500"></span>
+            Draft / Belum Rilis
+        </span>
     <?php else: ?>
-        <span class="px-sm py-xs bg-slate-100 text-slate-500 rounded-full font-bold text-label-sm">Tutup</span>
+        <span class="px-sm py-1 bg-slate-50 text-slate-400 border border-slate-200 rounded-full font-bold text-label-sm text-[12px] inline-flex items-center gap-1.5">
+            <span class="w-1.5 h-1.5 rounded-full bg-slate-300"></span>
+            Tutup
+        </span>
     <?php endif; ?>
 </td>
-<td class="px-lg py-md text-body-md font-bold text-right text-tertiary">
+<td class="px-lg py-md text-body-md font-bold text-right text-amber-500">
     <div class="flex items-center justify-end gap-[2px]">
-        <span class="material-symbols-outlined text-[18px]" style="font-variation-settings: 'FILL' 1;">star</span>
+        <span class="material-symbols-outlined text-[18px] fill-icon" style="font-variation-settings: 'FILL' 1;">star</span>
         <span><?= htmlspecialchars($mitra['rating']); ?></span>
     </div>
 </td>
@@ -458,23 +517,23 @@ $has_file = file_exists('../Mitra laundry/' . $file_name);
 </tbody>
 </table>
 </div>
-<div class="px-lg py-md bg-surface-container-low flex justify-between items-center border-t border-outline-variant">
-<p class="text-label-sm text-outline">Menampilkan <?= count($all_mitras); ?> dari <?= count($all_mitras); ?> mitra terdaftar</p>
+<div class="px-lg py-md bg-slate-50 flex justify-between items-center border-t border-slate-100">
+<p class="text-label-sm text-slate-400">Menampilkan <?= count($all_mitras); ?> dari <?= count($all_mitras); ?> mitra terdaftar</p>
 <div class="flex gap-xs">
-<button class="w-8 h-8 flex items-center justify-center rounded border border-outline-variant text-on-surface-variant hover:bg-white transition-colors disabled:opacity-50" disabled=""><span class="material-symbols-outlined text-[18px]">chevron_left</span></button>
-<button class="w-8 h-8 flex items-center justify-center rounded border border-primary bg-primary text-on-primary font-bold text-label-sm transition-colors">1</button>
-<button class="w-8 h-8 flex items-center justify-center rounded border border-outline-variant text-on-surface-variant hover:bg-white transition-colors disabled:opacity-50" disabled=""><span class="material-symbols-outlined text-[18px]">chevron_right</span></button>
+<button class="w-8 h-8 flex items-center justify-center rounded-lg border border-slate-200 text-slate-400 hover:bg-white hover:text-slate-600 transition-colors disabled:opacity-50" disabled=""><span class="material-symbols-outlined text-[18px]">chevron_left</span></button>
+<button class="w-8 h-8 flex items-center justify-center rounded-lg border border-blue-600 bg-blue-600 text-white font-bold text-label-sm transition-colors shadow-sm shadow-blue-500/10">1</button>
+<button class="w-8 h-8 flex items-center justify-center rounded-lg border border-slate-200 text-slate-400 hover:bg-white hover:text-slate-600 transition-colors disabled:opacity-50" disabled=""><span class="material-symbols-outlined text-[18px]">chevron_right</span></button>
 </div>
 </div>
 </div>
 </div>
 </div>
 <!-- Footer -->
-<footer class="w-full py-md px-lg bg-surface-container-highest flex justify-between items-center text-on-surface-variant">
+<footer class="w-full py-md px-lg bg-slate-50 border-t border-slate-100 flex justify-between items-center text-slate-400">
 <p class="text-label-sm">© 2024 MataramWash Provincial Partnership Program. Freshness across the region.</p>
 <div class="flex gap-lg">
-<a class="text-label-sm hover:text-primary transition-colors" href="../bantuan/bantuan.php">Pusat Bantuan</a>
-<a class="text-label-sm hover:text-primary transition-colors" href="#">Kebijakan Kemitraan</a>
+<a class="text-label-sm hover:text-blue-600 transition-colors" href="../bantuan/bantuan.php">Pusat Bantuan</a>
+<a class="text-label-sm hover:text-blue-600 transition-colors" href="#">Kebijakan Kemitraan</a>
 </div>
 </footer>
 </main>
