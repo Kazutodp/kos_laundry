@@ -321,7 +321,7 @@ try {
 </div>
 <div>
 <p class="text-label-md text-slate-500 font-semibold">Total Mitra Aktif</p>
-<p class="text-headline-md font-extrabold text-slate-800 mt-0.5"><?= $active_mitras_count; ?></p>
+<p class="text-xl font-extrabold text-slate-800 mt-0.5"><?= $active_mitras_count; ?></p>
 <span class="text-[11px] text-emerald-600 font-bold flex items-center gap-[2px] mt-1">
   <span class="material-symbols-outlined text-[12px]">trending_up</span> +2 baru minggu ini
 </span>
@@ -334,7 +334,7 @@ try {
 </div>
 <div>
 <p class="text-label-md text-slate-500 font-semibold">Total Pesanan Provinsi</p>
-<p class="text-headline-md font-extrabold text-slate-800 mt-0.5"><?= $active_mitras_count > 0 ? 120 + $active_mitras_count * 15 : 0; ?></p>
+<p class="text-xl font-extrabold text-slate-800 mt-0.5"><?= $active_mitras_count > 0 ? 120 + $active_mitras_count * 15 : 0; ?></p>
 <span class="text-[11px] text-emerald-600 font-bold flex items-center gap-[2px] mt-1">
   <span class="material-symbols-outlined text-[12px]">trending_up</span> +14.2% vs bln lalu
 </span>
@@ -347,7 +347,7 @@ try {
 </div>
 <div>
 <p class="text-label-md text-slate-500 font-semibold">Pendapatan Mitra</p>
-<p class="text-headline-md font-extrabold text-slate-800 mt-0.5">Rp <?= number_format($active_mitras_count > 0 ? 1500000 + $active_mitras_count * 220000 : 0, 0, ',', '.'); ?></p>
+<p class="text-xl font-extrabold text-slate-800 mt-0.5">Rp <?= number_format($active_mitras_count > 0 ? 1500000 + $active_mitras_count * 220000 : 0, 0, ',', '.'); ?></p>
 <span class="text-[11px] text-emerald-600 font-bold flex items-center gap-[2px] mt-1">
   <span class="material-symbols-outlined text-[12px]">trending_up</span> +Rp 440rb bln ini
 </span>
@@ -360,7 +360,7 @@ try {
 </div>
 <div>
 <p class="text-label-md text-slate-500 font-semibold">Avg Rating Provinsi</p>
-<p class="text-headline-md font-extrabold text-slate-800 mt-0.5"><?= $avg_rating; ?>/5</p>
+<p class="text-xl font-extrabold text-slate-800 mt-0.5"><?= $avg_rating; ?>/5</p>
 <span class="text-[11px] text-amber-600 font-bold flex items-center gap-[2px] mt-1">
   <span class="material-symbols-outlined text-[12px]">star</span> Sangat Baik
 </span>
