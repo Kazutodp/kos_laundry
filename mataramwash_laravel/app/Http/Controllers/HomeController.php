@@ -47,6 +47,29 @@ class HomeController extends Controller
         $delivery_label = $is_self_service ? 'Layanan Mandiri' : 'Jemput-Antar';
         $delivery_advice = $is_self_service ? 'Cuci Mandiri di Toko' : 'Biaya antar-jemput Rp 1.500';
         
+        // Calculate dynamic opening status based on WITA timezone (Asia/Makassar)
+        date_default_timezone_set('Asia/Makassar');
+        $currentTime = date('H:i');
+        $isOpenNow = false;
+        $jamBuka = $mitra->jam_buka ?? '08:00 - 21:00';
+        
+        if (strpos(strtolower($jamBuka), '24 hours') !== false || strpos(strtolower($jamBuka), '24 jam') !== false) {
+            $isOpenNow = true;
+        } elseif (preg_match('/(\d{1,2}:\d{2})\s*-\s*(\d{1,2}:\d{2})/', $jamBuka, $matches)) {
+            $startTime = $matches[1];
+            $endTime = $matches[2];
+            if ($startTime <= $endTime) {
+                $isOpenNow = ($currentTime >= $startTime && $currentTime <= $endTime);
+            } else {
+                $isOpenNow = ($currentTime >= $startTime || $currentTime <= $endTime);
+            }
+        } elseif (preg_match('/until\s*(\d{1,2}:\d{2})/i', $jamBuka, $matches)) {
+            $startTime = '07:00';
+            $endTime = $matches[1];
+            $isOpenNow = ($currentTime >= $startTime && $currentTime <= $endTime);
+        }
+        $status_buka = ($mitra->status_buka == 1 && $isOpenNow);
+        
         $harga_per_kg = $mitra->harga_per_kg;
         $pricing = [
             'lipat_reguler' => $harga_per_kg,
@@ -365,7 +388,8 @@ class HomeController extends Controller
             'delivery_advice', 
             'pricing', 
             'custom_tabs', 
-            'custom_grids_html'
+            'custom_grids_html',
+            'status_buka'
         ));
     }
 

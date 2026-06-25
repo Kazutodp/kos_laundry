@@ -75,10 +75,31 @@ $id_mitra = $mitra['id'];
 $alamat = $mitra['alamat'];
 $no_telp = $mitra['no_telp'] ?? '+62 812-3456-7890';
 $rating = number_format($mitra['rating'], 1);
-$status_buka = $mitra['status_buka'];
 $harga_per_kg = $mitra['harga_per_kg'];
 $jam_buka = $mitra['jam_buka'] ?? '08:00 - 21:00';
 $foto_toko = $mitra['foto_toko'] ?? 'uploads/mitra_1.png';
+
+// Calculate dynamic opening status based on WITA timezone (Asia/Makassar)
+date_default_timezone_set('Asia/Makassar');
+$current_time = date('H:i');
+$is_open_now = false;
+
+if (strpos(strtolower($jam_buka), '24 hours') !== false || strpos(strtolower($jam_buka), '24 jam') !== false) {
+    $is_open_now = true;
+} elseif (preg_match('/(\d{1,2}:\d{2})\s*-\s*(\d{1,2}:\d{2})/', $jam_buka, $matches)) {
+    $start_time = $matches[1];
+    $end_time = $matches[2];
+    if ($start_time <= $end_time) {
+        $is_open_now = ($current_time >= $start_time && $current_time <= $end_time);
+    } else {
+        $is_open_now = ($current_time >= $start_time || $current_time <= $end_time);
+    }
+} elseif (preg_match('/until\s*(\d{1,2}:\d{2})/i', $jam_buka, $matches)) {
+    $start_time = '07:00';
+    $end_time = $matches[1];
+    $is_open_now = ($current_time >= $start_time && $current_time <= $end_time);
+}
+$status_buka = ($mitra['status_buka'] == 1 && $is_open_now);
 
 // Resolve image path relative to the Mitra laundry directory
 if (strpos($foto_toko, 'uploads/') === 0) {

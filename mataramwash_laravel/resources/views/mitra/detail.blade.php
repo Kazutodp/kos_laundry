@@ -232,7 +232,7 @@
                                 <span class="material-symbols-outlined text-yellow-400 text-[18px] fill-icon">star</span>
                                 <span class="text-label-md font-bold">{{ number_format($mitra->rating, 1) }}</span>
                             </div>
-                            @if ($mitra->status_buka)
+                            @if ($status_buka)
                                 <span class="bg-secondary text-on-secondary px-md py-1 rounded-full text-label-sm font-bold">Buka</span>
                             @else
                                 <span class="bg-error text-on-error px-md py-1 rounded-full text-label-sm font-bold">Tutup</span>
@@ -522,8 +522,8 @@
                 </div>
                 
                 @php
-                $is_shoes = (strpos(strtolower($nama_mitra), 'shoes') !== false || strpos(strtolower($nama_mitra), 'sepatu') !== false);
-                $is_self = $is_self_service || (strpos(strtolower($nama_mitra), 'washtra') !== false);
+                $is_shoes = (strpos(strtolower($mitra->nama_mitra), 'shoes') !== false || strpos(strtolower($mitra->nama_mitra), 'sepatu') !== false);
+                $is_self = $is_self_service || (strpos(strtolower($mitra->nama_mitra), 'washtra') !== false);
 
                 if ($is_shoes) {
                     $reviews_pool = [
@@ -592,7 +592,7 @@
                         ]
                     ];
                 } else {
-                    if (strpos(strtolower($nama_mitra), 'lombok') !== false) {
+                    if (strpos(strtolower($mitra->nama_mitra), 'lombok') !== false) {
                         $reviews_pool = [
                             [
                                 'user' => 'a*****n',
@@ -696,7 +696,7 @@
                                          <div class="bg-slate-50 p-md rounded-xl border-l-4 border-primary flex items-start gap-sm mt-md shadow-xs">
                                              <span class="material-symbols-outlined text-primary text-[20px] mt-[2px] select-none">storefront</span>
                                              <div>
-                                                 <p class="text-[12px] font-extrabold text-primary mb-[2px]">{{ $nama_mitra }}</p>
+                                                 <p class="text-[12px] font-extrabold text-primary mb-[2px]">{{ $mitra->nama_mitra }}</p>
                                                  <p class="text-on-surface-variant leading-relaxed text-sm">{{ $rev['response'] }}</p>
                                              </div>
                                          </div>

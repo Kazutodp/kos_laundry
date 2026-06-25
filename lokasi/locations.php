@@ -13,9 +13,31 @@ try {
     $all_mitra = $stmt->fetchAll();
     
     $mitra_list = [];
+    date_default_timezone_set('Asia/Makassar');
+    $current_time = date('H:i');
     foreach ($all_mitra as $mitra) {
         $file_name = str_replace(' ', '_', $mitra['nama_mitra']) . '.php';
         if (file_exists('../Mitra laundry/' . $file_name)) {
+            // Calculate dynamic status_buka based on jam_buka and WITA time
+            $is_open_now = false;
+            $jam_buka = $mitra['jam_buka'] ?? '08:00 - 21:00';
+            
+            if (strpos(strtolower($jam_buka), '24 hours') !== false || strpos(strtolower($jam_buka), '24 jam') !== false) {
+                $is_open_now = true;
+            } elseif (preg_match('/(\d{1,2}:\d{2})\s*-\s*(\d{1,2}:\d{2})/', $jam_buka, $matches)) {
+                $start_time = $matches[1];
+                $end_time = $matches[2];
+                if ($start_time <= $end_time) {
+                    $is_open_now = ($current_time >= $start_time && $current_time <= $end_time);
+                } else {
+                    $is_open_now = ($current_time >= $start_time || $current_time <= $end_time);
+                }
+            } elseif (preg_match('/until\s*(\d{1,2}:\d{2})/i', $jam_buka, $matches)) {
+                $start_time = '07:00';
+                $end_time = $matches[1];
+                $is_open_now = ($current_time >= $start_time && $current_time <= $end_time);
+            }
+            $mitra['status_buka'] = ($mitra['status_buka'] == 1 && $is_open_now) ? 1 : 0;
             $mitra_list[] = $mitra;
         }
     }
