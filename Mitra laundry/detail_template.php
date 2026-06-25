@@ -1033,10 +1033,6 @@ $logo_url = $partner_logos[$id_mitra] ?? $partner_logos[1];
                             <div class="flex-1">
                                 <div class="flex flex-wrap items-center gap-sm mb-xs">
                                     <p class="font-bold text-on-surface text-sm"><?= htmlspecialchars($rev['user']); ?></p>
-                                    <span class="inline-flex items-center gap-[2px] px-2 py-[2px] bg-green-50 text-green-700 text-[10px] font-bold rounded-full border border-green-200 select-none">
-                                        <span class="material-symbols-outlined text-[10px] font-bold fill-icon">check_circle</span>
-                                        Transaksi Terverifikasi
-                                    </span>
                                 </div>
                                 <div class="flex gap-0.5 mb-1 text-yellow-500">
                                     <?php for ($i = 0; $i < 5; $i++): ?>
