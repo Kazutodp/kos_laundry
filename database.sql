@@ -58,4 +58,18 @@ CREATE TABLE IF NOT EXISTS `orders` (
     FOREIGN KEY (`mitra_id`) REFERENCES `mitra_laundry`(`id`) ON DELETE CASCADE
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
 
+CREATE TABLE IF NOT EXISTS `admins` (
+    `id` INT AUTO_INCREMENT PRIMARY KEY,
+    `username` VARCHAR(50) NOT NULL UNIQUE,
+    `password` VARCHAR(255) NOT NULL,
+    `nama` VARCHAR(100) NOT NULL,
+    `created_at` TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
+
+-- Seed default admin (username: admin, password: admin123)
+INSERT INTO `admins` (`id`, `username`, `password`, `nama`) VALUES
+(1, 'admin', '$2y$10$tMh4zHl0G6sPzU0eEaLp/OrZ0t5rK.zHhNf2u2gD3U.D3g5YyY2K.', 'Administrator')
+ON DUPLICATE KEY UPDATE `id`=`id`;
+
+
 
