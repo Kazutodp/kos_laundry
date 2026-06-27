@@ -8,7 +8,7 @@ if (!isset($_SESSION['user_id'])) {
     exit();
 }
 
-$user_nama = $_SESSION['user_nama'];
+$user_nama = $_SESSION['username'];
 
 // Load Midtrans Configuration
 $config_file = '../admin/settings_config.json';

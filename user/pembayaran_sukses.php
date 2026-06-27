@@ -23,7 +23,7 @@ try {
         JOIN mitra_laundry m ON o.mitra_id = m.id
         WHERE o.id = ? AND o.nama_pelanggan = ?
     ");
-    $stmt->execute([$order_id, $_SESSION['user_nama']]);
+    $stmt->execute([$order_id, $_SESSION['username']]);
     $order = $stmt->fetch();
 
     if (!$order) {

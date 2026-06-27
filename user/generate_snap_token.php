@@ -13,7 +13,7 @@ if (!isset($_SESSION['user_id'])) {
 }
 
 $order_id = intval($_GET['order_id'] ?? 0);
-$user_nama = $_SESSION['user_nama'];
+$user_nama = $_SESSION['username'];
 
 if ($order_id <= 0) {
     echo json_encode([
