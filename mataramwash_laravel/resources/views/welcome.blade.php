@@ -168,7 +168,7 @@
                             <span class="material-symbols-outlined text-[20px] text-outline">edit</span>
                             <span>Edit Profil</span>
                         </a>
-                        <a href="#" class="flex items-center gap-xs px-md py-sm text-body-md text-on-surface hover:bg-surface-container transition-colors">
+                        <a href="{{ route('orders.history') }}" class="flex items-center gap-xs px-md py-sm text-body-md text-on-surface hover:bg-surface-container transition-colors">
                             <span class="material-symbols-outlined text-[20px] text-outline">history</span>
                             <span>Riwayat Pesanan</span>
                         </a>

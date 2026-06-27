@@ -64,6 +64,19 @@ try {
 $is_self_service = (strpos(strtolower($mitra['nama_mitra']), 'washtra') !== false);
 
 $is_logged_in = isset($_SESSION['user_id']);
+$user_address = '';
+if ($is_logged_in) {
+    try {
+        $stmt_addr = $pdo->prepare("SELECT alamat FROM users WHERE id = ?");
+        $stmt_addr->execute([$_SESSION['user_id']]);
+        $user_data = $stmt_addr->fetch();
+        if ($user_data) {
+            $user_address = $user_data['alamat'] ?? '';
+        }
+    } catch (PDOException $e) {
+        // ignore
+    }
+}
 $dashboard_url = "../dashboard.php";
 $login_url = "../login/login.php";
 $daftar_url = "../login/daftar.php";
@@ -464,7 +477,7 @@ $logo_url = $partner_logos[$id_mitra] ?? $partner_logos[1];
                             <span class="material-symbols-outlined text-[20px] text-outline">edit</span>
                             <span>Edit Profil</span>
                         </a>
-                        <a href="#" class="flex items-center gap-xs px-md py-sm text-body-md text-on-surface hover:bg-surface-container transition-colors">
+                        <a href="../user/riwayat_pesanan.php" class="flex items-center gap-xs px-md py-sm text-body-md text-on-surface hover:bg-surface-container transition-colors">
                             <span class="material-symbols-outlined text-[20px] text-outline">history</span>
                             <span>Riwayat Pesanan</span>
                         </a>
@@ -1240,6 +1253,11 @@ $logo_url = $partner_logos[$id_mitra] ?? $partner_logos[1];
                     <span class="text-body-md text-sm">Antar Pakaian</span>
                 </label>
             </div>
+            
+            <div id="address-container" class="space-y-xs">
+                <label class="block text-label-md font-bold text-sm">Alamat Penjemputan / Pengantaran</label>
+                <textarea id="order-address" class="w-full bg-surface-container border border-outline-variant rounded-lg px-md py-sm focus:ring-1 focus:ring-primary outline-none h-20 resize-none text-sm" placeholder="Masukkan alamat lengkap penjemputan/pengantaran..."><?= htmlspecialchars($user_address); ?></textarea>
+            </div>
             <?php else: ?>
             <!-- Slot Booking Fields for Self Service -->
             <div class="grid grid-cols-2 gap-sm">
@@ -1410,7 +1428,34 @@ $logo_url = $partner_logos[$id_mitra] ?? $partner_logos[1];
     function calculateTotal() {
         const qty = parseFloat(document.getElementById('order-qty').value) || 1;
         const isSelfService = <?= $is_self_service ? 'true' : 'false'; ?>;
-        const addonFee = isSelfService ? 1000 : 1500;
+        
+        let addonFee = isSelfService ? 1000 : 0;
+        let jemput = false;
+        let antar = false;
+
+        if (!isSelfService) {
+            jemput = document.getElementById('addon-jemput')?.checked;
+            antar = document.getElementById('addon-antar')?.checked;
+            if (jemput && antar) {
+                addonFee = 1500;
+            } else if (jemput || antar) {
+                addonFee = 1000;
+            }
+        }
+
+        const addressContainer = document.getElementById('address-container');
+        if (addressContainer) {
+            if (!isSelfService && (jemput || antar)) {
+                addressContainer.classList.remove('hidden');
+            } else {
+                addressContainer.classList.add('hidden');
+            }
+        }
+
+        const addonPriceEl = document.getElementById('modal-addon-price');
+        if (addonPriceEl) {
+            addonPriceEl.innerText = formatRupiah(addonFee);
+        }
         
         const total = (activeServicePrice * qty) + addonFee;
         document.getElementById('modal-total-price').innerText = formatRupiah(total);
@@ -1421,11 +1466,12 @@ $logo_url = $partner_logos[$id_mitra] ?? $partner_logos[1];
         return 'Rp ' + new Intl.NumberFormat('id-ID').format(number);
     }
 
-    // Confirm Order and trigger Midtrans Snap
+    // Confirm Order
     function confirmOrder() {
         const qty = parseFloat(document.getElementById('order-qty').value) || 1;
         const serviceName = document.getElementById('modal-service-name').innerText;
         const notes = document.getElementById('order-notes').value.trim();
+        const isSelfService = <?= $is_self_service ? 'true' : 'false'; ?>;
         
         const originalBtn = document.querySelector('#order-modal button[onclick="confirmOrder()"]');
         const originalText = originalBtn.innerHTML;
@@ -1433,16 +1479,41 @@ $logo_url = $partner_logos[$id_mitra] ?? $partner_logos[1];
         originalBtn.innerHTML = '<span class="material-symbols-outlined animate-spin text-[20px] mr-xs">sync</span> Memproses...';
         originalBtn.disabled = true;
 
-        const isSelfService = <?= $is_self_service ? 'true' : 'false'; ?>;
-        const addonFee = isSelfService ? 1000 : 1500;
+        let addonFee = isSelfService ? 1000 : 0;
+        let jemput = 0;
+        let antar = 0;
+        let alamat = '';
+
+        if (!isSelfService) {
+            jemput = document.getElementById('addon-jemput')?.checked ? 1 : 0;
+            antar = document.getElementById('addon-antar')?.checked ? 1 : 0;
+            if (jemput && antar) {
+                addonFee = 1500;
+            } else if (jemput || antar) {
+                addonFee = 1000;
+            }
+            alamat = document.getElementById('order-address')?.value.trim() || '';
+            
+            if ((jemput || antar) && alamat === '') {
+                alert('Silakan isi alamat penjemputan/pengantaran terlebih dahulu.');
+                originalBtn.innerHTML = originalText;
+                originalBtn.disabled = false;
+                return;
+            }
+        }
         
         // Prepare order data
         const orderData = {
             mitra_id: <?= intval($mitra['id']); ?>,
             layanan: serviceName,
-            qty: qty,
+            is_self_service: isSelfService,
+            qty: qty, // will act as estimasi_berat if not self_service, or direct qty if self_service
             tarif_per_kg: activeServicePrice,
-            biaya_antar_jemput: addonFee
+            biaya_antar_jemput: addonFee,
+            catatan: notes,
+            layanan_jemput: jemput,
+            layanan_antar: antar,
+            alamat_antar_jemput: alamat
         };
 
         // Call backend processing order
@@ -1459,26 +1530,31 @@ $logo_url = $partner_logos[$id_mitra] ?? $partner_logos[1];
             if (data.status === 'success') {
                 closeOrderModal();
                 
-                // Trigger Midtrans Snap Popup
-                snap.pay(data.token, {
-                    onSuccess: function(result) {
-                        window.location.href = '../user/pembayaran_sukses.php?order_id=' + data.order_id + '&reference=' + result.order_id;
-                    },
-                    onPending: function(result) {
-                        alert('Pembayaran tertunda. Silakan selesaikan pembayaran Anda.');
-                        window.location.href = '../user/notifikasi.php';
-                    },
-                    onError: function(result) {
-                        alert('Pembayaran gagal. Silakan coba kembali.');
-                        originalBtn.innerHTML = originalText;
-                        originalBtn.disabled = false;
-                    },
-                    onClose: function() {
-                        alert('Anda menutup popup pembayaran sebelum menyelesaikan transaksi.');
-                        originalBtn.innerHTML = originalText;
-                        originalBtn.disabled = false;
-                    }
-                });
+                if (data.flow === 'timbang_dulu') {
+                    alert('Pesanan Anda berhasil dikirim! Silakan tunggu kurir menjemput pakaian Anda untuk ditimbang. Pantau tagihan di Riwayat Pesanan.');
+                    window.location.href = '../user/riwayat_pesanan.php';
+                } else {
+                    // Trigger Midtrans Snap Popup immediately (Self-Service flow)
+                    snap.pay(data.token, {
+                        onSuccess: function(result) {
+                            window.location.href = '../user/pembayaran_sukses.php?order_id=' + data.order_id + '&reference=' + result.order_id;
+                        },
+                        onPending: function(result) {
+                            alert('Pembayaran tertunda. Silakan selesaikan pembayaran Anda.');
+                            window.location.href = '../user/riwayat_pesanan.php';
+                        },
+                        onError: function(result) {
+                            alert('Pembayaran gagal. Silakan coba kembali.');
+                            originalBtn.innerHTML = originalText;
+                            originalBtn.disabled = false;
+                        },
+                        onClose: function() {
+                            alert('Anda menutup popup pembayaran sebelum menyelesaikan transaksi.');
+                            originalBtn.innerHTML = originalText;
+                            originalBtn.disabled = false;
+                        }
+                    });
+                }
             } else {
                 alert(data.message || 'Terjadi kesalahan saat memproses pesanan.');
                 originalBtn.innerHTML = originalText;

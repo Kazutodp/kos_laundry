@@ -27,14 +27,6 @@ if (file_exists($config_file)) {
     }
 }
 
-if (empty($config['midtrans_server_key'])) {
-    echo json_encode([
-        'status' => 'error',
-        'message' => 'Integrasi pembayaran (Midtrans) belum dikonfigurasi oleh administrator.'
-    ]);
-    exit();
-}
-
 // Get POST Data
 $raw_input = file_get_contents('php://input');
 $input = json_decode($raw_input, true);
@@ -44,11 +36,26 @@ if (!$input) {
     $input = $_POST;
 }
 
+$is_self_service = filter_var($input['is_self_service'] ?? false, FILTER_VALIDATE_BOOLEAN);
+
+if ($is_self_service && empty($config['midtrans_server_key'])) {
+    echo json_encode([
+        'status' => 'error',
+        'message' => 'Integrasi pembayaran (Midtrans) belum dikonfigurasi oleh administrator.'
+    ]);
+    exit();
+}
+
 $mitra_id = intval($input['mitra_id'] ?? 0);
 $layanan = trim($input['layanan'] ?? '');
 $qty = floatval($input['qty'] ?? 0);
 $tarif_per_kg = intval($input['tarif_per_kg'] ?? 0);
 $biaya_antar_jemput = intval($input['biaya_antar_jemput'] ?? 1500);
+
+$catatan = trim($input['catatan'] ?? '');
+$layanan_jemput = intval($input['layanan_jemput'] ?? 0);
+$layanan_antar = intval($input['layanan_antar'] ?? 0);
+$alamat_antar_jemput = trim($input['alamat_antar_jemput'] ?? '');
 
 if ($mitra_id <= 0 || empty($layanan) || $qty <= 0 || $tarif_per_kg <= 0) {
     echo json_encode([
@@ -80,26 +87,51 @@ try {
 }
 
 // Calculate Total Price
-$harga_layanan = round($qty * $tarif_per_kg);
+$estimasi_berat = $is_self_service ? 0.00 : $qty;
+$berat_atau_qty = $is_self_service ? $qty : 0.00;
+
+$harga_layanan = round(($is_self_service ? $berat_atau_qty : $estimasi_berat) * $tarif_per_kg);
 $total_harga = $harga_layanan + $biaya_antar_jemput;
+
+$status_order = $is_self_service ? 'Diproses' : 'Menunggu Penjemputan';
 
 // Save initial transaction to database (Status: pending)
 try {
     $order_stmt = $pdo->prepare("
-        INSERT INTO orders (mitra_id, nama_pelanggan, layanan, berat_atau_qty, tarif_per_kg, biaya_antar_jemput, total_harga, status_pembayaran, status_transfer)
-        VALUES (?, ?, ?, ?, ?, ?, ?, 'pending', 'Proses')
+        INSERT INTO orders (
+            mitra_id, nama_pelanggan, layanan, berat_atau_qty, estimasi_berat, 
+            tarif_per_kg, biaya_antar_jemput, total_harga, status_pembayaran, 
+            status_transfer, status_order, alamat_antar_jemput, layanan_jemput, 
+            layanan_antar, catatan
+        ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, 'pending', 'Proses', ?, ?, ?, ?, ?)
     ");
     $order_stmt->execute([
         $mitra_id,
         $user['nama'],
         $layanan,
-        $qty,
+        $berat_atau_qty,
+        $estimasi_berat,
         $tarif_per_kg,
         $biaya_antar_jemput,
-        $total_harga
+        $total_harga,
+        $status_order,
+        $alamat_antar_jemput,
+        $layanan_jemput,
+        $layanan_antar,
+        $catatan
     ]);
     
     $order_id = $pdo->lastInsertId();
+    
+    // Return early if not self-service (we weigh first, pay later)
+    if (!$is_self_service) {
+        echo json_encode([
+            'status' => 'success',
+            'flow' => 'timbang_dulu',
+            'order_id' => $order_id
+        ]);
+        exit();
+    }
 } catch (PDOException $e) {
     echo json_encode([
         'status' => 'error',

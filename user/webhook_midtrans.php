@@ -80,12 +80,23 @@ if ($transaction_status === 'capture') {
 
 // Update Database
 try {
-    $stmt = $pdo->prepare("
-        UPDATE orders 
-        SET status_pembayaran = ? 
-        WHERE id = ?
-    ");
-    $stmt->execute([$status_pembayaran, $db_order_id]);
+    if ($status_pembayaran === 'success') {
+        // Update payment status, and also transition order status to 'Diproses' if it was waiting for payment
+        $stmt = $pdo->prepare("
+            UPDATE orders 
+            SET status_pembayaran = ?, 
+                status_order = CASE WHEN status_order = 'Menunggu Pembayaran' THEN 'Diproses' ELSE status_order END
+            WHERE id = ?
+        ");
+        $stmt->execute([$status_pembayaran, $db_order_id]);
+    } else {
+        $stmt = $pdo->prepare("
+            UPDATE orders 
+            SET status_pembayaran = ? 
+            WHERE id = ?
+        ");
+        $stmt->execute([$status_pembayaran, $db_order_id]);
+    }
     
     echo json_encode([
         'status' => 'success',

@@ -29,7 +29,12 @@ class OrderController extends Controller
             'layanan' => 'required|string',
             'qty' => 'required|numeric|min:0.01',
             'tarif_per_kg' => 'required|integer',
-            'biaya_antar_jemput' => 'nullable|integer'
+            'biaya_antar_jemput' => 'nullable|integer',
+            'is_self_service' => 'nullable|boolean',
+            'catatan' => 'nullable|string',
+            'layanan_jemput' => 'nullable|integer',
+            'layanan_antar' => 'nullable|integer',
+            'alamat_antar_jemput' => 'nullable|string'
         ]);
 
         $mitra_id = $validated['mitra_id'];
@@ -37,6 +42,12 @@ class OrderController extends Controller
         $qty = $validated['qty'];
         $tarif_per_kg = $validated['tarif_per_kg'];
         $biaya_antar_jemput = $validated['biaya_antar_jemput'] ?? 1500;
+        
+        $is_self_service = $validated['is_self_service'] ?? false;
+        $catatan = $validated['catatan'] ?? null;
+        $layanan_jemput = $validated['layanan_jemput'] ?? 0;
+        $layanan_antar = $validated['layanan_antar'] ?? 0;
+        $alamat_antar_jemput = $validated['alamat_antar_jemput'] ?? null;
 
         // Check if Midtrans Config is loaded
         $serverKey = config('services.midtrans.server_key');
@@ -52,7 +63,7 @@ class OrderController extends Controller
             }
         }
 
-        if (empty($serverKey)) {
+        if ($is_self_service && empty($serverKey)) {
             return response()->json([
                 'status' => 'error',
                 'message' => 'Integrasi pembayaran (Midtrans) belum dikonfigurasi oleh administrator.'
@@ -60,8 +71,13 @@ class OrderController extends Controller
         }
 
         // Calculate Total Price
-        $harga_layanan = round($qty * $tarif_per_kg);
+        $estimasi_berat = $is_self_service ? 0.00 : $qty;
+        $berat_atau_qty = $is_self_service ? $qty : 0.00;
+
+        $harga_layanan = round(($is_self_service ? $berat_atau_qty : $estimasi_berat) * $tarif_per_kg);
         $total_harga = $harga_layanan + $biaya_antar_jemput;
+
+        $status_order = $is_self_service ? 'Diproses' : 'Menunggu Penjemputan';
 
         // Save order to database
         try {
@@ -69,13 +85,27 @@ class OrderController extends Controller
                 'mitra_id' => $mitra_id,
                 'nama_pelanggan' => $user->nama,
                 'layanan' => $layanan,
-                'berat_atau_qty' => $qty,
+                'berat_atau_qty' => $berat_atau_qty,
+                'estimasi_berat' => $estimasi_berat,
                 'tarif_per_kg' => $tarif_per_kg,
                 'biaya_antar_jemput' => $biaya_antar_jemput,
                 'total_harga' => $total_harga,
                 'status_pembayaran' => 'pending',
                 'status_transfer' => 'Proses',
+                'status_order' => $status_order,
+                'alamat_antar_jemput' => $alamat_antar_jemput,
+                'layanan_jemput' => $layanan_jemput,
+                'layanan_antar' => $layanan_antar,
+                'catatan' => $catatan,
             ]);
+            
+            if (!$is_self_service) {
+                return response()->json([
+                    'status' => 'success',
+                    'flow' => 'timbang_dulu',
+                    'order_id' => $order->id
+                ]);
+            }
         } catch (\Exception $e) {
             return response()->json([
                 'status' => 'error',

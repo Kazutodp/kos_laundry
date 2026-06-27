@@ -75,9 +75,11 @@ class WebhookController extends Controller
 
         // Update database
         try {
-            $order->update([
-                'status_pembayaran' => $status_pembayaran
-            ]);
+            $updateData = ['status_pembayaran' => $status_pembayaran];
+            if ($status_pembayaran === 'success' && $order->status_order === 'Menunggu Pembayaran') {
+                $updateData['status_order'] = 'Diproses';
+            }
+            $order->update($updateData);
 
             return response()->json([
                 'status' => 'success',
