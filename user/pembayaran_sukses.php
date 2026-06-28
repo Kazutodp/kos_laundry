@@ -29,6 +29,23 @@ try {
     if (!$order) {
         die("Pesanan tidak ditemukan atau Anda tidak berwenang mengakses halaman ini.");
     }
+
+    // Fallback for localhost testing: update status when successfully redirected
+    if ($order['status_pembayaran'] === 'pending') {
+        $update_stmt = $pdo->prepare("
+            UPDATE orders 
+            SET status_pembayaran = 'success', 
+                status_order = CASE WHEN status_order = 'Menunggu Pembayaran' THEN 'Diproses' ELSE status_order END
+            WHERE id = ?
+        ");
+        $update_stmt->execute([$order_id]);
+        
+        // Update local variable for rendering
+        $order['status_pembayaran'] = 'success';
+        if ($order['status_order'] === 'Menunggu Pembayaran') {
+            $order['status_order'] = 'Diproses';
+        }
+    }
 } catch (PDOException $e) {
     die("Kesalahan database: " . $e->getMessage());
 }
