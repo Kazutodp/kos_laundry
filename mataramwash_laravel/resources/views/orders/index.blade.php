@@ -32,7 +32,27 @@
                     "on-background": "#151c27",
                     "surface-container": "#e7eefe",
                     "surface-container-low": "#f0f3ff",
-                    "surface-container-lowest": "#ffffff"
+                    "surface-container-lowest": "#ffffff",
+                    "secondary": "#006b5f",
+                    "on-secondary": "#ffffff",
+                    "secondary-container": "#6df5e1",
+                    "on-secondary-container": "#006f64"
+            },
+            "spacing": {
+                    "xl": "32px",
+                    "base": "4px",
+                    "gutter": "16px",
+                    "container-margin": "20px",
+                    "xs": "8px",
+                    "sm": "12px",
+                    "md": "16px",
+                    "lg": "24px"
+            },
+            "borderRadius": {
+                    "DEFAULT": "0.25rem",
+                    "lg": "0.5rem",
+                    "xl": "0.75rem",
+                    "full": "9999px"
             }
           }
         }
