@@ -264,9 +264,9 @@
                                         </td>
                                         <td class="px-md py-md text-center space-x-xs">
                                             <!-- Weigh & upload photo timbangan -->
-                                            @if (!$is_self && ($order_status === 'Menunggu Penjemputan' || $order_status === 'Menunggu Timbangan'))
+                                            @if (!$is_self && $order_status !== 'Selesai')
                                                 <button onclick="openTimbangModal({{ $order->id }}, '{{ htmlspecialchars($order->nama_pelanggan) }}', '{{ htmlspecialchars($order->layanan) }}', {{ floatval($order->estimasi_berat) }})" class="text-xs bg-blue-600 text-white font-bold py-1.5 px-3 rounded-lg shadow-xs hover:bg-blue-700 transition-colors">
-                                                    Timbang
+                                                    {{ floatval($order->berat_atau_qty) > 0 ? 'Timbang Ulang' : 'Timbang' }}
                                                 </button>
                                             @endif
 
