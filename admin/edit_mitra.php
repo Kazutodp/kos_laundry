@@ -167,8 +167,8 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                     "\$nama_mitra = " . var_export($nama_mitra, true) . ";\n" .
                     "\$jam_operasional_html = '\n" .
                     "<div class=\"flex justify-between p-xs hover:bg-surface-container/30 rounded-lg transition-colors\">\n" .
-                    "    <span class=\"text-on-surface-variant\">Senin - Minggu</span>\n" .
-                    "    <span class=\"font-bold text-on-surface\">" . htmlspecialchars($jam_buka) . "</span>\n" .
+                    "    <span class=\"text-on-surface-variant\">Jam Buka</span>\n" .
+                    "    <span class=\"font-bold text-on-surface text-right\" style=\"white-space: pre-line;\">" . htmlspecialchars($jam_buka) . "</span>\n" .
                     "</div>';\n\n" .
                     "// Custom pricing overrides matching the database base price\n" .
                     "\$custom_harga_lipat_reguler = " . (int)$harga_per_kg . ";\n" .
@@ -444,7 +444,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                             <div class="grid grid-cols-1 md:grid-cols-2 gap-md">
                                 <div class="space-y-xs">
                                     <label for="jam_buka" class="text-label-md font-bold text-on-surface-variant">Jam Operasional</label>
-                                    <input type="text" id="jam_buka" name="jam_buka" value="<?= htmlspecialchars($mitra['jam_buka']); ?>" placeholder="Contoh: Senin - Minggu 07:00 - 21:00" class="w-full rounded-xl border-outline-variant focus:ring-primary focus:border-primary text-body-md py-2.5 px-md bg-white">
+                                    <textarea id="jam_buka" name="jam_buka" rows="3" placeholder="Contoh:&#10;Senin - Sabtu: 07:00 - 21:00&#10;Minggu: 08:00 - 18:00" class="w-full rounded-xl border-outline-variant focus:ring-primary focus:border-primary text-body-md py-2.5 px-md bg-white resize-none"><?= htmlspecialchars($mitra['jam_buka']); ?></textarea>
                                 </div>
                                 <div class="flex flex-col gap-sm pt-xs justify-center">
                                     <label class="relative inline-flex items-center cursor-pointer select-none">
