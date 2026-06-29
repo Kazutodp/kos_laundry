@@ -195,7 +195,12 @@ class HomeController extends Controller
                             <div class="flex justify-between"><span>Ukuran XL (200x200)</span><strong>Rp 36.000</strong></div>
                         </div>
                     </div>
-                    <button onclick="openOrderModal(\'Cuci Satuan Bed Cover\', 27000, \'pcs\')" class="w-full bg-primary text-on-primary py-sm rounded-xl font-bold flex items-center justify-center gap-sm active:scale-[0.98] transition-transform">
+                    <button onclick="openOrderModal(\'Cuci Satuan Bed Cover\', 27000, \'pcs\', [
+                        {name: \'Ukuran S (120x200)\', price: 27000},
+                        {name: \'Ukuran M (160x200)\', price: 30000},
+                        {name: \'Ukuran L (180x200)\', price: 33000},
+                        {name: \'Ukuran XL (200x200)\', price: 36000}
+                    ])" class="w-full bg-primary text-on-primary py-sm rounded-xl font-bold flex items-center justify-center gap-sm active:scale-[0.98] transition-transform">
                         <span class="material-symbols-outlined text-[20px]">shopping_cart_checkout</span> Pesan Sekarang
                     </button>
                 </div>
@@ -210,7 +215,13 @@ class HomeController extends Controller
                             <div class="flex justify-between"><span>Sprei Non-set</span><strong>Rp 25.000</strong></div>
                         </div>
                     </div>
-                    <button onclick="openOrderModal(\'Cuci Satuan Selimut/Sprei\', 25000, \'pcs\')" class="w-full bg-primary text-on-primary py-sm rounded-xl font-bold flex items-center justify-center gap-sm active:scale-[0.98] transition-transform">
+                    <button onclick="openOrderModal(\'Cuci Satuan Selimut/Sprei\', 25000, \'pcs\', [
+                        {name: \'Selimut Tipis\', price: 25000},
+                        {name: \'Selimut Sedang\', price: 27000},
+                        {name: \'Selimut Tebal\', price: 29000},
+                        {name: \'Sprei Set (Sprei + Bantal Guling)\', price: 28000},
+                        {name: \'Sprei Non-set\', price: 25000}
+                    ])" class="w-full bg-primary text-on-primary py-sm rounded-xl font-bold flex items-center justify-center gap-sm active:scale-[0.98] transition-transform">
                         <span class="material-symbols-outlined text-[20px]">shopping_cart_checkout</span> Pesan Sekarang
                     </button>
                 </div>
@@ -224,7 +235,12 @@ class HomeController extends Controller
                             <div class="flex justify-between border-b border-outline-variant/30 pb-xs"><span>Kaos / Celana per pcs</span><strong>Rp 15.000</strong></div>
                         </div>
                     </div>
-                    <button onclick="openOrderModal(\'Cuci Satuan Premium\', 15000, \'pcs\')" class="w-full bg-primary text-on-primary py-sm rounded-xl font-bold flex items-center justify-center gap-sm active:scale-[0.98] transition-transform">
+                    <button onclick="openOrderModal(\'Cuci Satuan Premium\', 15000, \'pcs\', [
+                        {name: \'Jas / Almamater\', price: 25000},
+                        {name: \'Jaket / Blazer / Kemeja\', price: 20000},
+                        {name: \'Dress Pesta\', price: 25000},
+                        {name: \'Kaos / Celana per pcs\', price: 15000}
+                    ])" class="w-full bg-primary text-on-primary py-sm rounded-xl font-bold flex items-center justify-center gap-sm active:scale-[0.98] transition-transform">
                         <span class="material-symbols-outlined text-[20px]">shopping_cart_checkout</span> Pesan Sekarang
                     </button>
                 </div>

@@ -1236,6 +1236,14 @@ $logo_url = $partner_logos[$id_mitra] ?? $partner_logos[1];
                 <p class="font-headline-md text-[20px] text-primary font-bold" id="modal-service-name">Cuci Lipat Reguler</p>
             </div>
             
+            <!-- Dynamic Sub-service Selector -->
+            <div id="subservice-container" class="hidden">
+                <label class="block text-label-md font-bold mb-xs text-sm">Pilih Varian / Jenis Item</label>
+                <select id="subservice-select" class="w-full bg-surface-container border border-outline-variant rounded-lg px-md py-sm focus:ring-1 focus:ring-primary outline-none text-sm" onchange="updateSubservicePrice()">
+                    <!-- Populated dynamically -->
+                </select>
+            </div>
+            
             <?php if (!$is_self_service): ?>
             <div>
                 <label class="block text-label-md font-bold mb-xs text-sm" id="modal-qty-label">Jumlah (Kg)</label>
@@ -1393,13 +1401,35 @@ $logo_url = $partner_logos[$id_mitra] ?? $partner_logos[1];
     });
 
     // Open Order Modal
-    function openOrderModal(serviceName, price, unitType) {
+    function openOrderModal(serviceName, price, unitType, optionsList = null) {
         // Check if user is logged in
         const isLoggedIn = <?= $is_logged_in ? 'true' : 'false'; ?>;
         if (!isLoggedIn) {
             alert('Silakan masuk terlebih dahulu untuk melakukan pemesanan.');
             window.location.href = '<?= $login_url; ?>';
             return;
+        }
+
+        // Handle subservices options dropdown
+        const subcontainer = document.getElementById('subservice-container');
+        const subselect = document.getElementById('subservice-select');
+        
+        if (optionsList && Array.isArray(optionsList) && optionsList.length > 0) {
+            subselect.innerHTML = '';
+            optionsList.forEach((opt) => {
+                const optionEl = document.createElement('option');
+                optionEl.value = opt.name;
+                optionEl.innerText = opt.name + ' - ' + formatRupiah(opt.price);
+                optionEl.setAttribute('data-price', opt.price);
+                subselect.appendChild(optionEl);
+            });
+            
+            // Set initial price to first option
+            price = optionsList[0].price;
+            subcontainer.classList.remove('hidden');
+        } else {
+            subcontainer.classList.add('hidden');
+            subselect.innerHTML = '';
         }
 
         activeServicePrice = price;
@@ -1417,6 +1447,20 @@ $logo_url = $partner_logos[$id_mitra] ?? $partner_logos[1];
         calculateTotal();
 
         document.getElementById('order-modal').classList.remove('hidden');
+    }
+
+    // Update Subservice price on select change
+    function updateSubservicePrice() {
+        const subselect = document.getElementById('subservice-select');
+        if (!subselect) return;
+        const selectedOption = subselect.options[subselect.selectedIndex];
+        if (!selectedOption) return;
+        
+        const price = parseFloat(selectedOption.getAttribute('data-price')) || 0;
+        activeServicePrice = price;
+        
+        document.getElementById('modal-price-per-unit').innerText = formatRupiah(price);
+        calculateTotal();
     }
 
     // Close Order Modal
@@ -1469,7 +1513,15 @@ $logo_url = $partner_logos[$id_mitra] ?? $partner_logos[1];
     // Confirm Order
     function confirmOrder() {
         const qty = parseFloat(document.getElementById('order-qty').value) || 1;
-        const serviceName = document.getElementById('modal-service-name').innerText;
+        let serviceName = document.getElementById('modal-service-name').innerText;
+        
+        // Append subservice type if selected
+        const subcontainer = document.getElementById('subservice-container');
+        const subselect = document.getElementById('subservice-select');
+        if (subcontainer && !subcontainer.classList.contains('hidden') && subselect && subselect.value) {
+            serviceName = serviceName + ' (' + subselect.value + ')';
+        }
+        
         const notes = document.getElementById('order-notes').value.trim();
         const isSelfService = <?= $is_self_service ? 'true' : 'false'; ?>;
         
