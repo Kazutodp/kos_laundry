@@ -114,6 +114,8 @@
                 @foreach ($orders as $order) 
                     @php
                         $is_self = (strpos(strtolower($order->layanan), 'self') !== false || strpos(strtolower($order->mitra->nama_mitra), 'washtra') !== false);
+                        $is_satuan = (strpos(strtolower($order->layanan), 'sepatu') !== false || strpos(strtolower($order->layanan), 'shoes') !== false || strpos(strtolower($order->mitra->nama_mitra), 'shoes') !== false);
+                        $is_kiloan = !$is_self && !$is_satuan;
                         
                         // Style class based on order status
                         $order_status = $order->status_order ?? 'Menunggu Penjemputan';
@@ -171,7 +173,7 @@
                                         <span class="text-slate-400 block font-semibold uppercase text-[10px]">ID Transaksi / Tanggal</span>
                                         <span class="font-medium text-slate-800">#{{ $order->id }} &bull; {{ $order->created_at->format('d M Y, H:i') }} WIB</span>
                                     </div>
-                                    @if (!$is_self)
+                                    @if ($is_kiloan)
                                     <div>
                                         <span class="text-slate-400 block font-semibold uppercase text-[10px]">Berat Pakaian</span>
                                         <span class="font-medium text-slate-800">
@@ -181,10 +183,15 @@
                                             @endif
                                         </span>
                                     </div>
-                                    @else
+                                    @elseif ($is_self)
                                     <div>
                                         <span class="text-slate-400 block font-semibold uppercase text-[10px]">Jumlah Slot Mesin</span>
                                         <span class="font-medium text-slate-800"><strong>{{ floatval($order->berat_atau_qty) }} Mesin</strong></span>
+                                    </div>
+                                    @elseif ($is_satuan)
+                                    <div>
+                                        <span class="text-slate-400 block font-semibold uppercase text-[10px]">Jumlah Pakaian/Barang</span>
+                                        <span class="font-medium text-slate-800"><strong>{{ floatval($order->estimasi_berat) }} Pasang Sepatu</strong></span>
                                     </div>
                                     @endif
                                 </div>
@@ -238,11 +245,11 @@
                                     @endif
 
                                     <!-- Pay button -->
-                                    @if ($pay_status === 'pending' && $order_status === 'Menunggu Pembayaran')
+                                    @if ($pay_status === 'pending' && ($order_status === 'Menunggu Pembayaran' || $is_self || $is_satuan))
                                         <button onclick="payOrder({{ $order->id }}, this)" class="bg-primary text-on-primary py-sm px-lg rounded-xl font-bold shadow-md hover:brightness-110 active:scale-95 transition-all text-xs flex items-center gap-xs">
                                             <span class="material-symbols-outlined text-[16px]">payments</span> Bayar Sekarang
                                         </button>
-                                    @elseif ($pay_status === 'pending' && !$is_self && ($order_status === 'Menunggu Penjemputan' || $order_status === 'Menunggu Timbangan'))
+                                    @elseif ($pay_status === 'pending' && $is_kiloan && ($order_status === 'Menunggu Penjemputan' || $order_status === 'Menunggu Timbangan'))
                                         <span class="text-[11px] text-amber-600 bg-amber-50 px-md py-sm rounded-xl border border-amber-100 flex items-center gap-xs font-semibold">
                                             <span class="material-symbols-outlined text-[14px]">schedule</span> Menunggu timbangan resmi
                                         </span>

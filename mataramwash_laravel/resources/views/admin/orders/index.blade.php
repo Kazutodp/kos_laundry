@@ -226,6 +226,8 @@
                                 @foreach ($orders as $order) 
                                     @php
                                         $is_self = (strpos(strtolower($order->layanan), 'self') !== false || strpos(strtolower($order->mitra->nama_mitra), 'washtra') !== false);
+                                        $is_satuan = (strpos(strtolower($order->layanan), 'sepatu') !== false || strpos(strtolower($order->layanan), 'shoes') !== false || strpos(strtolower($order->mitra->nama_mitra), 'shoes') !== false);
+                                        $is_kiloan = !$is_self && !$is_satuan;
                                         $order_status = $order->status_order ?? 'Menunggu Penjemputan';
                                         $pay_status = $order->status_pembayaran;
                                     @endphp
@@ -244,11 +246,13 @@
                                             <p class="text-xs text-blue-600 font-semibold">{{ $order->layanan }}</p>
                                         </td>
                                         <td class="px-md py-md">
-                                            @if (!$is_self)
+                                            @if ($is_kiloan)
                                                 <p class="text-xs text-slate-400">Estimasi: {{ floatval($order->estimasi_berat) }} kg</p>
                                                 <p class="text-sm font-semibold text-slate-800">Real: <span class="{{ floatval($order->berat_atau_qty) > 0 ? 'text-emerald-600' : 'text-slate-400' }}">{{ floatval($order->berat_atau_qty) ?: '-' }} kg</span></p>
-                                            @else
+                                            @elseif ($is_self)
                                                 <p class="text-sm font-bold text-slate-800">{{ floatval($order->berat_atau_qty) }} Slot</p>
+                                            @elseif ($is_satuan)
+                                                <p class="text-sm font-bold text-slate-800">{{ floatval($order->estimasi_berat) }} Pasang</p>
                                             @endif
                                         </td>
                                         <td class="px-md py-md">
@@ -264,7 +268,7 @@
                                         </td>
                                         <td class="px-md py-md text-center space-x-xs">
                                             <!-- Weigh & upload photo timbangan -->
-                                            @if (!$is_self && $order_status !== 'Selesai')
+                                            @if ($is_kiloan && $order_status !== 'Selesai')
                                                 <button onclick="openTimbangModal({{ $order->id }}, '{{ htmlspecialchars($order->nama_pelanggan) }}', '{{ htmlspecialchars($order->layanan) }}', {{ floatval($order->estimasi_berat) }})" class="text-xs bg-blue-600 text-white font-bold py-1.5 px-3 rounded-lg shadow-xs hover:bg-blue-700 transition-colors">
                                                     {{ floatval($order->berat_atau_qty) > 0 ? 'Timbang Ulang' : 'Timbang' }}
                                                 </button>

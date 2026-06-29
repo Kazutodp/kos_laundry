@@ -350,6 +350,8 @@ try {
                             <?php else: ?>
                                 <?php foreach ($all_orders as $order): 
                                     $is_self = (strpos(strtolower($order['layanan']), 'self') !== false || strpos(strtolower($order['nama_mitra']), 'washtra') !== false);
+                                    $is_satuan = (strpos(strtolower($order['layanan']), 'sepatu') !== false || strpos(strtolower($order['layanan']), 'shoes') !== false || strpos(strtolower($order['nama_mitra']), 'shoes') !== false);
+                                    $is_kiloan = !$is_self && !$is_satuan;
                                     
                                     $order_status = $order['status_order'] ?? 'Menunggu Penjemputan';
                                     $pay_status = $order['status_pembayaran'];
@@ -369,11 +371,13 @@ try {
                                             <p class="text-xs text-blue-600 font-semibold"><?= htmlspecialchars($order['layanan']); ?></p>
                                         </td>
                                         <td class="px-md py-md">
-                                            <?php if (!$is_self): ?>
+                                            <?php if ($is_kiloan): ?>
                                                 <p class="text-xs text-slate-400">Estimasi: <?= floatval($order['estimasi_berat']); ?> kg</p>
                                                 <p class="text-sm font-semibold text-slate-800">Real: <span class="<?= floatval($order['berat_atau_qty']) > 0 ? 'text-emerald-600' : 'text-slate-400'; ?>"><?= floatval($order['berat_atau_qty']) ?: '-'; ?> kg</span></p>
-                                            <?php else: ?>
+                                            <?php elseif ($is_self): ?>
                                                 <p class="text-sm font-bold text-slate-800"><?= floatval($order['berat_atau_qty']); ?> Slot</p>
+                                            <?php elseif ($is_satuan): ?>
+                                                <p class="text-sm font-bold text-slate-800"><?= floatval($order['estimasi_berat']); ?> Pasang</p>
                                             <?php endif; ?>
                                         </td>
                                         <td class="px-md py-md">
@@ -389,7 +393,7 @@ try {
                                         </td>
                                         <td class="px-md py-md text-center space-x-xs">
                                             <!-- Weigh & upload photo timbangan -->
-                                            <?php if (!$is_self && $order_status !== 'Selesai'): ?>
+                                            <?php if ($is_kiloan && $order_status !== 'Selesai'): ?>
                                                 <button onclick="openTimbangModal(<?= $order['id']; ?>, '<?= htmlspecialchars($order['nama_pelanggan']); ?>', '<?= htmlspecialchars($order['layanan']); ?>', <?= floatval($order['estimasi_berat']); ?>)" class="text-xs bg-blue-600 text-white font-bold py-1.5 px-3 rounded-lg shadow-xs hover:bg-blue-700 transition-colors">
                                                     <?= floatval($order['berat_atau_qty']) > 0 ? 'Timbang Ulang' : 'Timbang'; ?>
                                                 </button>
