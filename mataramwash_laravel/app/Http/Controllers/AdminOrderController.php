@@ -105,10 +105,17 @@ class AdminOrderController extends Controller
         try {
             $status_transfer = ($request->status_order === 'Selesai') ? 'Selesai' : 'Proses';
 
-            $order->update([
+            $updateData = [
                 'status_order' => $request->status_order,
                 'status_transfer' => $status_transfer,
-            ]);
+            ];
+
+            // If status is updated to active processing, ready, or finished, auto-mark payment as success
+            if (in_array($request->status_order, ['Diproses', 'Siap Diantar', 'Selesai'])) {
+                $updateData['status_pembayaran'] = 'success';
+            }
+
+            $order->update($updateData);
 
             return redirect()->back()->with('success', 'Status pesanan berhasil diperbarui menjadi: ' . $request->status_order);
         } catch (\Exception $e) {

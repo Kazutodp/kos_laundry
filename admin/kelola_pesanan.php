@@ -100,12 +100,20 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['action']) && $_POST['
         try {
             $transfer_status = ($status_order === 'Selesai') ? 'Selesai' : 'Proses';
             
+            // If status is updated to active processing, ready, or finished, auto-mark payment as success
+            $pay_update_sql = "";
+            $params = [$status_order, $transfer_status];
+            if (in_array($status_order, ['Diproses', 'Siap Diantar', 'Selesai'])) {
+                $pay_update_sql = ", status_pembayaran = 'success'";
+            }
+            $params[] = $order_id;
+            
             $update_stmt = $pdo->prepare("
                 UPDATE orders 
-                SET status_order = ?, status_transfer = ? 
+                SET status_order = ?, status_transfer = ? {$pay_update_sql}
                 WHERE id = ?
             ");
-            $update_stmt->execute([$status_order, $transfer_status, $order_id]);
+            $update_stmt->execute($params);
             $success_message = 'Status pesanan berhasil diperbarui menjadi: ' . $status_order;
         } catch (PDOException $e) {
             $error_message = 'Gagal memperbarui status: ' . $e->getMessage();
