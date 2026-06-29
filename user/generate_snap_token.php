@@ -71,11 +71,22 @@ if (empty($config['midtrans_server_key'])) {
     exit();
 }
 
+$is_self = (strpos(strtolower($order['layanan']), 'self') !== false || strpos(strtolower($order['nama_mitra']), 'washtra') !== false);
+if (!$is_self && floatval($order['berat_atau_qty']) <= 0) {
+    echo json_encode([
+        'status' => 'error',
+        'message' => 'Pesanan belum ditimbang oleh outlet laundry. Silakan hubungi admin/mitra untuk melakukan penimbangan.'
+    ]);
+    exit();
+}
+
 $midtrans_order_id = 'MW-' . $order['id'] . '-' . time();
 $total_harga = intval($order['total_harga']);
 $tarif_per_kg = intval($order['tarif_per_kg']);
 $qty = floatval($order['berat_atau_qty']);
 $biaya_antar_jemput = intval($order['biaya_antar_jemput']);
+
+$subtotal_layanan = $total_harga - $biaya_antar_jemput;
 
 // Prepare Midtrans Payload
 $payload = [
@@ -86,9 +97,9 @@ $payload = [
     'item_details' => [
         [
             'id' => 'SVC-' . substr(md5($order['layanan']), 0, 5),
-            'price' => $tarif_per_kg,
-            'quantity' => $qty,
-            'name' => substr($order['layanan'], 0, 50)
+            'price' => $subtotal_layanan,
+            'quantity' => 1,
+            'name' => substr($order['layanan'] . ($is_self ? ' (' . $qty . ' Mesin)' : ' (' . $qty . ' Kg)'), 0, 50)
         ],
         [
             'id' => 'SHIPPING-FLAT',

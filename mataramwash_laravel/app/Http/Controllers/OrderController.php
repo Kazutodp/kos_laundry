@@ -116,6 +116,8 @@ class OrderController extends Controller
         // Generate unique order ID for Midtrans (MW-[database-id]-[timestamp])
         $midtrans_order_id = 'MW-' . $order->id . '-' . time();
 
+        $subtotal_layanan = $total_harga - $biaya_antar_jemput;
+
         // Prepare Midtrans Payload
         $payload = [
             'transaction_details' => [
@@ -125,9 +127,9 @@ class OrderController extends Controller
             'item_details' => [
                 [
                     'id' => 'SVC-' . substr(md5($layanan), 0, 5),
-                    'price' => $tarif_per_kg,
-                    'quantity' => $qty,
-                    'name' => substr($layanan, 0, 50)
+                    'price' => $subtotal_layanan,
+                    'quantity' => 1,
+                    'name' => substr($layanan . ' (' . $qty . ' Mesin)', 0, 50)
                 ],
                 [
                     'id' => 'SHIPPING-FLAT',
