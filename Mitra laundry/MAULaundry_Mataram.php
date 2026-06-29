@@ -23,7 +23,7 @@ $custom_grids_html = '
         <div>
             <div class="flex justify-between items-start mb-sm">
                 <h3 class="font-headline-md text-[20px] text-on-surface">Cuci Kering (Wash & Dry)</h3>
-                <span class="text-primary font-bold text-lg">Rp 25.000/7kg</span>
+                <span class="text-primary font-bold text-lg">Rp 25.000/kg</span>
             </div>
             <p class="text-on-surface-variant text-body-md mb-lg">Mencuci dan mengeringkan pakaian secara mandiri dengan kapasitas mesin hingga 7kg. Selesai cepat ± 90 menit.</p>
         </div>
@@ -35,7 +35,7 @@ $custom_grids_html = '
         <div>
             <div class="flex justify-between items-start mb-sm">
                 <h3 class="font-headline-md text-[20px] text-on-surface">Cuci Basah (Wash Only)</h3>
-                <span class="text-primary font-bold text-lg">Rp 10.000/7kg</span>
+                <span class="text-primary font-bold text-lg">Rp 10.000/kg</span>
             </div>
             <p class="text-on-surface-variant text-body-md mb-lg">Hanya layanan mencuci tanpa pengeringan dengan mesin komersil kapasitas 7kg.</p>
         </div>
@@ -79,7 +79,7 @@ $custom_grids_html = '
                     <p class="text-[12px] text-primary font-semibold mt-xs">Gratis Parfum & Detergen 50ml pertama</p>
                 </div>
                 <div class="text-right">
-                    <span class="text-primary font-bold text-lg block">Rp 34.000/7kg</span>
+                    <span class="text-primary font-bold text-lg block">Rp 34.000/kg</span>
                     <span class="text-label-sm text-on-surface-variant text-[12px]">+ Rp 4.850/kg selanjutnya</span>
                 </div>
             </div>
