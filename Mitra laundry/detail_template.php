@@ -143,9 +143,9 @@ $delivery_label = isset($custom_delivery_label) ? $custom_delivery_label : ($is_
 $delivery_advice = isset($custom_delivery_advice) ? $custom_delivery_advice : ($is_self_service ? 'Cuci Mandiri di Toko' : 'Biaya antar-jemput Rp 1.500');
 
 // Satuan pricing
-$harga_satuan_jaket = 15000;
-$harga_satuan_selimut = 20000;
-$harga_satuan_bed_cover = 30000;
+$harga_satuan_jaket = isset($custom_harga_satuan_jaket) ? $custom_harga_satuan_jaket : 15000;
+$harga_satuan_selimut = isset($custom_harga_satuan_selimut) ? $custom_harga_satuan_selimut : 20000;
+$harga_satuan_bed_cover = isset($custom_harga_satuan_bed_cover) ? $custom_harga_satuan_bed_cover : 30000;
 
 // Render different reviews depending on the shop
 $is_shoes = (strpos(strtolower($nama_mitra), 'shoes') !== false || strpos(strtolower($nama_mitra), 'sepatu') !== false);

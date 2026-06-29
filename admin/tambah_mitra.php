@@ -70,6 +70,14 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     $status_buka = isset($_POST['status_buka']) ? 1 : 0;
     $is_rekomendasi = isset($_POST['is_rekomendasi']) ? 1 : 0;
     $rating = trim($_POST['rating'] ?? '5.0');
+    
+    // Custom Pricing Overrides
+    $harga_pengeringan = (int)($_POST['harga_pengeringan'] ?? 6000);
+    $harga_setrika_reguler = (int)($_POST['harga_setrika_reguler'] ?? 13000);
+    $harga_setrika_saja = (int)($_POST['harga_setrika_saja'] ?? 7000);
+    $harga_satuan_jaket = (int)($_POST['harga_satuan_jaket'] ?? 15000);
+    $harga_satuan_selimut = (int)($_POST['harga_satuan_selimut'] ?? 20000);
+    $harga_satuan_bed_cover = (int)($_POST['harga_satuan_bed_cover'] ?? 30000);
 
     // Validation
     if (empty($nama_mitra) || empty($latitude) || empty($longitude) || empty($alamat) || empty($harga_per_kg)) {
@@ -140,9 +148,13 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                     "</div>';\n\n" .
                     "// Custom pricing overrides matching the database base price\n" .
                     "\$custom_harga_lipat_reguler = " . (int)$harga_per_kg . ";\n" .
-                    "\$custom_harga_pengeringan = 6000;\n" .
-                    "\$custom_harga_setrika_reguler = 13000;\n" .
-                    "\$custom_harga_setrika_saja = 7000;\n\n" .
+                    "\$custom_harga_pengeringan = " . $harga_pengeringan . ";\n" .
+                    "\$custom_harga_setrika_reguler = " . $harga_setrika_reguler . ";\n" .
+                    "\$custom_harga_setrika_saja = " . $harga_setrika_saja . ";\n\n" .
+                    "// Custom Satuan pricing overrides\n" .
+                    "\$custom_harga_satuan_jaket = " . $harga_satuan_jaket . ";\n" .
+                    "\$custom_harga_satuan_selimut = " . $harga_satuan_selimut . ";\n" .
+                    "\$custom_harga_satuan_bed_cover = " . $harga_satuan_bed_cover . ";\n\n" .
                     "include 'detail_template.php';\n" .
                     "?>\n";
 
@@ -453,6 +465,45 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                                         <div class="w-11 h-6 bg-slate-300 peer-focus:outline-none rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-slate-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-primary"></div>
                                         <span class="ml-3 text-label-md font-bold text-on-surface-variant">Tampilkan di Rekomendasi Beranda</span>
                                     </label>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Custom Pricing Bento Card -->
+                        <div class="bento-card p-xl rounded-xl space-y-md">
+                            <h2 class="text-headline-sm font-bold text-primary flex items-center gap-xs">
+                                <span class="material-symbols-outlined">payments</span>
+                                <span>Tarif Kustom Layanan (Opsional)</span>
+                            </h2>
+                            <p class="text-xs text-on-surface-variant">Kustomisasi tarif jika ingin berbeda dari tarif kelipatan dasar sistem.</p>
+                            
+                            <div class="grid grid-cols-1 md:grid-cols-3 gap-md">
+                                <div class="space-y-xs">
+                                    <label for="harga_pengeringan" class="text-label-md font-bold text-on-surface-variant">Harga Pengeringan (Rp)</label>
+                                    <input type="number" id="harga_pengeringan" name="harga_pengeringan" value="6000" class="w-full rounded-xl border-outline-variant focus:ring-primary focus:border-primary text-body-md py-2.5 px-md bg-white">
+                                </div>
+                                <div class="space-y-xs">
+                                    <label for="harga_setrika_reguler" class="text-label-md font-bold text-on-surface-variant">Harga Setrika Reguler (Rp)</label>
+                                    <input type="number" id="harga_setrika_reguler" name="harga_setrika_reguler" value="13000" class="w-full rounded-xl border-outline-variant focus:ring-primary focus:border-primary text-body-md py-2.5 px-md bg-white">
+                                </div>
+                                <div class="space-y-xs">
+                                    <label for="harga_setrika_saja" class="text-label-md font-bold text-on-surface-variant">Harga Setrika Saja (Rp)</label>
+                                    <input type="number" id="harga_setrika_saja" name="harga_setrika_saja" value="7000" class="w-full rounded-xl border-outline-variant focus:ring-primary focus:border-primary text-body-md py-2.5 px-md bg-white">
+                                </div>
+                            </div>
+                            
+                            <div class="grid grid-cols-1 md:grid-cols-3 gap-md">
+                                <div class="space-y-xs">
+                                    <label for="harga_satuan_jaket" class="text-label-md font-bold text-on-surface-variant">Harga Satuan Jaket (Rp)</label>
+                                    <input type="number" id="harga_satuan_jaket" name="harga_satuan_jaket" value="15000" class="w-full rounded-xl border-outline-variant focus:ring-primary focus:border-primary text-body-md py-2.5 px-md bg-white">
+                                </div>
+                                <div class="space-y-xs">
+                                    <label for="harga_satuan_selimut" class="text-label-md font-bold text-on-surface-variant">Harga Satuan Selimut (Rp)</label>
+                                    <input type="number" id="harga_satuan_selimut" name="harga_satuan_selimut" value="20000" class="w-full rounded-xl border-outline-variant focus:ring-primary focus:border-primary text-body-md py-2.5 px-md bg-white">
+                                </div>
+                                <div class="space-y-xs">
+                                    <label for="harga_satuan_bed_cover" class="text-label-md font-bold text-on-surface-variant">Harga Satuan Bed Cover (Rp)</label>
+                                    <input type="number" id="harga_satuan_bed_cover" name="harga_satuan_bed_cover" value="30000" class="w-full rounded-xl border-outline-variant focus:ring-primary focus:border-primary text-body-md py-2.5 px-md bg-white">
                                 </div>
                             </div>
                         </div>
