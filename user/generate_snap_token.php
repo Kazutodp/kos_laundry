@@ -26,9 +26,10 @@ if ($order_id <= 0) {
 // Fetch order
 try {
     $stmt = $pdo->prepare("
-        SELECT o.*, u.email, u.no_telp 
+        SELECT o.*, u.email, u.no_telp, m.nama_mitra
         FROM orders o
         JOIN users u ON o.nama_pelanggan = u.nama
+        JOIN mitra_laundry m ON o.mitra_id = m.id
         WHERE o.id = ? AND o.nama_pelanggan = ? AND o.status_pembayaran = 'pending' AND o.status_order = 'Menunggu Pembayaran'
     ");
     $stmt->execute([$order_id, $user_nama]);
