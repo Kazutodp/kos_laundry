@@ -148,7 +148,8 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 
                 file_put_contents($detail_dir . $slug, $file_content);
 
-                $success = true;
+                header("Location: manajemen_mitra.php?status=added");
+                exit();
             } catch (PDOException $e) {
                 $error = 'Gagal menyimpan ke database: ' . $e->getMessage();
             }

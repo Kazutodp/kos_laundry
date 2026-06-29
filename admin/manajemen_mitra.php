@@ -44,6 +44,8 @@ if (isset($_GET['status']) && $_GET['status'] === 'deleted') {
     $success_message = 'Mitra laundry berhasil dihapus dari sistem.';
 } elseif (isset($_GET['status']) && $_GET['status'] === 'updated') {
     $success_message = 'Data mitra laundry berhasil diperbarui!';
+} elseif (isset($_GET['status']) && $_GET['status'] === 'added') {
+    $success_message = 'Mitra laundry baru berhasil ditambahkan!';
 }
 
 // Fetch all partners
