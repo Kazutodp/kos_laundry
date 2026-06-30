@@ -25,6 +25,7 @@ Route::middleware('auth')->group(function () {
     Route::post('/orders/process', [OrderController::class, 'process'])->name('orders.process');
     Route::get('/orders/history', [OrderHistoryController::class, 'index'])->name('orders.history');
     Route::get('/orders/{id}/token', [OrderHistoryController::class, 'getSnapToken'])->name('orders.token');
+    Route::post('/orders/cancel', [OrderHistoryController::class, 'cancel'])->name('orders.cancel');
     Route::get('/pembayaran-sukses', [HomeController::class, 'success'])->name('pembayaran.sukses');
     
     // Admin/Mitra Order Management routes

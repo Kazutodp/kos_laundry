@@ -130,6 +130,8 @@
                             $status_badge_class = 'bg-teal-50 text-teal-700 border border-teal-200';
                         } elseif ($order_status === 'Selesai') {
                             $status_badge_class = 'bg-emerald-50 text-emerald-700 border border-emerald-200';
+                        } elseif ($order_status === 'Dibatalkan') {
+                            $status_badge_class = 'bg-rose-50 text-rose-700 border border-rose-200 font-bold';
                         }
                         
                         // Style class based on payment status
@@ -244,6 +246,13 @@
                                         </button>
                                     @endif
 
+                                    <!-- Cancel button -->
+                                    @if ($pay_status !== 'success' && $order_status !== 'Dibatalkan' && in_array($order_status, ['Menunggu Penjemputan', 'Menunggu Timbangan', 'Menunggu Pembayaran']))
+                                        <button onclick="cancelOrder({{ $order->id }}, this)" class="bg-rose-50 hover:bg-rose-100 text-rose-600 border border-rose-200 py-sm px-md rounded-xl font-bold transition-all text-xs flex items-center gap-xs">
+                                            <span class="material-symbols-outlined text-[16px]">cancel</span> Batalkan Pesanan
+                                        </button>
+                                    @endif
+
                                     <!-- Pay button -->
                                     @if ($pay_status === 'pending' && ($order_status === 'Menunggu Pembayaran' || $is_self || $is_satuan))
                                         <button onclick="payOrder({{ $order->id }}, this)" class="bg-primary text-on-primary py-sm px-lg rounded-xl font-bold shadow-md hover:brightness-110 active:scale-95 transition-all text-xs flex items-center gap-xs">
@@ -334,6 +343,42 @@
             .catch(err => {
                 console.error(err);
                 alert('Gagal menghubungi server pembayaran.');
+                btn.innerHTML = originalText;
+                btn.disabled = false;
+            });
+        }
+
+        function cancelOrder(orderId, btn) {
+            if (!confirm('Apakah Anda yakin ingin membatalkan pesanan ini?')) {
+                return;
+            }
+
+            const originalText = btn.innerHTML;
+            btn.innerHTML = '<span class="material-symbols-outlined animate-spin text-[16px]">sync</span> Membatalkan...';
+            btn.disabled = true;
+
+            fetch('{{ route("orders.cancel") }}', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'X-CSRF-TOKEN': '{{ csrf_token() }}'
+                },
+                body: JSON.stringify({ order_id: orderId })
+            })
+            .then(response => response.json())
+            .then(data => {
+                if (data.status === 'success') {
+                    alert(data.message || 'Pesanan Anda berhasil dibatalkan.');
+                    window.location.reload();
+                } else {
+                    alert(data.message || 'Gagal membatalkan pesanan.');
+                    btn.innerHTML = originalText;
+                    btn.disabled = false;
+                }
+            })
+            .catch(err => {
+                console.error(err);
+                alert('Gagal menghubungi server.');
                 btn.innerHTML = originalText;
                 btn.disabled = false;
             });

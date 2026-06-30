@@ -150,4 +150,38 @@ class OrderHistoryController extends Controller
             ]);
         }
     }
+
+    public function cancel(Request $request)
+    {
+        $user = Auth::user();
+        $orderId = $request->input('order_id');
+
+        $order = Order::where('id', $orderId)
+            ->where('nama_pelanggan', $user->nama)
+            ->first();
+
+        if (!$order) {
+            return response()->json([
+                'status' => 'error',
+                'message' => 'Pesanan tidak ditemukan atau Anda tidak memiliki akses.'
+            ], 404);
+        }
+
+        $eligibleStatuses = ['Menunggu Penjemputan', 'Menunggu Timbangan', 'Menunggu Pembayaran'];
+        if (!in_array($order->status_order, $eligibleStatuses) || $order->status_pembayaran === 'success') {
+            return response()->json([
+                'status' => 'error',
+                'message' => 'Pesanan tidak dapat dibatalkan karena sudah diproses atau sudah dibayar.'
+            ]);
+        }
+
+        // Update status_order to Dibatalkan
+        $order->status_order = 'Dibatalkan';
+        $order->save();
+
+        return response()->json([
+            'status' => 'success',
+            'message' => 'Pesanan Anda berhasil dibatalkan.'
+        ]);
+    }
 }

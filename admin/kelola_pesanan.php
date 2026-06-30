@@ -387,22 +387,26 @@ try {
                                             </span>
                                         </td>
                                         <td class="px-md py-md">
-                                            <span class="inline-block px-2 py-0.5 rounded text-xs font-semibold <?= $order_status === 'Menunggu Pembayaran' ? 'bg-sky-100 text-sky-800 font-bold animate-pulse' : ($order_status === 'Selesai' ? 'bg-emerald-100 text-emerald-800' : 'bg-slate-100 text-slate-700'); ?>">
+                                            <span class="inline-block px-2 py-0.5 rounded text-xs font-semibold <?= $order_status === 'Menunggu Pembayaran' ? 'bg-sky-100 text-sky-800 font-bold animate-pulse' : ($order_status === 'Selesai' ? 'bg-emerald-100 text-emerald-800' : ($order_status === 'Dibatalkan' ? 'bg-rose-100 text-rose-800 font-bold' : 'bg-slate-100 text-slate-700')); ?>">
                                                 <?= $order_status; ?>
                                             </span>
                                         </td>
                                         <td class="px-md py-md text-center space-x-xs">
-                                            <!-- Weigh & upload photo timbangan -->
-                                            <?php if ($is_kiloan && $order_status !== 'Selesai'): ?>
-                                                <button onclick="openTimbangModal(<?= $order['id']; ?>, '<?= htmlspecialchars($order['nama_pelanggan']); ?>', '<?= htmlspecialchars($order['layanan']); ?>', <?= floatval($order['estimasi_berat']); ?>)" class="text-xs bg-blue-600 text-white font-bold py-1.5 px-3 rounded-lg shadow-xs hover:bg-blue-700 transition-colors">
-                                                    <?= floatval($order['berat_atau_qty']) > 0 ? 'Timbang Ulang' : 'Timbang'; ?>
-                                                </button>
-                                            <?php endif; ?>
+                                            <?php if ($order_status !== 'Dibatalkan'): ?>
+                                                <!-- Weigh & upload photo timbangan -->
+                                                <?php if ($is_kiloan && $order_status !== 'Selesai'): ?>
+                                                    <button onclick="openTimbangModal(<?= $order['id']; ?>, '<?= htmlspecialchars($order['nama_pelanggan']); ?>', '<?= htmlspecialchars($order['layanan']); ?>', <?= floatval($order['estimasi_berat']); ?>)" class="text-xs bg-blue-600 text-white font-bold py-1.5 px-3 rounded-lg shadow-xs hover:bg-blue-700 transition-colors">
+                                                        <?= floatval($order['berat_atau_qty']) > 0 ? 'Timbang Ulang' : 'Timbang'; ?>
+                                                    </button>
+                                                <?php endif; ?>
 
-                                            <!-- Update Order Status Dropdown -->
-                                            <button onclick="openStatusModal(<?= $order['id']; ?>, '<?= $order_status; ?>')" class="text-xs bg-slate-100 text-slate-700 border border-slate-200 font-bold py-1.5 px-3 rounded-lg shadow-xs hover:bg-slate-200 transition-colors">
-                                                Status
-                                            </button>
+                                                <!-- Update Order Status Dropdown -->
+                                                <button onclick="openStatusModal(<?= $order['id']; ?>, '<?= $order_status; ?>')" class="text-xs bg-slate-100 text-slate-700 border border-slate-200 font-bold py-1.5 px-3 rounded-lg shadow-xs hover:bg-slate-200 transition-colors">
+                                                    Status
+                                                </button>
+                                            <?php else: ?>
+                                                <span class="text-xs text-rose-600 font-semibold bg-rose-50 border border-rose-100 px-md py-1 rounded-lg">Dibatalkan</span>
+                                            <?php endif; ?>
                                         </td>
                                     </tr>
                                 <?php endforeach; ?>
