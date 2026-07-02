@@ -910,7 +910,7 @@ $logo_url = $partner_logos[$id_mitra] ?? $partner_logos[1];
                                 $time = $line;
                             }
                         ?>
-                        <div class="flex justify-between p-xs hover:bg-surface-container/30 rounded-lg transition-colors text-sm">
+                        <div class="flex py-[2px] text-sm">
                             <span class="text-on-surface-variant w-24 shrink-0 text-left"><?= htmlspecialchars($day); ?></span>
                             <span class="font-bold text-on-surface flex-1 text-left"><?= htmlspecialchars($time); ?></span>
                         </div>
