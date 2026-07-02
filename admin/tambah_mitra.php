@@ -153,8 +153,8 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                         $time = $line;
                     }
                     $jam_operasional_html_content .= "    <div class=\"flex justify-between p-xs hover:bg-surface-container/30 rounded-lg transition-colors text-sm\">\n" .
-                                                     "        <span class=\"text-on-surface-variant w-32 shrink-0 text-left\">" . htmlspecialchars($day) . "</span>\n" .
-                                                     "        <span class=\"font-bold text-on-surface flex-1 text-left\">: " . htmlspecialchars($time) . "</span>\n" .
+                                                     "        <span class=\"text-on-surface-variant w-24 shrink-0 text-left\">" . htmlspecialchars($day) . "</span>\n" .
+                                                     "        <span class=\"font-bold text-on-surface flex-1 text-left\">" . htmlspecialchars($time) . "</span>\n" .
                                                      "    </div>\n";
                 }
                 $jam_operasional_html_content .= "</div>";

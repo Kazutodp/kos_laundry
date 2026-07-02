@@ -798,8 +798,8 @@
                                 }
                             @endphp
                             <div class="flex justify-between p-xs hover:bg-surface-container/30 rounded-lg transition-colors text-sm">
-                                <span class="text-on-surface-variant w-32 shrink-0 text-left">{{ $day }}</span>
-                                <span class="font-bold text-on-surface flex-1 text-left">: {{ $time }}</span>
+                                <span class="text-on-surface-variant w-24 shrink-0 text-left">{{ $day }}</span>
+                                <span class="font-bold text-on-surface flex-1 text-left">{{ $time }}</span>
                             </div>
                         @endforeach
                     </div>
