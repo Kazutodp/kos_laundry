@@ -395,7 +395,12 @@ try {
                             </div>
                             <div class="flex items-center">
                                 <span class="material-symbols-outlined text-[16px] mr-1">schedule</span>
-                                <span class=""><?= htmlspecialchars($mitra['jam_buka']); ?></span>
+                                <span class="">
+                                    <?php 
+                                    $jam_buka_lines = explode("\n", str_replace("\r", "", $mitra['jam_buka'] ?? ''));
+                                    echo htmlspecialchars(!empty($jam_buka_lines) ? trim($jam_buka_lines[0]) : '');
+                                    ?>
+                                </span>
                             </div>
                         </div>
                         <div class="pt-md border-t border-outline-variant flex justify-between items-center">

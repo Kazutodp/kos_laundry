@@ -337,7 +337,12 @@ try {
                                 <?php endif; ?>
                                 <div class="flex items-center gap-xs">
                                     <span class="w-1.5 h-1.5 rounded-full <?= $mitra['status_buka'] ? 'bg-secondary' : 'bg-outline' ?>"></span>
-                                    <span class="text-[11px] font-semibold text-on-surface-variant"><?= htmlspecialchars($mitra['jam_buka']); ?></span>
+                                    <span class="text-[11px] font-semibold text-on-surface-variant">
+                                        <?php 
+                                        $jam_buka_lines = explode("\n", str_replace("\r", "", $mitra['jam_buka'] ?? ''));
+                                        echo htmlspecialchars(!empty($jam_buka_lines) ? trim($jam_buka_lines[0]) : '');
+                                        ?>
+                                    </span>
                                 </div>
                             </div>
                         </div>
@@ -460,7 +465,7 @@ try {
                     <span class="text-xs font-bold text-primary bg-primary-container/10 px-xs py-[2px] rounded-md">
                         ${mitra.icon_type === 'sepatu' ? 'Rp 20.000/pasang' : (mitra.nama_mitra.toLowerCase().includes('washtra') ? `Rp ${parseInt(mitra.harga_per_kg).toLocaleString('id-ID')} Flat` : `Rp ${parseInt(mitra.harga_per_kg).toLocaleString('id-ID')}/kg`)}
                     </span>
-                    <span class="text-[10px] ${mitra.status_buka == 1 ? 'text-green-600' : 'text-slate-500'} font-bold">${mitra.jam_buka}</span>
+                    <span class="text-[10px] ${mitra.status_buka == 1 ? 'text-green-600' : 'text-slate-500'} font-bold">${mitra.jam_buka ? mitra.jam_buka.split('\n')[0] : ''}</span>
                 </div>
                 <div class="pt-sm">
                     <a href="tel:${mitra.no_telp}" class="block w-full text-center text-white bg-primary py-[6px] px-sm rounded-lg text-xs font-bold hover:bg-primary-container transition-colors">

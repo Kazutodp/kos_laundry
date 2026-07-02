@@ -312,7 +312,7 @@
                             </div>
                             <div class="flex items-center">
                                 <span class="material-symbols-outlined text-[16px] mr-1">schedule</span>
-                                <span class="">{{ $m->jam_buka }}</span>
+                                <span class="">{{ explode("\n", str_replace("\r", "", $m->jam_buka ?? ''))[0] ?? '' }}</span>
                             </div>
                         </div>
                         <div class="pt-md border-t border-outline-variant flex justify-between items-center">
