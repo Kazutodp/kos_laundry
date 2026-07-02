@@ -893,23 +893,28 @@ $logo_url = $partner_logos[$id_mitra] ?? $partner_logos[1];
                         <span class="material-symbols-outlined text-primary text-[18px]">schedule</span>
                         Jam Operasional
                     </h4>
-                    <div class="space-y-xs text-sm">
-                        <?php if (isset($jam_operasional_html)): ?>
-                            <?= $jam_operasional_html; ?>
-                        <?php else: ?>
-                            <div class="flex justify-between p-xs hover:bg-surface-container/30 rounded-lg transition-colors">
-                                <span class="text-on-surface-variant">Senin - Jumat</span>
-                                <span class="font-bold text-on-surface"><?= $jam_buka; ?></span>
-                            </div>
-                            <div class="flex justify-between p-xs hover:bg-surface-container/30 rounded-lg transition-colors">
-                                <span class="text-on-surface-variant">Sabtu</span>
-                                <span class="font-bold text-on-surface"><?= $jam_buka; ?></span>
-                            </div>
-                            <div class="flex justify-between p-xs hover:bg-surface-container/30 rounded-lg transition-colors">
-                                <span class="text-error font-bold">Minggu</span>
-                                <span class="text-error font-bold">Tutup</span>
-                            </div>
-                        <?php endif; ?>
+                    <div class="space-y-xs text-sm w-full">
+                        <?php 
+                        $jam_buka_to_parse = $jam_buka;
+                        $lines = explode("\n", str_replace("\r", "", $jam_buka_to_parse));
+                        foreach ($lines as $line):
+                            $line = trim($line);
+                            if (empty($line)) continue;
+                            
+                            $parts = preg_split('/(?=\d)/', $line, 2);
+                            if (count($parts) === 2) {
+                                $day = trim(rtrim(trim($parts[0]), ':'));
+                                $time = trim($parts[1]);
+                            } else {
+                                $day = 'Jam Kerja';
+                                $time = $line;
+                            }
+                        ?>
+                        <div class="flex justify-between p-xs hover:bg-surface-container/30 rounded-lg transition-colors text-sm">
+                            <span class="text-on-surface-variant w-32 shrink-0 text-left"><?= htmlspecialchars($day); ?></span>
+                            <span class="font-bold text-on-surface flex-1 text-left">: <?= htmlspecialchars($time); ?></span>
+                        </div>
+                        <?php endforeach; ?>
                     </div>
                 </div>
             </div>

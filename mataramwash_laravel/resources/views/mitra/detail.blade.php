@@ -779,11 +779,29 @@
                         <span class="material-symbols-outlined text-primary text-[18px]">schedule</span>
                         Jam Operasional
                     </h4>
-                    <div class="space-y-xs text-sm">
-                        <div class="flex justify-between p-xs hover:bg-surface-container/30 rounded-lg transition-colors text-sm">
-                            <span class="text-on-surface-variant">Senin - Minggu</span>
-                            <span class="font-bold text-on-surface">{{ $mitra->jam_buka }}</span>
-                        </div>
+                    <div class="space-y-xs text-sm w-full">
+                        @php
+                            $lines = explode("\n", str_replace("\r", "", $mitra->jam_buka ?? ''));
+                        @endphp
+                        @foreach ($lines as $line)
+                            @php
+                                $line = trim($line);
+                                if (empty($line)) continue;
+                                
+                                $parts = preg_split('/(?=\d)/', $line, 2);
+                                if (count($parts) === 2) {
+                                    $day = trim(rtrim(trim($parts[0]), ':'));
+                                    $time = trim($parts[1]);
+                                } else {
+                                    $day = 'Jam Kerja';
+                                    $time = $line;
+                                }
+                            @endphp
+                            <div class="flex justify-between p-xs hover:bg-surface-container/30 rounded-lg transition-colors text-sm">
+                                <span class="text-on-surface-variant w-32 shrink-0 text-left">{{ $day }}</span>
+                                <span class="font-bold text-on-surface flex-1 text-left">: {{ $time }}</span>
+                            </div>
+                        @endforeach
                     </div>
                 </div>
             </div>

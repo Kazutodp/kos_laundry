@@ -139,13 +139,29 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                     mkdir($detail_dir, 0777, true);
                 }
 
+                $jam_operasional_html_content = "<div class=\"w-full space-y-1\">\n";
+                $lines = explode("\n", str_replace("\r", "", $jam_buka));
+                foreach ($lines as $line) {
+                    $line = trim($line);
+                    if (empty($line)) continue;
+                    if (strpos($line, ':') !== false) {
+                        $parts = explode(':', $line, 2);
+                        $day = trim($parts[0]);
+                        $time = trim($parts[1]);
+                    } else {
+                        $day = 'Jam Kerja';
+                        $time = $line;
+                    }
+                    $jam_operasional_html_content .= "    <div class=\"flex justify-between p-xs hover:bg-surface-container/30 rounded-lg transition-colors text-sm\">\n" .
+                                                     "        <span class=\"text-on-surface-variant w-32 shrink-0 text-left\">" . htmlspecialchars($day) . "</span>\n" .
+                                                     "        <span class=\"font-bold text-on-surface flex-1 text-left\">: " . htmlspecialchars($time) . "</span>\n" .
+                                                     "    </div>\n";
+                }
+                $jam_operasional_html_content .= "</div>";
+
                 $file_content = "<?php\n" .
                     "\$nama_mitra = " . var_export($nama_mitra, true) . ";\n" .
-                    "\$jam_operasional_html = '\n" .
-                    "<div class=\"flex justify-between p-xs hover:bg-surface-container/30 rounded-lg transition-colors\">\n" .
-                    "    <span class=\"text-on-surface-variant\">Jam Buka</span>\n" .
-                    "    <span class=\"font-bold text-on-surface text-right\" style=\"white-space: pre-line;\">" . htmlspecialchars($jam_buka) . "</span>\n" .
-                    "</div>';\n\n" .
+                    "\$jam_operasional_html = " . var_export($jam_operasional_html_content, true) . ";\n\n" .
                     "// Custom pricing overrides matching the database base price\n" .
                     "\$custom_harga_lipat_reguler = " . (int)$harga_per_kg . ";\n" .
                     "\$custom_harga_pengeringan = " . $harga_pengeringan . ";\n" .
