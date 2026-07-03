@@ -7,6 +7,32 @@ if (!isset($_SESSION['admin_logged_in'])) {
 
 require_once '../db_connect.php';
 
+// Handle AJAX toggle updates
+if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['action']) && $_POST['action'] === 'toggle_status') {
+    header('Content-Type: application/json');
+    if (!isset($_POST['id']) || !isset($_POST['field']) || !isset($_POST['value'])) {
+        echo json_encode(['success' => false, 'message' => 'Invalid parameters']);
+        exit();
+    }
+    $id = (int)$_POST['id'];
+    $field = $_POST['field']; // 'status_buka' or 'is_rekomendasi'
+    $value = (int)$_POST['value'] ? 1 : 0;
+
+    if ($field !== 'status_buka' && $field !== 'is_rekomendasi') {
+        echo json_encode(['success' => false, 'message' => 'Invalid field']);
+        exit();
+    }
+
+    try {
+        $stmt = $pdo->prepare("UPDATE mitra_laundry SET $field = ? WHERE id = ?");
+        $stmt->execute([$value, $id]);
+        echo json_encode(['success' => true]);
+    } catch (PDOException $e) {
+        echo json_encode(['success' => false, 'message' => $e->getMessage()]);
+    }
+    exit();
+}
+
 $success_message = '';
 $error_message = '';
 
@@ -197,10 +223,7 @@ try {
 <span class="material-symbols-outlined text-[20px]">map</span>
 <span class="text-label-md font-label-md">Wilayah Operasional</span>
 </a>
-<a class="flex items-center gap-sm px-md py-sm text-slate-400 hover:text-white hover:bg-slate-800 rounded-xl transition-all duration-200" href="analitik_kemitraan.php">
-<span class="material-symbols-outlined text-[20px]">analytics</span>
-<span class="text-label-md font-label-md">Analitik Kemitraan</span>
-</a>
+
 <a class="flex items-center gap-sm px-md py-sm text-slate-400 hover:text-white hover:bg-slate-800 rounded-xl transition-all duration-200" href="financial_statements.php">
 <span class="material-symbols-outlined text-[20px]">payments</span>
 <span class="text-label-md font-label-md">Laporan Keuangan</span>
@@ -278,61 +301,65 @@ try {
                         <table class="w-full text-left border-collapse">
                             <thead>
                                 <tr class="bg-surface-container-low border-b border-outline-variant">
-                                    <th class="px-lg py-md text-label-sm text-on-surface-variant font-bold uppercase tracking-wider">Mitra</th>
-                                    <th class="px-lg py-md text-label-sm text-on-surface-variant font-bold uppercase tracking-wider">Kontak & Alamat</th>
-                                    <th class="px-lg py-md text-label-sm text-on-surface-variant font-bold uppercase tracking-wider">Layanan & Tarif</th>
-                                    <th class="px-lg py-md text-label-sm text-on-surface-variant font-bold uppercase tracking-wider">Status & Rekomendasi</th>
-                                    <th class="px-lg py-md text-label-sm text-on-surface-variant font-bold uppercase tracking-wider text-center">Aksi</th>
+                                    <th class="pl-md pr-1 py-2.5 text-[11px] text-slate-700 font-semibold uppercase tracking-wide">No</th>
+                                    <th class="px-md py-2.5 text-[11px] text-slate-700 font-semibold uppercase tracking-wide">Mitra</th>
+                                    <th class="px-md py-2.5 text-[11px] text-slate-700 font-semibold uppercase tracking-wide">Kontak & Alamat</th>
+                                    <th class="px-md py-2.5 text-[11px] text-slate-700 font-semibold uppercase tracking-wide">Layanan & Tarif</th>
+                                    <th class="px-md py-2.5 text-[11px] text-slate-700 font-semibold uppercase tracking-wide">Status & Rekomendasi</th>
+                                    <th class="px-md py-2.5 text-[11px] text-slate-700 font-semibold uppercase tracking-wide text-center">Aksi</th>
                                 </tr>
                             </thead>
                             <tbody class="divide-y divide-outline-variant">
                                 <?php if (empty($all_mitras)): ?>
                                     <tr>
-                                        <td colspan="5" class="px-lg py-12 text-center text-on-surface-variant">
+                                        <td colspan="6" class="px-md py-12 text-center text-on-surface-variant">
                                             <span class="material-symbols-outlined text-outline text-[48px] mb-2">storefront_off</span>
                                             <p class="text-body-md font-semibold">Belum ada mitra laundry yang terdaftar</p>
                                         </td>
                                     </tr>
                                 <?php else: ?>
+                                    <?php $no = 1; ?>
                                     <?php foreach ($all_mitras as $mitra): ?>
                                         <tr class="hover:bg-surface-container-low transition-colors">
+                                            <!-- Column 0: No -->
+                                            <td class="pl-md pr-1 py-sm text-[12px] text-slate-500 font-medium text-center"><?= $no++; ?></td>
                                             <!-- Column 1: Photo and Name -->
-                                            <td class="px-lg py-md">
-                                                <div class="flex items-center gap-md">
-                                                    <img src="../<?= htmlspecialchars($mitra['foto_toko']); ?>" alt="<?= htmlspecialchars($mitra['nama_mitra']); ?>" class="w-14 h-14 rounded-lg object-cover border border-outline-variant">
+                                            <td class="px-md py-sm">
+                                                <div class="flex items-center gap-sm">
+                                                    <img src="../<?= htmlspecialchars($mitra['foto_toko']); ?>" alt="<?= htmlspecialchars($mitra['nama_mitra']); ?>" class="w-10 h-10 rounded-lg object-cover border border-outline-variant shrink-0">
                                                     <div>
-                                                        <p class="text-body-md font-bold text-on-surface leading-tight"><?= htmlspecialchars($mitra['nama_mitra']); ?></p>
-                                                        <div class="flex items-center gap-[2px] mt-xs text-tertiary">
-                                                            <span class="material-symbols-outlined text-[16px]" style="font-variation-settings: 'FILL' 1;">star</span>
-                                                            <span class="text-label-sm font-bold"><?= htmlspecialchars($mitra['rating']); ?></span>
-                                                        </div>
+                                                        <p class="text-[13px] font-bold text-on-surface leading-tight"><?= htmlspecialchars($mitra['nama_mitra']); ?></p>
+                                                        <span class="inline-flex items-center gap-[2px] px-1.5 py-[1px] bg-amber-50 text-amber-700 border border-amber-200 rounded text-[10px] font-bold mt-0.5">
+                                                            <span class="material-symbols-outlined text-[10px]" style="font-variation-settings: 'FILL' 1;">star</span>
+                                                            <span><?= htmlspecialchars($mitra['rating']); ?></span>
+                                                        </span>
                                                     </div>
                                                 </div>
                                             </td>
                                             <!-- Column 2: Contact Info -->
-                                            <td class="px-lg py-md text-body-sm text-on-surface-variant">
-                                                <div class="space-y-base">
-                                                    <p class="flex items-center gap-xs font-medium">
-                                                        <span class="material-symbols-outlined text-[16px] text-primary">call</span>
+                                            <td class="px-md py-sm">
+                                                <div class="space-y-0.5">
+                                                    <p class="flex items-center gap-xs text-[12px] font-medium text-on-surface">
+                                                        <span class="material-symbols-outlined text-[14px] text-primary">call</span>
                                                         <span><?= htmlspecialchars($mitra['no_telp']); ?></span>
                                                     </p>
-                                                    <p class="flex items-start gap-xs max-w-xs">
-                                                        <span class="material-symbols-outlined text-[16px] text-outline shrink-0 mt-[2px]">location_on</span>
-                                                        <span class="line-clamp-2" title="<?= htmlspecialchars($mitra['alamat']); ?>"><?= htmlspecialchars($mitra['alamat']); ?></span>
+                                                    <p class="flex items-center gap-xs max-w-[220px] text-[12px] text-slate-500" title="<?= htmlspecialchars($mitra['alamat']); ?>">
+                                                        <span class="material-symbols-outlined text-[14px] text-slate-400 shrink-0">location_on</span>
+                                                        <span class="truncate"><?= htmlspecialchars($mitra['alamat']); ?></span>
                                                     </p>
                                                 </div>
                                             </td>
                                             <!-- Column 3: Services & Rates -->
-                                            <td class="px-lg py-md text-body-sm text-on-surface-variant">
-                                                <div class="space-y-base">
-                                                    <p class="flex items-center gap-xs font-semibold text-on-surface">
-                                                        <span class="material-symbols-outlined text-[16px] text-secondary">
+                                            <td class="px-md py-sm">
+                                                <div class="space-y-0.5">
+                                                    <p class="flex items-center gap-xs text-[12px] font-semibold text-on-surface">
+                                                        <span class="material-symbols-outlined text-[14px] text-secondary">
                                                             <?= $mitra['icon_type'] === 'sepatu' ? 'footprint' : ($mitra['icon_type'] === 'express' ? 'bolt' : 'local_laundry_service'); ?>
                                                         </span>
                                                         <span>
                                                             <?php 
                                                             if ($mitra['icon_type'] === 'sepatu') {
-                                                                echo 'Special Shoe Care';
+                                                                echo 'Special Shoe';
                                                             } elseif ($mitra['icon_type'] === 'express') {
                                                                 echo 'Layanan Express';
                                                             } else {
@@ -341,41 +368,37 @@ try {
                                                             ?>
                                                         </span>
                                                     </p>
-                                                    <p class="text-label-md font-bold text-primary">
-                                                        Rp <?= number_format($mitra['harga_per_kg'], 0, ',', '.'); ?><span class="text-outline font-normal text-body-sm">/kg</span>
+                                                    <p class="text-[12px] font-bold text-primary pl-[18px]">
+                                                        Rp <?= number_format($mitra['harga_per_kg'], 0, ',', '.'); ?><span class="text-slate-400 font-normal">/kg</span>
                                                     </p>
                                                 </div>
                                             </td>
                                             <!-- Column 4: Status & Settings -->
-                                            <td class="px-lg py-md text-body-sm">
-                                                <div class="space-y-sm">
-                                                    <div>
-                                                        <?php if ($mitra['status_buka'] == 1): ?>
-                                                            <span class="px-xs py-[2px] bg-emerald-50 text-emerald-700 rounded-full font-bold text-[11px] border border-emerald-200">Buka / Aktif</span>
-                                                        <?php else: ?>
-                                                            <span class="px-xs py-[2px] bg-slate-100 text-slate-500 rounded-full font-bold text-[11px] border border-slate-200">Tutup</span>
-                                                        <?php endif; ?>
-                                                    </div>
-                                                    <div class="flex items-center gap-xs text-on-surface-variant">
-                                                        <span class="material-symbols-outlined text-[16px]">
-                                                            <?= $mitra['is_rekomendasi'] == 1 ? 'verified' : 'circle_notifications'; ?>
-                                                        </span>
-                                                        <span class="text-label-sm">
-                                                            <?= $mitra['is_rekomendasi'] == 1 ? 'Rekomendasi Beranda' : 'Hanya Layanan'; ?>
-                                                        </span>
-                                                    </div>
+                                            <td class="px-md py-sm">
+                                                <div class="space-y-1">
+                                                    <!-- Toggle Status Buka -->
+                                                    <label class="relative inline-flex items-center cursor-pointer select-none">
+                                                        <input type="checkbox" onchange="toggleMitra(<?= $mitra['id']; ?>, 'status_buka', this.checked)" <?= $mitra['status_buka'] == 1 ? 'checked' : ''; ?> class="sr-only peer">
+                                                        <div class="w-8 h-[18px] bg-slate-200 peer-focus:outline-none rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-slate-300 after:border after:rounded-full after:h-[14px] after:w-[14px] after:transition-all peer-checked:bg-primary"></div>
+                                                        <span class="ml-2 text-[11px] font-medium text-slate-600">Buka / Aktif</span>
+                                                    </label>
+                                                    
+                                                    <!-- Toggle Rekomendasi -->
+                                                    <label class="relative inline-flex items-center cursor-pointer select-none">
+                                                        <input type="checkbox" onchange="toggleMitra(<?= $mitra['id']; ?>, 'is_rekomendasi', this.checked)" <?= $mitra['is_rekomendasi'] == 1 ? 'checked' : ''; ?> class="sr-only peer">
+                                                        <div class="w-8 h-[18px] bg-slate-200 peer-focus:outline-none rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-slate-300 after:border after:rounded-full after:h-[14px] after:w-[14px] after:transition-all peer-checked:bg-emerald-500"></div>
+                                                        <span class="ml-2 text-[11px] font-medium text-slate-600">Rekomendasi</span>
+                                                    </label>
                                                 </div>
                                             </td>
                                             <!-- Column 5: Actions -->
-                                            <td class="px-lg py-md text-center">
+                                            <td class="px-md py-sm text-center">
                                                 <div class="flex items-center justify-center gap-xs">
-                                                    <a href="edit_mitra.php?id=<?= $mitra['id']; ?>" class="px-sm py-xs border border-primary text-primary rounded-xl font-bold text-label-sm hover:bg-primary-fixed/30 transition-all active:scale-95 inline-flex items-center gap-xs">
+                                                    <a href="edit_mitra.php?id=<?= $mitra['id']; ?>" title="Edit Mitra" class="p-1.5 border border-outline-variant text-primary hover:bg-blue-50 hover:border-primary rounded-lg transition-all active:scale-95 flex items-center justify-center">
                                                         <span class="material-symbols-outlined text-[18px]">edit</span>
-                                                        Edit
                                                     </a>
-                                                    <button onclick="confirmDelete(<?= $mitra['id']; ?>, '<?= htmlspecialchars($mitra['nama_mitra'], ENT_QUOTES); ?>')" class="px-sm py-xs border border-error text-error rounded-xl font-bold text-label-sm hover:bg-error-container/20 transition-all active:scale-95 inline-flex items-center gap-xs">
+                                                    <button onclick="confirmDelete(<?= $mitra['id']; ?>, '<?= htmlspecialchars($mitra['nama_mitra'], ENT_QUOTES); ?>')" title="Hapus Mitra" class="p-1.5 border border-outline-variant text-error hover:bg-rose-50 hover:border-error rounded-lg transition-all active:scale-95 flex items-center justify-center">
                                                         <span class="material-symbols-outlined text-[18px]">delete</span>
-                                                        Hapus
                                                     </button>
                                                 </div>
                                             </td>
@@ -406,6 +429,32 @@ try {
             if (confirm(`Apakah Anda yakin ingin menghapus mitra "${name}"?\nTindakan ini akan menghapus data dari database dan menghapus file detail template.`)) {
                 window.location.href = `manajemen_mitra.php?action=delete&id=${id}`;
             }
+        }
+
+        function toggleMitra(id, field, isChecked) {
+            const val = isChecked ? 1 : 0;
+            const formData = new FormData();
+            formData.append('action', 'toggle_status');
+            formData.append('id', id);
+            formData.append('field', field);
+            formData.append('value', val);
+
+            fetch('manajemen_mitra.php', {
+                method: 'POST',
+                body: formData
+            })
+            .then(response => response.json())
+            .then(data => {
+                if (!data.success) {
+                    alert('Gagal memperbarui status: ' + (data.message || 'Error tidak diketahui'));
+                    location.reload();
+                }
+            })
+            .catch(error => {
+                console.error('Error:', error);
+                alert('Terjadi kesalahan koneksi server.');
+                location.reload();
+            });
         }
     </script>
 </body>

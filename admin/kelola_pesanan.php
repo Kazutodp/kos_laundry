@@ -267,10 +267,7 @@ try {
             <span class="material-symbols-outlined text-[20px]">map</span>
             <span class="text-label-md font-label-md">Wilayah Operasional</span>
         </a>
-        <a class="flex items-center gap-sm px-md py-sm text-slate-400 hover:text-white hover:bg-slate-800 rounded-xl transition-all duration-200" href="analitik_kemitraan.php">
-            <span class="material-symbols-outlined text-[20px]">analytics</span>
-            <span class="text-label-md font-label-md">Analitik Kemitraan</span>
-        </a>
+
         <a class="flex items-center gap-sm px-md py-sm text-slate-400 hover:text-white hover:bg-slate-800 rounded-xl transition-all duration-200" href="financial_statements.php">
             <span class="material-symbols-outlined text-[20px]">payments</span>
             <span class="text-label-md font-label-md">Laporan Keuangan</span>
@@ -333,6 +330,7 @@ try {
                     <table class="w-full text-left border-collapse bg-white">
                         <thead>
                             <tr class="bg-slate-50 border-b border-slate-100">
+                                <th class="pl-lg pr-md py-sm text-label-sm text-slate-500 font-bold uppercase tracking-wider text-xs">No</th>
                                 <th class="px-md py-sm text-label-sm text-slate-500 font-bold uppercase tracking-wider text-xs">ID</th>
                                 <th class="px-md py-sm text-label-sm text-slate-500 font-bold uppercase tracking-wider text-xs">Pelanggan</th>
                                 <th class="px-md py-sm text-label-sm text-slate-500 font-bold uppercase tracking-wider text-xs">Outlet / Layanan</th>
@@ -345,9 +343,10 @@ try {
                         <tbody class="divide-y divide-slate-100 text-slate-700 text-sm">
                             <?php if (empty($all_orders)): ?>
                                 <tr>
-                                    <td colspan="7" class="px-md py-xl text-center text-slate-400">Belum ada pesanan terdaftar di sistem.</td>
+                                    <td colspan="8" class="px-md py-xl text-center text-slate-400">Belum ada pesanan terdaftar di sistem.</td>
                                 </tr>
                             <?php else: ?>
+                                <?php $no = 1; ?>
                                 <?php foreach ($all_orders as $order): 
                                     $is_self = (strpos(strtolower($order['layanan']), 'self') !== false || strpos(strtolower($order['nama_mitra']), 'washtra') !== false);
                                     $is_satuan = (strpos(strtolower($order['layanan']), 'sepatu') !== false || strpos(strtolower($order['layanan']), 'shoes') !== false || strpos(strtolower($order['nama_mitra']), 'shoes') !== false);
@@ -357,6 +356,7 @@ try {
                                     $pay_status = $order['status_pembayaran'];
                                 ?>
                                     <tr class="hover:bg-slate-50/50 transition-colors">
+                                        <td class="pl-lg pr-md py-md text-slate-500 font-medium text-center"><?= $no++; ?></td>
                                         <td class="px-md py-md font-bold text-slate-800">#<?= $order['id']; ?></td>
                                         <td class="px-md py-md">
                                             <p class="font-bold text-slate-800"><?= htmlspecialchars($order['nama_pelanggan']); ?></p>

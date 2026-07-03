@@ -123,6 +123,8 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     $status_buka = isset($_POST['status_buka']) ? 1 : 0;
     $is_rekomendasi = isset($_POST['is_rekomendasi']) ? 1 : 0;
     $rating = trim($_POST['rating'] ?? '5.0');
+    $fasilitas = isset($_POST['fasilitas']) ? implode(',', $_POST['fasilitas']) : '';
+    $keunggulan_lainnya = trim($_POST['keunggulan_lainnya'] ?? '');
     
     // Custom Pricing Overrides
     $harga_pengeringan = (int)($_POST['harga_pengeringan'] ?? 6000);
@@ -171,7 +173,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         if (empty($error)) {
             try {
                 // Update database
-                $stmt = $pdo->prepare("UPDATE mitra_laundry SET nama_mitra = ?, foto_toko = ?, latitude = ?, longitude = ?, alamat = ?, no_telp = ?, rating = ?, harga_per_kg = ?, jam_buka = ?, status_buka = ?, icon_type = ?, is_rekomendasi = ? WHERE id = ?");
+                $stmt = $pdo->prepare("UPDATE mitra_laundry SET nama_mitra = ?, foto_toko = ?, latitude = ?, longitude = ?, alamat = ?, no_telp = ?, rating = ?, harga_per_kg = ?, jam_buka = ?, status_buka = ?, icon_type = ?, is_rekomendasi = ?, fasilitas = ?, keunggulan_lainnya = ? WHERE id = ?");
                 $stmt->execute([
                     $nama_mitra,
                     $foto_toko,
@@ -185,6 +187,8 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                     $status_buka,
                     $icon_type,
                     $is_rekomendasi,
+                    $fasilitas,
+                    $keunggulan_lainnya,
                     $id
                 ]);
 
@@ -327,6 +331,26 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                     "md": "16px",
                     "lg": "24px",
                     "xs": "8px"
+            },
+            "fontFamily": {
+                    "headline-md": ["Inter"],
+                    "headline-lg": ["Inter"],
+                    "label-sm": ["Inter"],
+                    "display-lg": ["Inter"],
+                    "headline-lg-mobile": ["Inter"],
+                    "body-md": ["Inter"],
+                    "label-md": ["Inter"],
+                    "body-lg": ["Inter"]
+            },
+            "fontSize": {
+                    "headline-md": ["24px", {"lineHeight": "32px", "fontWeight": "600"}],
+                    "headline-lg": ["32px", {"lineHeight": "40px", "letterSpacing": "-0.01em", "fontWeight": "700"}],
+                    "label-sm": ["12px", {"lineHeight": "16px", "fontWeight": "600"}],
+                    "display-lg": ["48px", {"lineHeight": "56px", "letterSpacing": "-0.02em", "fontWeight": "700"}],
+                    "headline-lg-mobile": ["28px", {"lineHeight": "36px", "letterSpacing": "-0.01em", "fontWeight": "700"}],
+                    "body-md": ["16px", {"lineHeight": "24px", "fontWeight": "400"}],
+                    "label-md": ["14px", {"lineHeight": "20px", "letterSpacing": "0.01em", "fontWeight": "500"}],
+                    "body-lg": ["18px", {"lineHeight": "28px", "fontWeight": "400"}]
             }
           }
         }
@@ -381,10 +405,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 <span class="material-symbols-outlined text-[20px]">map</span>
 <span class="text-label-md font-label-md">Wilayah Operasional</span>
 </a>
-<a class="flex items-center gap-sm px-md py-sm text-slate-400 hover:text-white hover:bg-slate-800 rounded-xl transition-all duration-200" href="analitik_kemitraan.php">
-<span class="material-symbols-outlined text-[20px]">analytics</span>
-<span class="text-label-md font-label-md">Analitik Kemitraan</span>
-</a>
+
 <a class="flex items-center gap-sm px-md py-sm text-slate-400 hover:text-white hover:bg-slate-800 rounded-xl transition-all duration-200" href="financial_statements.php">
 <span class="material-symbols-outlined text-[20px]">payments</span>
 <span class="text-label-md font-label-md">Laporan Keuangan</span>
@@ -559,6 +580,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                             </div>
                         </div>
 
+                        <!-- Koordinat Geografis (Peta) * -->
                         <div class="bento-card p-xl rounded-xl space-y-md">
                             <h2 class="text-headline-sm font-bold text-primary flex items-center gap-xs">
                                 <span class="material-symbols-outlined">map</span>
@@ -610,6 +632,50 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                                     <img id="image-preview" class="absolute inset-0 w-full h-full object-cover rounded-2xl <?= empty($mitra['foto_toko']) ? 'hidden' : ''; ?>" src="../<?= htmlspecialchars($mitra['foto_toko']); ?>" alt="Preview Foto">
                                 </div>
                                 <button type="button" id="remove-preview-btn" onclick="removePreview(event)" class="w-full py-xs border border-error text-error rounded-xl text-label-md font-bold hover:bg-error-container/10 transition-all <?= empty($mitra['foto_toko']) ? 'hidden' : ''; ?>">Hapus Foto</button>
+                            </div>
+                        </div>
+
+                        <!-- Fasilitas & Keunggulan Bento Card -->
+                        <div class="bento-card p-xl rounded-xl space-y-md">
+                            <h2 class="text-headline-sm font-bold text-primary flex items-center gap-xs">
+                                <span class="material-symbols-outlined">workspace_premium</span>
+                                <span>Fasilitas &amp; Keunggulan (Opsional)</span>
+                            </h2>
+                            <p class="text-xs text-on-surface-variant">Tentukan fasilitas yang tersedia dan keunggulan laundry Anda.</p>
+                            
+                            <?php
+                            $selected_facilities = explode(',', $mitra['fasilitas'] ?? '');
+                            ?>
+                            <div class="space-y-md">
+                                <div class="space-y-xs">
+                                    <label class="text-label-md font-bold text-on-surface-variant">Fasilitas Standar</label>
+                                    <div class="flex flex-col gap-y-sm pt-xs">
+                                        <label class="inline-flex items-center gap-sm cursor-pointer select-none">
+                                            <input type="checkbox" name="fasilitas[]" value="wifi" <?= in_array('wifi', $selected_facilities) ? 'checked' : ''; ?> class="rounded border-outline-variant text-primary focus:ring-primary">
+                                            <span class="text-body-md text-on-surface">Free Wi-Fi</span>
+                                        </label>
+                                        <label class="inline-flex items-center gap-sm cursor-pointer select-none">
+                                            <input type="checkbox" name="fasilitas[]" value="ac" <?= in_array('ac', $selected_facilities) ? 'checked' : ''; ?> class="rounded border-outline-variant text-primary focus:ring-primary">
+                                            <span class="text-body-md text-on-surface">Ruang Tunggu AC</span>
+                                        </label>
+                                        <label class="inline-flex items-center gap-sm cursor-pointer select-none">
+                                            <input type="checkbox" name="fasilitas[]" value="parkir" <?= in_array('parkir', $selected_facilities) ? 'checked' : ''; ?> class="rounded border-outline-variant text-primary focus:ring-primary">
+                                            <span class="text-body-md text-on-surface">Parkir Luas</span>
+                                        </label>
+                                        <label class="inline-flex items-center gap-sm cursor-pointer select-none">
+                                            <input type="checkbox" name="fasilitas[]" value="air" <?= in_array('air', $selected_facilities) ? 'checked' : ''; ?> class="rounded border-outline-variant text-primary focus:ring-primary">
+                                            <span class="text-body-md text-on-surface">Air Minum Gratis</span>
+                                        </label>
+                                        <label class="inline-flex items-center gap-sm cursor-pointer select-none">
+                                            <input type="checkbox" name="fasilitas[]" value="antar" <?= in_array('antar', $selected_facilities) ? 'checked' : ''; ?> class="rounded border-outline-variant text-primary focus:ring-primary">
+                                            <span class="text-body-md text-on-surface">Antar Jemput</span>
+                                        </label>
+                                    </div>
+                                </div>
+                                <div class="space-y-xs">
+                                    <label for="keunggulan_lainnya" class="text-label-md font-bold text-on-surface-variant">Keunggulan Lainnya</label>
+                                    <textarea id="keunggulan_lainnya" name="keunggulan_lainnya" rows="3" placeholder="Contoh:&#10;Menggunakan deterjen ramah lingkungan&#10;Pengerjaan ekspres 2 jam selesai" class="w-full rounded-xl border-outline-variant focus:ring-primary focus:border-primary text-body-md py-2.5 px-md bg-white resize-none"><?= htmlspecialchars($mitra['keunggulan_lainnya'] ?? ''); ?></textarea>
+                                </div>
                             </div>
                         </div>
 

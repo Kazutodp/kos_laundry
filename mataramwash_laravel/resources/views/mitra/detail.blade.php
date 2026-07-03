@@ -298,6 +298,9 @@
                         <button id="tab-kiloan" onclick="switchTab('kiloan')" class="tab-btn px-md py-sm border-b-2 border-transparent text-on-surface-variant hover:text-primary transition-colors whitespace-nowrap active">Cuci Kiloan</button>
                         <button id="tab-satuan" onclick="switchTab('satuan')" class="tab-btn px-md py-sm border-b-2 border-transparent text-on-surface-variant hover:text-primary transition-colors whitespace-nowrap">Cuci Satuan</button>
                         <button id="tab-express" onclick="switchTab('express')" class="tab-btn px-md py-sm border-b-2 border-transparent text-on-surface-variant hover:text-primary transition-colors whitespace-nowrap">Cuci Express</button>
+                        @if (!empty($mitra->fasilitas) || !empty($mitra->keunggulan_lainnya))
+                            <button id="tab-facility" onclick="switchTab('facility')" class="tab-btn px-md py-sm border-b-2 border-transparent text-on-surface-variant hover:text-primary transition-colors whitespace-nowrap">Fasilitas & Keunggulan</button>
+                        @endif
                     @endif
                 </div>
                 
@@ -505,8 +508,61 @@
                             <button onclick="openOrderModal('Cuci Setrika Express', {{ $pricing['express_setrika'] }}, 'kg')" class="w-full bg-primary text-on-primary py-sm rounded-xl font-bold flex items-center justify-center gap-sm active:scale-[0.98] transition-transform">
                                 <span class="material-symbols-outlined text-[20px]">shopping_cart_checkout</span> Pesan Sekarang
                             </button>
-                        </div>
                     </div>
+
+                    @if (!empty($mitra->fasilitas) || !empty($mitra->keunggulan_lainnya))
+                        <!-- Grid: Facility -->
+                        <div id="grid-facility" class="grid-content hidden space-y-md">
+                            <div class="bg-surface-container-lowest p-lg rounded-xl border border-outline-variant shadow-sm space-y-sm">
+                                <h3 class="font-headline-md text-[20px] text-primary font-bold">Kenapa Memilih {{ $mitra->nama_mitra }}?</h3>
+                                <ul class="space-y-sm text-body-md text-on-surface-variant">
+                                    @if (!empty($mitra->fasilitas))
+                                        @php
+                                            $facs = explode(',', $mitra->fasilitas);
+                                            $desc_map = [
+                                                'wifi' => ['Free Wi-Fi', 'Tersedia koneksi internet Wi-Fi gratis berkecepatan tinggi di area toko.'],
+                                                'ac' => ['Ruang Tunggu AC', 'Ruang tunggu ber-AC yang nyaman dan sejuk bagi pelanggan.'],
+                                                'parkir' => ['Parkir Luas', 'Area parkir luas dan aman untuk kendaraan roda dua maupun roda empat.'],
+                                                'air' => ['Air Minum Gratis', 'Tersedia fasilitas air minum gratis (dispenser/mineral) untuk pelanggan.'],
+                                                'antar' => ['Antar Jemput', 'Layanan jemput-antar laundry praktis langsung ke kosan Anda.']
+                                            ];
+                                        @endphp
+                                        @foreach ($facs as $fac)
+                                            @php $fac = trim($fac); @endphp
+                                            @if (isset($desc_map[$fac]))
+                                                <li class="flex items-start gap-md">
+                                                    <span class="material-symbols-outlined text-secondary mt-[2px]">check_circle</span>
+                                                    <span><strong>{{ $desc_map[$fac][0] }}:</strong> {{ $desc_map[$fac][1] }}</span>
+                                                </li>
+                                            @endif
+                                        @endforeach
+                                    @endif
+                                    
+                                    @if (!empty($mitra->keunggulan_lainnya))
+                                        @php
+                                            $lines = explode("\n", str_replace("\r", "", $mitra->keunggulan_lainnya));
+                                        @endphp
+                                        @foreach ($lines as $line)
+                                            @php $line = trim($line); @endphp
+                                            @if (!empty($line))
+                                                <li class="flex items-start gap-md">
+                                                    <span class="material-symbols-outlined text-secondary mt-[2px]">check_circle</span>
+                                                    @if (strpos($line, ':') !== false)
+                                                        @php
+                                                            $parts = explode(':', $line, 2);
+                                                        @endphp
+                                                        <span><strong>{{ trim($parts[0]) }}:</strong> {{ trim($parts[1]) }}</span>
+                                                    @else
+                                                        <span>{{ $line }}</span>
+                                                    @endif
+                                                </li>
+                                            @endif
+                                        @endforeach
+                                    @endif
+                                </ul>
+                            </div>
+                        </div>
+                    @endif
                 @endif
             </div>
             

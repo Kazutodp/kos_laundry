@@ -23,10 +23,21 @@ try {
     
     // Count active partners (status_buka = 1 AND detail template file exists)
     $active_mitras_count = 0;
+    $new_partners_week = 0;
     $total_rating = 0;
     $rating_count = 0;
+    $total_price = 0;
     
-    // Calculate active partners by area
+    // Service categories counter
+    $service_counts = [
+        'kiloan' => 0,
+        'express' => 0,
+        'sepatu' => 0,
+        'eco' => 0,
+        'satuan' => 0
+    ];
+    
+    // Calculate active partners by area and services
     $sebaran_data = [];
     
     foreach ($all_mitras as $mitra) {
@@ -39,6 +50,21 @@ try {
             if ($mitra['rating'] > 0) {
                 $total_rating += $mitra['rating'];
                 $rating_count++;
+            }
+            
+            $total_price += $mitra['harga_per_kg'];
+            
+            
+            // Check if registered in last 7 days
+            if (isset($mitra['created_at']) && strtotime($mitra['created_at']) >= strtotime('-7 days')) {
+                $new_partners_week++;
+            }
+            
+            $type = $mitra['icon_type'] ?? 'kiloan';
+            if (isset($service_counts[$type])) {
+                $service_counts[$type]++;
+            } else {
+                $service_counts['kiloan']++;
             }
             
             // Determine area
@@ -63,6 +89,99 @@ try {
     }
     
     $avg_rating = $rating_count > 0 ? number_format($total_rating / $rating_count, 1, '.', '') : '0.0';
+    $avg_price = $active_mitras_count > 0 ? round($total_price / $active_mitras_count) : 0;
+    
+    // Calculate percentages for service types
+    $service_percentages = [];
+    foreach ($service_counts as $key => $count) {
+        $service_percentages[$key] = $active_mitras_count > 0 ? round(($count / $active_mitras_count) * 100) : 0;
+    }
+    
+    // Calculate actual total revenue & total orders from orders table (status_pembayaran = 'success')
+    $total_revenue = 0;
+    $total_orders_real = 0;
+    try {
+        $stats_stmt = $pdo->query("SELECT COUNT(id) as total_cnt, COALESCE(SUM(total_harga), 0) as total FROM orders WHERE status_pembayaran = 'success'");
+        $stats_data = $stats_stmt->fetch();
+        $total_orders_real = (int)$stats_data['total_cnt'];
+        $total_revenue = (float)$stats_data['total'];
+    } catch (PDOException $e) {
+        $total_revenue = 0;
+        $total_orders_real = 0;
+    }
+    
+    // Fetch 5 most recent orders as notifications for admin
+    $recent_notifications = [];
+    try {
+        $notif_stmt = $pdo->query("
+            SELECT o.*, m.nama_mitra 
+            FROM orders o
+            JOIN mitra_laundry m ON o.mitra_id = m.id
+            WHERE o.status_pembayaran = 'success'
+            ORDER BY o.created_at DESC
+            LIMIT 5
+        ");
+        $recent_notifications = $notif_stmt->fetchAll();
+    } catch (PDOException $e) {
+        $recent_notifications = [];
+    }
+    
+    // Calculate 90% payout for partners
+    $real_payout = $total_revenue * 0.90;
+
+    // Calculate monthly revenue trend for the last 6 months
+    $monthly_revenue = [];
+    $months_indo_short = [
+        1 => 'Jan', 2 => 'Feb', 3 => 'Mar', 4 => 'Apr', 5 => 'Mei', 6 => 'Jun',
+        7 => 'Jul', 8 => 'Ags', 9 => 'Sep', 10 => 'Okt', 11 => 'Nov', 12 => 'Des'
+    ];
+
+    // Generate keys for the last 6 months (chronological order)
+    for ($i = 5; $i >= 0; $i--) {
+        $time = strtotime("-$i months");
+        $m = (int)date('n', $time);
+        $y = (int)date('Y', $time);
+        $key = $months_indo_short[$m] . ' ' . $y;
+        $monthly_revenue[$key] = [
+            'month' => $m,
+            'year' => $y,
+            'amount' => 0
+        ];
+    }
+
+    try {
+        $six_months_ago = date('Y-m-01', strtotime('-5 months'));
+        $stmt_trend = $pdo->prepare("
+            SELECT 
+                MONTH(created_at) as order_month,
+                YEAR(created_at) as order_year,
+                COALESCE(SUM(total_harga), 0) as monthly_sum
+            FROM orders
+            WHERE status_pembayaran = 'success'
+              AND created_at >= ?
+            GROUP BY order_year, order_month
+        ");
+        $stmt_trend->execute([$six_months_ago]);
+        
+        while ($row = $stmt_trend->fetch()) {
+            $m = (int)$row['order_month'];
+            $y = (int)$row['order_year'];
+            foreach ($monthly_revenue as $key => $data) {
+                if ($data['month'] == $m && $data['year'] == $y) {
+                    $monthly_revenue[$key]['amount'] = (float)$row['monthly_sum'];
+                    break;
+                }
+            }
+        }
+    } catch (PDOException $e) {
+        // Fallback
+    }
+    
+    $amounts = array_column($monthly_revenue, 'amount');
+    $max_revenue = !empty($amounts) ? max($amounts) : 0;
+    if ($max_revenue <= 0) {
+        $max_revenue = 1; // avoid division by zero
+    }
     
     // Define operational areas to display in the chart
     $chart_areas = ['Sekarbela', 'Mataram Kota', 'Ampenan', 'Pagutan', 'Cakranegara'];
@@ -70,10 +189,19 @@ try {
 } catch (PDOException $e) {
     $all_mitras = [];
     $active_mitras_count = 0;
+    $new_partners_week = 0;
     $avg_rating = '0.0';
     $sebaran_data = [];
     $chart_areas = ['Sekarbela', 'Mataram Kota', 'Ampenan', 'Pagutan', 'Cakranegara'];
     $max_count = 0;
+    $total_revenue = 0;
+    $total_orders_real = 0;
+    $recent_notifications = [];
+    $real_payout = 0;
+    $service_counts = [];
+    $service_percentages = [];
+    $monthly_revenue = [];
+    $max_revenue = 1;
 }
 ?>
 <!DOCTYPE html><html lang="en"><head>
@@ -253,10 +381,7 @@ try {
 <span class="material-symbols-outlined text-[20px]">map</span>
 <span class="text-label-md font-label-md">Wilayah Operasional</span>
 </a>
-<a class="flex items-center gap-sm px-md py-sm text-slate-400 hover:text-white hover:bg-slate-800 rounded-xl transition-all duration-200" href="analitik_kemitraan.php">
-<span class="material-symbols-outlined text-[20px]">analytics</span>
-<span class="text-label-md font-label-md">Analitik Kemitraan</span>
-</a>
+
 <a class="flex items-center gap-sm px-md py-sm text-slate-400 hover:text-white hover:bg-slate-800 rounded-xl transition-all duration-200" href="financial_statements.php">
 <span class="material-symbols-outlined text-[20px]">payments</span>
 <span class="text-label-md font-label-md">Laporan Keuangan</span>
@@ -291,11 +416,48 @@ try {
 </div>
 </div>
 <div class="flex items-center gap-md">
-<button class="w-10 h-10 flex items-center justify-center rounded-xl hover:bg-slate-50 text-slate-600 hover:text-blue-500 transition-colors relative">
-<span class="material-symbols-outlined text-[22px]">notifications</span>
-<span class="absolute top-2.5 right-2.5 w-2 h-2 bg-rose-500 rounded-full animate-ping"></span>
-<span class="absolute top-2.5 right-2.5 w-2 h-2 bg-rose-500 rounded-full"></span>
-</button>
+                <!-- Notifications Dropdown -->
+                <div class="relative">
+                    <button onclick="toggleNotifications(event)" class="w-10 h-10 flex items-center justify-center rounded-xl hover:bg-slate-50 text-slate-600 hover:text-blue-500 transition-colors relative">
+                        <span class="material-symbols-outlined text-[22px]">notifications</span>
+                        <?php if (count($recent_notifications) > 0): ?>
+                            <span class="absolute top-2.5 right-2.5 w-2 h-2 bg-rose-500 rounded-full animate-ping"></span>
+                            <span class="absolute top-2.5 right-2.5 w-2 h-2 bg-rose-500 rounded-full"></span>
+                        <?php endif; ?>
+                    </button>
+                    
+                    <!-- Dropdown Panel (hidden by default) -->
+                    <div id="notif-dropdown" class="hidden absolute right-0 mt-2 w-80 bg-white rounded-2xl border border-slate-100 shadow-xl z-50 overflow-hidden">
+                        <div class="px-md py-sm bg-slate-50 border-b border-slate-100 flex justify-between items-center">
+                            <span class="text-label-md font-extrabold text-slate-800">Notifikasi</span>
+                            <span class="text-[10px] font-bold bg-blue-50 text-blue-600 px-sm py-[2px] rounded-full"><?= count($recent_notifications); ?> Baru</span>
+                        </div>
+                        <div class="divide-y divide-slate-50 max-h-64 overflow-y-auto custom-scrollbar">
+                            <?php if (empty($recent_notifications)): ?>
+                                <div class="p-lg text-center text-slate-400">
+                                    <span class="material-symbols-outlined text-[32px] mb-1">notifications_off</span>
+                                    <p class="text-label-sm font-semibold">Tidak ada notifikasi baru</p>
+                                </div>
+                            <?php else: ?>
+                                <?php foreach ($recent_notifications as $notif): ?>
+                                    <div class="p-md hover:bg-slate-50/50 transition-colors flex gap-sm">
+                                        <div class="w-8 h-8 rounded-full bg-emerald-50 text-emerald-600 flex items-center justify-center shrink-0">
+                                            <span class="material-symbols-outlined text-[18px]">shopping_bag</span>
+                                        </div>
+                                        <div class="space-y-[2px]">
+                                            <p class="text-[12px] text-slate-800 font-semibold leading-tight">Pesanan Baru Berhasil</p>
+                                            <p class="text-[11px] text-slate-500">Pelanggan membayar Rp <?= number_format($notif['total_harga'], 0, ',', '.'); ?> di <span class="font-bold text-slate-700"><?= htmlspecialchars($notif['nama_mitra']); ?></span></p>
+                                            <p class="text-[9px] text-slate-400 font-medium"><?= date('d M Y, H:i', strtotime($notif['created_at'])); ?> WIB</p>
+                                        </div>
+                                    </div>
+                                <?php endforeach; ?>
+                            <?php endif; ?>
+                        </div>
+                        <div class="px-md py-xs bg-slate-50 border-t border-slate-100 text-center">
+                            <a href="kelola_pesanan.php" class="text-[11px] font-bold text-blue-600 hover:underline">Lihat Semua Pesanan</a>
+                        </div>
+                    </div>
+                </div>
 <div class="h-6 w-[1px] bg-slate-200 mx-xs"></div>
 <div class="flex items-center gap-sm">
 <div class="text-right hidden sm:block">
@@ -326,9 +488,15 @@ try {
 <div>
 <p class="text-label-md text-slate-500 font-semibold">Total Mitra Aktif</p>
 <p class="text-xl font-extrabold text-slate-800 mt-0.5"><?= $active_mitras_count; ?></p>
-<span class="text-[11px] text-emerald-600 font-bold flex items-center gap-[2px] mt-1">
-  <span class="material-symbols-outlined text-[12px]">trending_up</span> +2 baru minggu ini
-</span>
+                                <?php if ($new_partners_week > 0): ?>
+                                    <span class="text-[11px] text-emerald-600 font-bold flex items-center gap-[2px] mt-1">
+                                      <span class="material-symbols-outlined text-[12px]">trending_up</span> +<?= $new_partners_week; ?> baru minggu ini
+                                    </span>
+                                <?php else: ?>
+                                    <span class="text-[11px] text-slate-400 font-semibold flex items-center gap-[2px] mt-1">
+                                      <span class="material-symbols-outlined text-[12px] text-primary">verified</span> Mitra terverifikasi aktif
+                                    </span>
+                                <?php endif; ?>
 </div>
 </div>
 <!-- Card 2 -->
@@ -337,10 +505,10 @@ try {
 <span class="material-symbols-outlined text-[32px] fill-icon">local_laundry_service</span>
 </div>
 <div>
-<p class="text-label-md text-slate-500 font-semibold">Total Pesanan Provinsi</p>
-<p class="text-xl font-extrabold text-slate-800 mt-0.5"><?= $active_mitras_count > 0 ? 120 + $active_mitras_count * 15 : 0; ?></p>
-<span class="text-[11px] text-emerald-600 font-bold flex items-center gap-[2px] mt-1">
-  <span class="material-symbols-outlined text-[12px]">trending_up</span> +14.2% vs bln lalu
+<p class="text-label-md text-slate-500 font-semibold">Total Pesanan</p>
+<p class="text-xl font-extrabold text-slate-800 mt-0.5"><?= $total_orders_real; ?></p>
+<span class="text-[11px] text-slate-400 font-semibold flex items-center gap-[2px] mt-1">
+  <span class="material-symbols-outlined text-[12px] text-emerald-600">check_circle</span> Jumlah transaksi sukses
 </span>
 </div>
 </div>
@@ -350,11 +518,11 @@ try {
 <span class="material-symbols-outlined text-[32px] fill-icon">payments</span>
 </div>
 <div>
-<p class="text-label-md text-slate-500 font-semibold">Pendapatan Mitra</p>
-<p class="text-xl font-extrabold text-slate-800 mt-0.5">Rp <?= number_format($active_mitras_count > 0 ? 1500000 + $active_mitras_count * 220000 : 0, 0, ',', '.'); ?></p>
-<span class="text-[11px] text-emerald-600 font-bold flex items-center gap-[2px] mt-1">
-  <span class="material-symbols-outlined text-[12px]">trending_up</span> +Rp 440rb bln ini
-</span>
+                                <p class="text-label-md text-slate-500 font-semibold">Payout Bersih Mitra (90%)</p>
+                                <p class="text-xl font-extrabold text-slate-800 mt-0.5">Rp <?= number_format($real_payout, 0, ',', '.'); ?></p>
+                                <span class="text-[11px] text-slate-400 font-semibold flex items-center gap-[2px] mt-1">
+                                  <span class="material-symbols-outlined text-[12px] text-primary">info</span> Akumulasi bersih terbayar
+                                </span>
 </div>
 </div>
 <!-- Card 4 -->
@@ -363,7 +531,7 @@ try {
 <span class="material-symbols-outlined text-[32px] fill-icon">grade</span>
 </div>
 <div>
-<p class="text-label-md text-slate-500 font-semibold">Avg Rating Provinsi</p>
+<p class="text-label-md text-slate-500 font-semibold">Rata-rata Rating</p>
 <p class="text-xl font-extrabold text-slate-800 mt-0.5"><?= $avg_rating; ?>/5</p>
 <span class="text-[11px] text-amber-600 font-bold flex items-center gap-[2px] mt-1">
   <span class="material-symbols-outlined text-[12px]">star</span> Sangat Baik
@@ -434,8 +602,86 @@ $percentage = $total_mitras > 0 ? ($count / $total_mitras) * 100 : 0;
 <a href="../lokasi/locations.php" class="block w-full text-center py-xs bg-slate-50 hover:bg-slate-100 text-blue-600 font-bold text-label-md rounded-xl border border-slate-200 mt-md transition-all">Detail Peta Wilayah</a>
 </div>
 </div>
-<!-- Recent Partners Table -->
-<div class="bento-card rounded-2xl overflow-hidden border border-slate-100 shadow-xs">
+
+                <!-- Partnership Analytics Grid (Merged from Analitik Kemitraan) -->
+                <div class="grid grid-cols-1 lg:grid-cols-3 gap-lg">
+                    <!-- Column 1: Weekly Revenue Trend (Takes 2 columns in lg) -->
+                    <div class="lg:col-span-2 bento-card p-lg rounded-2xl flex flex-col border border-slate-100 shadow-xs h-[360px]">
+                        <div>
+                            <h2 class="text-headline-sm font-extrabold text-slate-800 text-[18px]">Tren Transaksi Kemitraan (6 Bulan Terakhir)</h2>
+                            <p class="text-body-xs text-slate-500 mt-1">Akumulasi pertumbuhan pendapatan bruto bulanan dalam Rupiah.</p>
+                        </div>
+                        <div class="flex-grow flex items-end justify-between gap-md h-56 pt-md px-md chart-grid">
+                            <?php foreach ($monthly_revenue as $period_label => $period_data): ?>
+                                <?php 
+                                $amount = $period_data['amount'];
+                                $height_percent = $max_revenue > 0 ? ($amount / $max_revenue) * 75 : 0;
+                                ?>
+                                <div class="w-full flex flex-col items-center gap-xs group relative h-full justify-end cursor-pointer">
+                                    <div class="absolute bottom-full mb-xs bg-slate-800 text-white text-[11px] px-sm py-1 rounded-lg opacity-0 group-hover:opacity-100 transition-opacity pointer-events-none whitespace-nowrap z-10 shadow-md">
+                                        Rp <?= number_format($amount, 0, ',', '.'); ?>
+                                    </div>
+                                    <div class="w-8 bg-gradient-to-t from-violet-500 to-violet-600 rounded-t-lg transition-all duration-300 group-hover:scale-105" style="height: <?= max(4, $height_percent); ?>%;"></div>
+                                    <span class="text-[11px] text-slate-400 text-center truncate w-full mt-xs"><?= htmlspecialchars($period_label); ?></span>
+                                </div>
+                            <?php endforeach; ?>
+                        </div>
+                    </div>
+
+                    <!-- Column 2: Popular Services Category Distribution -->
+                    <div class="bento-card p-lg rounded-2xl flex flex-col justify-between border border-slate-100 shadow-xs h-[360px]">
+                        <div>
+                            <h2 class="text-headline-sm font-extrabold text-slate-800 text-[18px] mb-xs">Kategori Layanan Mitra</h2>
+                            <p class="text-body-xs text-slate-500">Persentase outlet mitra berdasarkan kategori pelayanan utama.</p>
+                        </div>
+                        <div class="flex-grow flex flex-col justify-center space-y-md">
+                            <!-- Kiloan -->
+                            <div class="space-y-xs">
+                                <div class="flex justify-between items-center text-[12px] font-semibold">
+                                    <span class="text-slate-700 flex items-center gap-1">
+                                        <span class="material-symbols-outlined text-[16px] text-blue-500">local_laundry_service</span>
+                                        Kiloan &amp; Satuan
+                                    </span>
+                                    <span class="text-blue-600"><?= $service_percentages['kiloan']; ?>% (<?= $service_counts['kiloan']; ?>)</span>
+                                </div>
+                                <div class="w-full bg-slate-100 h-2 rounded-full overflow-hidden">
+                                    <div class="bg-gradient-to-r from-blue-400 to-blue-600 h-full rounded-full" style="width: <?= $service_percentages['kiloan']; ?>%"></div>
+                                </div>
+                            </div>
+                            
+                            <!-- Express -->
+                            <div class="space-y-xs">
+                                <div class="flex justify-between items-center text-[12px] font-semibold">
+                                    <span class="text-slate-700 flex items-center gap-1">
+                                        <span class="material-symbols-outlined text-[16px] text-amber-500">bolt</span>
+                                        Layanan Express
+                                    </span>
+                                    <span class="text-amber-600"><?= $service_percentages['express']; ?>% (<?= $service_counts['express']; ?>)</span>
+                                </div>
+                                <div class="w-full bg-slate-100 h-2 rounded-full overflow-hidden">
+                                    <div class="bg-gradient-to-r from-amber-400 to-amber-500 h-full rounded-full" style="width: <?= $service_percentages['express']; ?>%"></div>
+                                </div>
+                            </div>
+
+                            <!-- Sepatu -->
+                            <div class="space-y-xs">
+                                <div class="flex justify-between items-center text-[12px] font-semibold">
+                                    <span class="text-slate-700 flex items-center gap-1">
+                                        <span class="material-symbols-outlined text-[16px] text-emerald-500">footprint</span>
+                                        Special Shoe Care
+                                    </span>
+                                    <span class="text-emerald-600"><?= $service_percentages['sepatu']; ?>% (<?= $service_counts['sepatu']; ?>)</span>
+                                </div>
+                                <div class="w-full bg-slate-100 h-2 rounded-full overflow-hidden">
+                                    <div class="bg-gradient-to-r from-emerald-400 to-emerald-600 h-full rounded-full" style="width: <?= $service_percentages['sepatu']; ?>%"></div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Recent Partners Table -->
+                <div class="bento-card rounded-2xl overflow-hidden border border-slate-100 shadow-xs">
 <div class="px-lg py-md flex justify-between items-center border-b border-slate-100">
 <h2 class="text-headline-sm font-extrabold text-slate-800 text-[18px]">Aktivitas Mitra Terkini</h2>
 <button class="text-blue-600 font-bold text-label-md hover:underline">Lihat Semua Mitra</button>
@@ -562,5 +808,20 @@ $has_file = file_exists('../Mitra laundry/' . $file_name);
                 searchInput.parentElement.classList.remove('ring-2', 'ring-primary');
             });
         }
+
+        // Notification dropdown toggle
+        function toggleNotifications(event) {
+            event.stopPropagation();
+            const dropdown = document.getElementById('notif-dropdown');
+            dropdown.classList.toggle('hidden');
+        }
+
+        // Close dropdown when clicking outside
+        window.addEventListener('click', () => {
+            const dropdown = document.getElementById('notif-dropdown');
+            if (dropdown && !dropdown.classList.contains('hidden')) {
+                dropdown.classList.add('hidden');
+            }
+        });
     </script>
 </body></html>

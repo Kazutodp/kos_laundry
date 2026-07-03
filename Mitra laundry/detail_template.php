@@ -609,6 +609,13 @@ $logo_url = $partner_logos[$id_mitra] ?? $partner_logos[1];
                             <span class="material-symbols-outlined text-[20px] select-none">bolt</span>
                             <span>Cuci Express</span>
                         </button>
+                        <?php if (!empty($mitra['fasilitas']) || !empty($mitra['keunggulan_lainnya'])): ?>
+                            <button id="tab-facility" onclick="switchTab('facility')" 
+                                    class="tab-btn flex items-center gap-2 px-5 py-2.5 rounded-xl text-sm font-semibold transition-all duration-200 whitespace-nowrap active:scale-95 text-on-surface-variant hover:text-primary hover:bg-white/50">
+                                <span class="material-symbols-outlined text-[20px] select-none">workspace_premium</span>
+                                <span>Fasilitas & Keunggulan</span>
+                            </button>
+                        <?php endif; ?>
                     <?php endif; ?>
                 </div>
                 
@@ -818,6 +825,56 @@ $logo_url = $partner_logos[$id_mitra] ?? $partner_logos[1];
                             </button>
                         </div>
                     </div>
+
+                    <?php if (!empty($mitra['fasilitas']) || !empty($mitra['keunggulan_lainnya'])): ?>
+                        <!-- Grid: Facility -->
+                        <div id="grid-facility" class="grid-content hidden space-y-md">
+                            <div class="bg-surface-container-lowest p-lg rounded-xl border border-outline-variant shadow-sm space-y-sm">
+                                <h3 class="font-headline-md text-[20px] text-primary font-bold">Kenapa Memilih <?= htmlspecialchars($nama_mitra); ?>?</h3>
+                                <ul class="space-y-sm text-body-md text-on-surface-variant">
+                                    <?php 
+                                    if (!empty($mitra['fasilitas'])) {
+                                        $facs = explode(',', $mitra['fasilitas']);
+                                        $desc_map = [
+                                            'wifi' => ['Free Wi-Fi', 'Tersedia koneksi internet Wi-Fi gratis berkecepatan tinggi di area toko.'],
+                                            'ac' => ['Ruang Tunggu AC', 'Ruang tunggu ber-AC yang nyaman dan sejuk bagi pelanggan.'],
+                                            'parkir' => ['Parkir Luas', 'Area parkir luas dan aman untuk kendaraan roda dua maupun roda empat.'],
+                                            'air' => ['Air Minum Gratis', 'Tersedia fasilitas air minum gratis (dispenser/mineral) untuk pelanggan.'],
+                                            'antar' => ['Antar Jemput', 'Layanan jemput-antar laundry praktis langsung ke kosan Anda.']
+                                        ];
+                                        foreach ($facs as $fac) {
+                                            $fac = trim($fac);
+                                            if (isset($desc_map[$fac])) {
+                                                echo '<li class="flex items-start gap-md">';
+                                                echo '  <span class="material-symbols-outlined text-secondary mt-[2px]">check_circle</span>';
+                                                echo '  <span><strong>' . htmlspecialchars($desc_map[$fac][0]) . ':</strong> ' . htmlspecialchars($desc_map[$fac][1]) . '</span>';
+                                                echo '</li>';
+                                            }
+                                        }
+                                    }
+                                    
+                                    if (!empty($mitra['keunggulan_lainnya'])) {
+                                        $lines = explode("\n", str_replace("\r", "", $mitra['keunggulan_lainnya']));
+                                        foreach ($lines as $line) {
+                                            $line = trim($line);
+                                            if (empty($line)) continue;
+                                            
+                                            echo '<li class="flex items-start gap-md">';
+                                            echo '  <span class="material-symbols-outlined text-secondary mt-[2px]">check_circle</span>';
+                                            if (strpos($line, ':') !== false) {
+                                                $parts = explode(':', $line, 2);
+                                                echo '  <span><strong>' . htmlspecialchars(trim($parts[0])) . ':</strong> ' . htmlspecialchars(trim($parts[1])) . '</span>';
+                                            } else {
+                                                echo '  <span>' . htmlspecialchars($line) . '</span>';
+                                            }
+                                            echo '</li>';
+                                        }
+                                    }
+                                    ?>
+                                </ul>
+                            </div>
+                        </div>
+                    <?php endif; ?>
                 <?php endif; ?>
             </div>
         </div> <!-- End of lg:col-span-2 Left Column -->

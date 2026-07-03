@@ -7,16 +7,36 @@ if (!isset($_SESSION['admin_logged_in'])) {
 
 require_once '../db_connect.php';
 
+// Indonesian month names
+$bulan_indo = [
+    1 => 'Januari', 2 => 'Februari', 3 => 'Maret', 4 => 'April',
+    5 => 'Mei', 6 => 'Juni', 7 => 'Juli', 8 => 'Agustus',
+    9 => 'September', 10 => 'Oktober', 11 => 'November', 12 => 'Desember'
+];
+
+// Get selected month/year from GET params, default to current
+$selected_month = isset($_GET['bulan']) ? (int)$_GET['bulan'] : (int)date('n');
+$selected_year = isset($_GET['tahun']) ? (int)$_GET['tahun'] : (int)date('Y');
+
+// Clamp values
+if ($selected_month < 1 || $selected_month > 12) $selected_month = (int)date('n');
+if ($selected_year < 2024 || $selected_year > 2030) $selected_year = (int)date('Y');
+
+$selected_label = $bulan_indo[$selected_month] . ' ' . $selected_year;
+
 try {
-    // Fetch all active partners along with their real order metrics
-    $stmt = $pdo->query("SELECT m.*, 
+    // Fetch all active partners with order metrics filtered by selected month
+    $stmt = $pdo->prepare("SELECT m.*, 
                                COUNT(o.id) as real_orders, 
-                               COALESCE(SUM(o.total_harga), 0) as real_gross,
-                               COUNT(CASE WHEN o.status_transfer = 'Proses' THEN 1 END) as pending_transfers
+                               COALESCE(SUM(o.total_harga), 0) as real_gross
                         FROM mitra_laundry m
-                        LEFT JOIN orders o ON m.id = o.mitra_id AND o.status_pembayaran = 'success'
+                        LEFT JOIN orders o ON m.id = o.mitra_id 
+                            AND o.status_pembayaran = 'success'
+                            AND MONTH(o.created_at) = ?
+                            AND YEAR(o.created_at) = ?
                         GROUP BY m.id
                         ORDER BY m.rating DESC");
+    $stmt->execute([$selected_month, $selected_year]);
     $raw_mitras = $stmt->fetchAll();
     
     $mitra_list = [];
@@ -31,8 +51,8 @@ try {
             
             $mitra['simulated_orders'] = $orders;
             $mitra['simulated_gross'] = $gross;
-            $mitra['simulated_platform'] = $gross * 0.10; // 10% platform share
-            $mitra['simulated_net'] = $gross * 0.90; // 90% partner share
+            $mitra['simulated_platform'] = $gross * 0.10;
+            $mitra['simulated_net'] = $gross * 0.90;
             
             $total_orders += $orders;
             $total_gross += $gross;
@@ -185,10 +205,7 @@ try {
 <span class="material-symbols-outlined text-[20px]">map</span>
 <span class="text-label-md font-label-md">Wilayah Operasional</span>
 </a>
-<a class="flex items-center gap-sm px-md py-sm text-slate-400 hover:text-white hover:bg-slate-800 rounded-xl transition-all duration-200" href="analitik_kemitraan.php">
-<span class="material-symbols-outlined text-[20px]">analytics</span>
-<span class="text-label-md font-label-md">Analitik Kemitraan</span>
-</a>
+
 <a class="flex items-center gap-sm px-md py-sm bg-blue-600 text-white rounded-xl font-bold border-l-4 border-blue-400 shadow-lg shadow-blue-900/30 transition-all duration-200" href="financial_statements.php">
 <span class="material-symbols-outlined text-[20px]">payments</span>
 <span class="text-label-md font-label-md">Laporan Keuangan</span>
@@ -233,12 +250,12 @@ try {
         <div class="flex-grow overflow-y-auto custom-scrollbar p-lg">
             <div class="max-w-7xl mx-auto space-y-lg">
                 
-                <!-- Toast alert (hidden by default) -->
-                <div id="toast" class="fixed top-6 right-6 p-md bg-emerald-50 text-emerald-800 rounded-xl border border-emerald-200 flex items-center gap-md shadow-lg z-50 transition-all duration-300 transform translate-y-[-100px] opacity-0">
-                    <span class="material-symbols-outlined text-emerald-600 text-2xl">check_circle</span>
+                <!-- Dynamic Toast alert (hidden by default) -->
+                <div id="toast" class="fixed top-6 right-6 p-md rounded-xl border flex items-center gap-md shadow-lg z-50 transition-all duration-300 transform translate-y-[-100px] opacity-0">
+                    <span id="toast-icon" class="material-symbols-outlined text-2xl"></span>
                     <div>
-                        <p class="text-label-md font-bold">Unduh Berhasil</p>
-                        <p class="text-body-xs text-emerald-700">Laporan keuangan telah diexport ke format PDF.</p>
+                        <p id="toast-title" class="text-label-md font-bold"></p>
+                        <p id="toast-message" class="text-body-xs"></p>
                     </div>
                 </div>
 
@@ -248,10 +265,17 @@ try {
                         <h1 class="text-headline-lg font-headline-lg text-on-surface">Pusat Laporan Keuangan</h1>
                         <p class="text-body-md text-on-surface-variant">Laporan bagi hasil platform 10% dan total rincian pembayaran ke mitra laundry.</p>
                     </div>
-                    <button onclick="downloadReport()" class="bg-primary text-on-primary px-lg py-sm rounded-xl font-bold flex items-center gap-sm shadow-md hover:brightness-110 active:scale-95 transition-all w-fit">
-                        <span class="material-symbols-outlined">download</span>
-                        Unduh Laporan (PDF)
-                    </button>
+                    <?php if ($total_orders == 0 && $total_gross == 0): ?>
+                        <button onclick="showNoDataToast()" class="bg-slate-100 border border-slate-200 text-slate-400 px-lg py-sm rounded-xl font-bold flex items-center gap-sm cursor-not-allowed w-fit" title="Tidak ada data keuangan pada periode ini">
+                            <span class="material-symbols-outlined text-slate-400">download</span>
+                            Unduh Laporan (PDF)
+                        </button>
+                    <?php else: ?>
+                        <a href="laporan/unduh_pdf.php?bulan=<?= $selected_month; ?>&tahun=<?= $selected_year; ?>" class="bg-primary text-on-primary px-lg py-sm rounded-xl font-bold flex items-center gap-sm shadow-md hover:brightness-110 active:scale-95 transition-all w-fit">
+                            <span class="material-symbols-outlined">download</span>
+                            Unduh Laporan (PDF)
+                        </a>
+                    <?php endif; ?>
                 </div>
 
                 <!-- Financial Stats Summary -->
@@ -260,7 +284,7 @@ try {
                         <div>
                             <p class="text-label-sm text-on-surface-variant font-medium">Total Omset Pendapatan</p>
                             <p class="text-headline-sm font-bold text-on-surface">Rp <?= number_format($total_gross, 0, ',', '.'); ?></p>
-                            <p class="text-[10px] text-outline mt-base">Dari <?= $total_orders; ?> pesanan terkumpul</p>
+                            <p class="text-[10px] text-outline mt-base">Dari <?= $total_orders; ?> pesanan — <?= $selected_label; ?></p>
                         </div>
                     </div>
                     <div class="bento-card p-lg rounded-xl flex items-center gap-md border-l-4 border-l-secondary">
@@ -291,20 +315,32 @@ try {
                     <div class="px-lg py-md border-b border-outline-variant flex justify-between items-center bg-slate-50">
                         <div>
                             <h2 class="text-headline-sm font-bold text-on-surface">Rincian Bagi Hasil per Mitra</h2>
-                            <p class="text-body-xs text-on-surface-variant">Laporan rincian omset bruto, potongan platform 10%, dan transfer status.</p>
+                            <p class="text-body-xs text-on-surface-variant">Laporan rincian omset bruto, potongan platform 10%, dan payout bersih mitra.</p>
                         </div>
-                        <span class="px-sm py-xs bg-emerald-50 border border-emerald-200 text-emerald-700 rounded-full font-bold text-[11px]">Siklus Juni 2026</span>
+                        <div class="flex items-center gap-sm">
+                            <select onchange="filterByPeriod()" id="filter-bulan" class="text-[12px] font-semibold bg-white border border-outline-variant rounded-lg px-sm py-1.5 text-on-surface cursor-pointer focus:ring-primary focus:border-primary">
+                                <?php foreach ($bulan_indo as $num => $nama): ?>
+                                    <option value="<?= $num; ?>" <?= $num == $selected_month ? 'selected' : ''; ?>><?= $nama; ?></option>
+                                <?php endforeach; ?>
+                            </select>
+                            <select onchange="filterByPeriod()" id="filter-tahun" class="text-[12px] font-semibold bg-white border border-outline-variant rounded-lg px-sm py-1.5 text-on-surface cursor-pointer focus:ring-primary focus:border-primary">
+                                <?php for ($y = 2024; $y <= (int)date('Y') + 1; $y++): ?>
+                                    <option value="<?= $y; ?>" <?= $y == $selected_year ? 'selected' : ''; ?>><?= $y; ?></option>
+                                <?php endfor; ?>
+                            </select>
+                        </div>
                     </div>
                     <div class="overflow-x-auto">
                         <table class="w-full text-left border-collapse">
                             <thead>
                                 <tr class="bg-surface-container-low border-b border-outline-variant">
+                                    <th class="pl-lg pr-1 py-md text-label-sm text-on-surface-variant font-bold uppercase tracking-wider">No</th>
                                     <th class="px-lg py-md text-label-sm text-on-surface-variant font-bold uppercase tracking-wider">Mitra Laundry</th>
                                     <th class="px-lg py-md text-label-sm text-on-surface-variant font-bold uppercase tracking-wider text-center">Total Orders</th>
                                     <th class="px-lg py-md text-label-sm text-on-surface-variant font-bold uppercase tracking-wider text-right">Omset Bruto</th>
                                     <th class="px-lg py-md text-label-sm text-on-surface-variant font-bold uppercase tracking-wider text-right">Komisi Platform (10%)</th>
                                     <th class="px-lg py-md text-label-sm text-on-surface-variant font-bold uppercase tracking-wider text-right">Payout Mitra (90%)</th>
-                                    <th class="px-lg py-md text-label-sm text-on-surface-variant font-bold uppercase tracking-wider text-center">Status Transfer</th>
+
                                 </tr>
                             </thead>
                             <tbody class="divide-y divide-outline-variant">
@@ -316,14 +352,11 @@ try {
                                         </td>
                                     </tr>
                                 <?php else: ?>
+                                    <?php $no = 1; ?>
                                     <?php foreach ($mitra_list as $mitra): ?>
-                                        <?php 
-                                        $transfer_status = ($mitra['simulated_orders'] > 0 && $mitra['pending_transfers'] > 0) ? 'Proses' : 'Selesai';
-                                        $status_badge = $transfer_status === 'Selesai' 
-                                            ? 'bg-emerald-50 text-emerald-700 border-emerald-200' 
-                                            : 'bg-amber-50 text-amber-700 border-amber-200';
-                                        ?>
+
                                         <tr class="hover:bg-surface-container-low transition-colors">
+                                            <td class="pl-lg pr-1 py-md text-body-sm text-slate-500 font-medium text-center"><?= $no++; ?></td>
                                             <td class="px-lg py-md">
                                                 <div class="flex items-center gap-sm">
                                                     <img src="../<?= htmlspecialchars($mitra['foto_toko']); ?>" alt="" class="w-10 h-10 rounded object-cover border border-outline-variant">
@@ -333,15 +366,11 @@ try {
                                                     </div>
                                                 </div>
                                             </td>
-                                            <td class="px-lg py-md text-center text-body-sm font-semibold text-on-surface-variant"><?= $mitra['simulated_orders']; ?> Pcs</td>
+                                            <td class="px-lg py-md text-center text-body-sm font-semibold text-on-surface-variant"><?= $mitra['simulated_orders']; ?></td>
                                             <td class="px-lg py-md text-right text-body-sm font-bold text-on-surface">Rp <?= number_format($mitra['simulated_gross'], 0, ',', '.'); ?></td>
                                             <td class="px-lg py-md text-right text-body-sm font-bold text-secondary">- Rp <?= number_format($mitra['simulated_platform'], 0, ',', '.'); ?></td>
                                             <td class="px-lg py-md text-right text-body-sm font-extrabold text-primary">Rp <?= number_format($mitra['simulated_net'], 0, ',', '.'); ?></td>
-                                            <td class="px-lg py-md text-center">
-                                                <span class="px-xs py-[2px] border rounded-full font-bold text-[10px] <?= $status_badge; ?>">
-                                                    <?= $transfer_status; ?>
-                                                </span>
-                                            </td>
+
                                         </tr>
                                     <?php endforeach; ?>
                                 <?php endif; ?>
@@ -365,18 +394,55 @@ try {
     </main>
 
     <script>
-        function downloadReport() {
+        function showToast(title, message, type = 'success') {
             const toast = document.getElementById('toast');
+            const icon = document.getElementById('toast-icon');
+            const titleEl = document.getElementById('toast-title');
+            const msgEl = document.getElementById('toast-message');
+
+            if (type === 'error') {
+                toast.className = "fixed top-6 right-6 p-md bg-rose-50 text-rose-800 rounded-xl border border-rose-200 flex items-center gap-md shadow-lg z-50 transition-all duration-300 transform";
+                icon.className = "material-symbols-outlined text-rose-600 text-2xl";
+                icon.innerText = "error";
+            } else {
+                toast.className = "fixed top-6 right-6 p-md bg-emerald-50 text-emerald-800 rounded-xl border border-emerald-200 flex items-center gap-md shadow-lg z-50 transition-all duration-300 transform";
+                icon.className = "material-symbols-outlined text-emerald-600 text-2xl";
+                icon.innerText = "check_circle";
+            }
+
+            titleEl.innerText = title;
+            msgEl.innerText = message;
+
             // Show toast
             toast.style.transform = 'translateY(0)';
             toast.style.opacity = '1';
-            
-            // Hide toast after 3 seconds
+
+            // Hide toast after 3.5 seconds
             setTimeout(() => {
                 toast.style.transform = 'translateY(-100px)';
                 toast.style.opacity = '0';
-            }, 3000);
+            }, 3500);
         }
+
+        function showNoDataToast() {
+            showToast("Unduh Gagal", "Tidak ada data transaksi yang dapat diunduh pada periode ini.", "error");
+        }
+
+        function filterByPeriod() {
+            const bulan = document.getElementById('filter-bulan').value;
+            const tahun = document.getElementById('filter-tahun').value;
+            window.location.href = `financial_statements.php?bulan=${bulan}&tahun=${tahun}`;
+        }
+
+        // Detect URL error parameters on load
+        window.addEventListener('DOMContentLoaded', () => {
+            const urlParams = new URLSearchParams(window.location.search);
+            if (urlParams.get('error') === 'nodata') {
+                showNoDataToast();
+            } else if (urlParams.get('error') === 'db') {
+                showToast("Gagal Memuat Laporan", "Terjadi kesalahan pada database saat memproses laporan.", "error");
+            }
+        });
     </script>
 </body>
 </html>

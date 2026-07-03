@@ -70,6 +70,8 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     $status_buka = isset($_POST['status_buka']) ? 1 : 0;
     $is_rekomendasi = isset($_POST['is_rekomendasi']) ? 1 : 0;
     $rating = trim($_POST['rating'] ?? '5.0');
+    $fasilitas = isset($_POST['fasilitas']) ? implode(',', $_POST['fasilitas']) : '';
+    $keunggulan_lainnya = trim($_POST['keunggulan_lainnya'] ?? '');
     
     // Custom Pricing Overrides
     $harga_pengeringan = (int)($_POST['harga_pengeringan'] ?? 6000);
@@ -116,7 +118,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         if (empty($error)) {
             try {
                 // Insert into database
-                $stmt = $pdo->prepare("INSERT INTO mitra_laundry (nama_mitra, foto_toko, latitude, longitude, alamat, no_telp, rating, harga_per_kg, jam_buka, status_buka, icon_type, is_rekomendasi) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)");
+                $stmt = $pdo->prepare("INSERT INTO mitra_laundry (nama_mitra, foto_toko, latitude, longitude, alamat, no_telp, rating, harga_per_kg, jam_buka, status_buka, icon_type, is_rekomendasi, fasilitas, keunggulan_lainnya) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)");
                 $stmt->execute([
                     $nama_mitra,
                     $foto_toko,
@@ -129,7 +131,9 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                     $jam_buka,
                     $status_buka,
                     $icon_type,
-                    $is_rekomendasi
+                    $is_rekomendasi,
+                    $fasilitas,
+                    $keunggulan_lainnya
                 ]);
 
                 // Create the detail template page in "../Mitra laundry/"
@@ -337,10 +341,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 <span class="material-symbols-outlined text-[20px]">map</span>
 <span class="text-label-md font-label-md">Wilayah Operasional</span>
 </a>
-<a class="flex items-center gap-sm px-md py-sm text-slate-400 hover:text-white hover:bg-slate-800 rounded-xl transition-all duration-200" href="analitik_kemitraan.php">
-<span class="material-symbols-outlined text-[20px]">analytics</span>
-<span class="text-label-md font-label-md">Analitik Kemitraan</span>
-</a>
+
 <a class="flex items-center gap-sm px-md py-sm text-slate-400 hover:text-white hover:bg-slate-800 rounded-xl transition-all duration-200" href="financial_statements.php">
 <span class="material-symbols-outlined text-[20px]">payments</span>
 <span class="text-label-md font-label-md">Laporan Keuangan</span>
@@ -524,6 +525,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                             </div>
                         </div>
 
+                        <!-- Koordinat Geografis (Peta) * -->
                         <div class="bento-card p-xl rounded-xl space-y-md">
                             <h2 class="text-headline-sm font-bold text-primary flex items-center gap-xs">
                                 <span class="material-symbols-outlined">map</span>
@@ -573,6 +575,47 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                                     <img id="image-preview" class="absolute inset-0 w-full h-full object-cover rounded-2xl hidden" alt="Preview Foto">
                                 </div>
                                 <button type="button" id="remove-preview-btn" onclick="removePreview(event)" class="w-full py-xs border border-error text-error rounded-xl text-label-md font-bold hover:bg-error-container/10 transition-all hidden">Hapus Foto</button>
+                            </div>
+                        </div>
+
+                        <!-- Fasilitas & Keunggulan Bento Card -->
+                        <div class="bento-card p-xl rounded-xl space-y-md">
+                            <h2 class="text-headline-sm font-bold text-primary flex items-center gap-xs">
+                                <span class="material-symbols-outlined">workspace_premium</span>
+                                <span>Fasilitas &amp; Keunggulan (Opsional)</span>
+                            </h2>
+                            <p class="text-xs text-on-surface-variant">Tentukan fasilitas yang tersedia dan keunggulan laundry Anda.</p>
+                            
+                            <div class="space-y-md">
+                                <div class="space-y-xs">
+                                    <label class="text-label-md font-bold text-on-surface-variant">Fasilitas Standar</label>
+                                    <div class="flex flex-col gap-y-sm pt-xs">
+                                        <label class="inline-flex items-center gap-sm cursor-pointer select-none">
+                                            <input type="checkbox" name="fasilitas[]" value="wifi" class="rounded border-outline-variant text-primary focus:ring-primary">
+                                            <span class="text-body-md text-on-surface">Free Wi-Fi</span>
+                                        </label>
+                                        <label class="inline-flex items-center gap-sm cursor-pointer select-none">
+                                            <input type="checkbox" name="fasilitas[]" value="ac" class="rounded border-outline-variant text-primary focus:ring-primary">
+                                            <span class="text-body-md text-on-surface">Ruang Tunggu AC</span>
+                                        </label>
+                                        <label class="inline-flex items-center gap-sm cursor-pointer select-none">
+                                            <input type="checkbox" name="fasilitas[]" value="parkir" class="rounded border-outline-variant text-primary focus:ring-primary">
+                                            <span class="text-body-md text-on-surface">Parkir Luas</span>
+                                        </label>
+                                        <label class="inline-flex items-center gap-sm cursor-pointer select-none">
+                                            <input type="checkbox" name="fasilitas[]" value="air" class="rounded border-outline-variant text-primary focus:ring-primary">
+                                            <span class="text-body-md text-on-surface">Air Minum Gratis</span>
+                                        </label>
+                                        <label class="inline-flex items-center gap-sm cursor-pointer select-none">
+                                            <input type="checkbox" name="fasilitas[]" value="antar" class="rounded border-outline-variant text-primary focus:ring-primary">
+                                            <span class="text-body-md text-on-surface">Antar Jemput</span>
+                                        </label>
+                                    </div>
+                                </div>
+                                <div class="space-y-xs">
+                                    <label for="keunggulan_lainnya" class="text-label-md font-bold text-on-surface-variant">Keunggulan Lainnya</label>
+                                    <textarea id="keunggulan_lainnya" name="keunggulan_lainnya" rows="3" placeholder="Contoh:&#10;Menggunakan deterjen ramah lingkungan&#10;Pengerjaan ekspres 2 jam selesai" class="w-full rounded-xl border-outline-variant focus:ring-primary focus:border-primary text-body-md py-2.5 px-md bg-white resize-none"></textarea>
+                                </div>
                             </div>
                         </div>
 

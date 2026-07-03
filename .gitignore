@@ -1,2 +1,5 @@
 screenshoot/
 admin/settings_config.json
+uploads/
+mataramwash_laravel/public/uploads/
+
