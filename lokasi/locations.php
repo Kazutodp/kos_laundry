@@ -1,4 +1,4 @@
-<?php
+﻿<?php
 // lokasi/locations.php
 session_start();
 require_once '../db_connect.php';
@@ -205,7 +205,7 @@ try {
     <div class="max-w-7xl mx-auto px-gutter py-md flex justify-between items-center">
         <div class="flex items-center space-x-md lg:space-x-lg">
             <a class="flex items-center space-x-xs text-headline-md font-headline-md font-bold text-primary" href="../index.php">
-                <img alt="MataramWash Logo" class="h-10 w-10 object-contain" src="../logo.png?v=3">
+                <img alt="MataramWash Logo" class="h-10 w-10 object-contain" src="../Logo_MataramWash.png?v=3">
                 <span class="">MataramWash</span>
             </a>
         </div>

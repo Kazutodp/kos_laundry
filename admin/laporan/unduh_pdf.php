@@ -1,4 +1,4 @@
-<?php
+﻿<?php
 // admin/laporan/unduh_pdf.php
 session_start();
 if (!isset($_SESSION['admin_logged_in'])) {
@@ -77,8 +77,8 @@ class PDF extends FPDF {
     // Page header
     function Header() {
         // Logo
-        if (file_exists('../../logo.png')) {
-            $this->Image('../../logo.png', 10, 8, 15);
+        if (file_exists('../../Logo_MataramWash.png')) {
+            $this->Image('../../Logo_MataramWash.png', 10, 8, 15);
         }
         // Arial bold 15
         $this->SetFont('Arial', 'B', 16);

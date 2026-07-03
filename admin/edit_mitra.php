@@ -1,4 +1,4 @@
-<?php
+﻿<?php
 session_start();
 if (!isset($_SESSION['admin_logged_in'])) {
     header("Location: admin.php");
@@ -384,7 +384,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     <!-- SideNavBar -->
 <aside class="hidden lg:flex flex-col h-screen sticky top-0 p-md space-y-md bg-slate-900 border-r border-slate-800 w-64 shrink-0 text-slate-300">
 <div class="flex items-center gap-xs px-xs py-sm border-b border-slate-800">
-<img alt="MataramWash Logo" class="h-8 w-8 object-contain brightness-110 filter" src="../logo.png?v=3">
+<img alt="MataramWash Logo" class="h-8 w-8 object-contain brightness-110 filter" src="../Logo_MataramWash.png?v=3">
 <span class="text-headline-sm font-headline-md font-extrabold text-white">MataramWash</span>
 </div>
 <div class="flex flex-col gap-xs py-md border-b border-slate-800">

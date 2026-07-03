@@ -1,4 +1,4 @@
-<!DOCTYPE html>
+﻿<!DOCTYPE html>
 <html lang="id">
 <head>
     <meta charset="utf-8">
@@ -74,7 +74,7 @@
     <header class="w-full bg-surface-container shadow-sm py-4 px-6 border-b border-outline-variant/30 sticky top-0 z-40">
         <div class="max-w-7xl mx-auto flex items-center justify-between">
             <a class="flex items-center space-x-xs text-headline-md font-bold text-primary" href="{{ route('home') }}">
-                <img alt="MataramWash Logo" class="h-8 w-8 object-contain" src="{{ asset('logo.png?v=3') }}">
+                <img alt="MataramWash Logo" class="h-8 w-8 object-contain" src="{{ asset('Logo_MataramWash.png?v=3') }}">
                 <span class="text-lg">MataramWash</span>
             </a>
             <a class="flex items-center space-x-1 text-label-md font-bold text-primary hover:underline" href="{{ route('home') }}">

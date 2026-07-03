@@ -1,4 +1,4 @@
-<?php
+﻿<?php
 session_start();
 require_once '../db_connect.php';
 
@@ -157,7 +157,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 <section class="hidden lg:flex lg:w-1/2 flex-col justify-between p-xl bg-surface-container-low relative overflow-hidden border-r border-outline-variant">
 <div class="relative z-10">
 <div class="mb-xl">
-<img alt="MataramWash Logo" class="h-16 w-16 object-contain" src="../logo.png?v=3">
+<img alt="MataramWash Logo" class="h-16 w-16 object-contain" src="../Logo_MataramWash.png?v=3">
 <div class="mt-base font-bold text-primary text-headline-md">MataramWash</div>
 </div>
 <h1 class="text-headline-lg font-headline-lg text-primary mb-md leading-tight">Admin Portal Access</h1>
@@ -186,7 +186,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 <div class="mb-xl">
 <!-- Mobile Logo -->
 <div class="lg:hidden flex flex-col items-center mb-xl">
-<img alt="MataramWash Logo" class="h-12 w-12 object-contain" src="../logo.png?v=3">
+<img alt="MataramWash Logo" class="h-12 w-12 object-contain" src="../Logo_MataramWash.png?v=3">
 <span class="font-bold text-primary mt-xs">MataramWash</span>
 </div>
 <h2 class="text-headline-md font-headline-lg text-on-surface">Masuk Panel Admin</h2>

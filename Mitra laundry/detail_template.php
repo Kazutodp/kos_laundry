@@ -1,4 +1,4 @@
-<?php
+﻿<?php
 // detail_template.php
 if (session_status() === PHP_SESSION_NONE) {
     session_start();
@@ -455,7 +455,7 @@ $logo_url = $partner_logos[$id_mitra] ?? $partner_logos[1];
     <div class="flex justify-between items-center px-lg py-md w-full mx-auto max-w-6xl">
         <div class="flex items-center gap-md">
             <a href="../index.php" class="flex items-center gap-xs">
-                <img alt="MataramWash Logo" class="h-10 w-10 object-contain" src="../logo.png?v=3"/>
+                <img alt="MataramWash Logo" class="h-10 w-10 object-contain" src="../Logo_MataramWash.png?v=3"/>
                 <span class="font-headline-md text-headline-md font-bold text-primary">MataramWash</span>
             </a>
         </div>
@@ -1194,7 +1194,7 @@ $logo_url = $partner_logos[$id_mitra] ?? $partner_logos[1];
         <!-- Brand Section -->
         <div class="space-y-md">
             <div class="flex items-center gap-xs">
-                <img alt="MataramWash Logo" class="h-10 w-10 object-contain" src="../logo.png?v=3">
+                <img alt="MataramWash Logo" class="h-10 w-10 object-contain" src="../Logo_MataramWash.png?v=3">
                 <span class="text-headline-sm font-headline-md font-bold text-white">MataramWash</span>
             </div>
             <p class="text-slate-400 leading-relaxed text-sm">

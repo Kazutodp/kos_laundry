@@ -1,4 +1,4 @@
-<!DOCTYPE html>
+﻿<!DOCTYPE html>
 <html lang="id">
 <head>
     <meta charset="utf-8"/>
@@ -147,7 +147,7 @@
     <div class="flex justify-between items-center px-lg py-md w-full mx-auto max-w-6xl">
         <div class="flex items-center gap-md">
             <a href="{{ route('home') }}" class="flex items-center gap-xs">
-                <img alt="MataramWash Logo" class="h-10 w-10 object-contain" src="{{ asset('logo.png') }}"/>
+                <img alt="MataramWash Logo" class="h-10 w-10 object-contain" src="{{ asset('Logo_MataramWash.png') }}"/>
                 <span class="font-headline-md text-headline-md font-bold text-primary">MataramWash</span>
             </a>
         </div>
@@ -876,7 +876,7 @@
         <!-- Brand Section -->
         <div class="space-y-md">
             <div class="flex items-center gap-xs">
-                <img alt="MataramWash Logo" class="h-10 w-10 object-contain" src="{{ asset('logo.png') }}?v=3">
+                <img alt="MataramWash Logo" class="h-10 w-10 object-contain" src="{{ asset('Logo_MataramWash.png') }}?v=3">
                 <span class="text-headline-sm font-headline-md font-bold text-white">MataramWash</span>
             </div>
             <p class="text-slate-400 leading-relaxed text-sm">

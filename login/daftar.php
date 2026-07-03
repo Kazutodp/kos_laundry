@@ -1,4 +1,4 @@
-<?php
+﻿<?php
 session_start();
 require_once '../db_connect.php';
 
@@ -189,7 +189,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         </div>
         <div class="relative z-10 max-w-lg text-center">
             <div class="mb-lg inline-flex items-center justify-center p-md bg-white rounded-full shadow-lg">
-                <img alt="MataramWash Logo" class="w-16 h-16 object-contain" src="../logo.png?v=3"/>
+                <img alt="MataramWash Logo" class="w-16 h-16 object-contain" src="../Logo_MataramWash.png?v=3"/>
             </div>
             <h1 class="font-headline-lg text-headline-lg text-on-primary mb-md leading-tight">
                 Mulai Rawat Pakaian Anda dengan Mudah.
@@ -215,7 +215,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     <section class="flex-grow md:w-1/2 lg:w-2/5 flex flex-col justify-center px-container-margin py-xl bg-surface-container-lowest relative">
         <!-- Mobile Brand Identity -->
         <div class="md:hidden flex items-center gap-xs mb-xl">
-            <img alt="Logo" class="w-10 h-10 object-contain" src="../logo.png?v=3"/>
+            <img alt="Logo" class="w-10 h-10 object-contain" src="../Logo_MataramWash.png?v=3"/>
             <span class="font-headline-md text-headline-md text-primary font-bold">MataramWash</span>
         </div>
         <div class="max-w-md w-full mx-auto">

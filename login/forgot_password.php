@@ -1,4 +1,4 @@
-<!DOCTYPE html>
+﻿<!DOCTYPE html>
 <html lang="id">
 <head>
     <meta charset="utf-8"/>
@@ -125,7 +125,7 @@
     <!-- Top Navigation Bar - Contextual for Transactional (Minimized) -->
     <header class="fixed top-0 w-full z-50 bg-transparent py-md px-lg">
         <div class="max-w-7xl mx-auto flex items-center justify-center md:justify-start gap-xs">
-            <img alt="MataramWash Logo" class="h-10 w-10 object-contain" src="../logo.png?v=3"/>
+            <img alt="MataramWash Logo" class="h-10 w-10 object-contain" src="../Logo_MataramWash.png?v=3"/>
             <span class="text-headline-md font-headline-md font-bold text-primary">MataramWash</span>
         </div>
     </header>
