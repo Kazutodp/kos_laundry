@@ -37,7 +37,12 @@ try {
                 $end_time = $matches[1];
                 $is_open_now = ($current_time >= $start_time && $current_time <= $end_time);
             }
-            $mitra['status_buka'] = ($mitra['status_buka'] == 1 && $is_open_now) ? 1 : 0;
+            $original_status = $mitra['status_buka'];
+            $mitra['status_buka'] = ($original_status == 1 && $is_open_now) ? 1 : 0;
+            // Store reason for closed status
+            if ($mitra['status_buka'] == 0) {
+                $mitra['tutup_reason'] = ($original_status == 0) ? 'Dinonaktifkan' : 'Di luar jam operasional';
+            }
             $mitra_list[] = $mitra;
         }
     }

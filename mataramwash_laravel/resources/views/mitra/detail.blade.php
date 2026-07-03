@@ -233,9 +233,14 @@
                                 <span class="text-label-md font-bold">{{ number_format($mitra->rating, 1) }}</span>
                             </div>
                             @if ($status_buka)
-                                <span class="bg-secondary text-on-secondary px-md py-1 rounded-full text-label-sm font-bold">Buka</span>
+                                <span class="bg-secondary text-on-secondary px-md py-1 rounded-full text-label-sm font-bold flex items-center gap-1">
+                                    <span class="w-1.5 h-1.5 rounded-full bg-white animate-pulse"></span> Buka
+                                </span>
                             @else
                                 <span class="bg-error text-on-error px-md py-1 rounded-full text-label-sm font-bold">Tutup</span>
+                                @if ($tutup_reason)
+                                    <span class="bg-white/20 backdrop-blur-md text-white/80 px-xs py-1 rounded-lg text-[11px]">{{ $tutup_reason }}</span>
+                                @endif
                             @endif
                         </div>
                     </div>
@@ -1120,6 +1125,16 @@
         const isSelfService = {{ $is_self_service ? 'true' : 'false' }};
         switchTab(isSelfService ? 'self' : 'kiloan');
 
+        // Disable order buttons visually when shop is closed
+        const isShopOpen = {{ $status_buka ? 'true' : 'false' }};
+        if (!isShopOpen) {
+            document.querySelectorAll('button[onclick*="openOrderModal"]').forEach(btn => {
+                btn.classList.remove('bg-primary', 'text-on-primary', 'active:scale-[0.98]');
+                btn.classList.add('bg-slate-300', 'text-slate-500', 'cursor-not-allowed');
+                btn.innerHTML = '<span class="material-symbols-outlined text-[20px]">block</span> Toko Tutup';
+            });
+        }
+
         // Leaflet Map Initialization
         const lat = {{ floatval($mitra->latitude) }};
         const lng = {{ floatval($mitra->longitude) }};
@@ -1156,6 +1171,13 @@
 
     // Open Order Modal
     function openOrderModal(serviceName, price, unitType, optionsList = null) {
+        // Check if shop is currently open
+        const isShopOpen = {{ $status_buka ? 'true' : 'false' }};
+        if (!isShopOpen) {
+            alert('Maaf, toko sedang tutup saat ini. {{ addslashes($tutup_reason) }}.');
+            return;
+        }
+
         // Check if user is logged in
         const isLoggedIn = {{ Auth::check() ? 'true' : 'false' }};
         if (!isLoggedIn) {

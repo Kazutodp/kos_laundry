@@ -13,9 +13,34 @@ try {
     $all_mitra = $stmt->fetchAll();
     
     $mitra_list = [];
+    date_default_timezone_set('Asia/Makassar');
+    $current_time = date('H:i');
+    
     foreach ($all_mitra as $mitra) {
         $file_name = str_replace(' ', '_', $mitra['nama_mitra']) . '.php';
         if (file_exists('../Mitra laundry/' . $file_name)) {
+            // Calculate dynamic opening status
+            $is_open_now = false;
+            $jam_buka = $mitra['jam_buka'] ?? '08:00 - 21:00';
+            
+            if (strpos(strtolower($jam_buka), '24 hours') !== false || strpos(strtolower($jam_buka), '24 jam') !== false) {
+                $is_open_now = true;
+            } elseif (preg_match('/(\d{1,2}:\d{2})\s*-\s*(\d{1,2}:\d{2})/', $jam_buka, $matches)) {
+                $start_time = $matches[1];
+                $end_time = $matches[2];
+                if ($start_time <= $end_time) {
+                    $is_open_now = ($current_time >= $start_time && $current_time <= $end_time);
+                } else {
+                    $is_open_now = ($current_time >= $start_time || $current_time <= $end_time);
+                }
+            } elseif (preg_match('/until\s*(\d{1,2}:\d{2})/i', $jam_buka, $matches)) {
+                $start_time = '07:00';
+                $end_time = $matches[1];
+                $is_open_now = ($current_time >= $start_time && $current_time <= $end_time);
+            }
+            
+            $original_status = $mitra['status_buka'];
+            $mitra['is_open'] = ($original_status == 1 && $is_open_now);
             $mitra_list[] = $mitra;
         }
     }
@@ -366,6 +391,13 @@ try {
                             
                             <div class="h-48 relative overflow-hidden bg-slate-100 flex items-center justify-center">
                                 <img src="<?= htmlspecialchars($foto); ?>" alt="<?= htmlspecialchars($mitra['nama_mitra']); ?>" class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300" onerror="this.src='../uploads/mitra_1.png'">
+                                <?php if (!empty($mitra['is_open'])): ?>
+                                    <div class="absolute top-md left-md bg-secondary text-on-secondary px-sm py-[2px] rounded-full text-[10px] font-bold shadow-sm flex items-center gap-1">
+                                        <span class="w-1.5 h-1.5 rounded-full bg-white animate-pulse"></span> Buka
+                                    </div>
+                                <?php else: ?>
+                                    <div class="absolute top-md left-md bg-error text-on-error px-sm py-[2px] rounded-full text-[10px] font-bold shadow-sm">Tutup</div>
+                                <?php endif; ?>
                                 <?php if ($is_washtra): ?>
                                     <div class="absolute top-md right-md bg-secondary-fixed text-on-secondary-fixed px-sm py-[2px] rounded-full text-label-sm font-bold shadow-sm">Self Service</div>
                                 <?php elseif ($mitra['icon_type'] === 'sepatu'): ?>

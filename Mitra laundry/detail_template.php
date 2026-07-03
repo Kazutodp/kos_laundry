@@ -114,6 +114,16 @@ if (strpos(strtolower($jam_buka), '24 hours') !== false || strpos(strtolower($ja
 }
 $status_buka = ($mitra['status_buka'] == 1 && $is_open_now);
 
+// Determine reason for being closed (for display purposes)
+$tutup_reason = '';
+if (!$status_buka) {
+    if ($mitra['status_buka'] == 0) {
+        $tutup_reason = 'Dinonaktifkan oleh pengelola';
+    } else {
+        $tutup_reason = 'Di luar jam operasional';
+    }
+}
+
 // Resolve image path relative to the Mitra laundry directory
 if (strpos($foto_toko, 'uploads/') === 0) {
     $foto_toko_path = '../' . $foto_toko;
@@ -521,9 +531,14 @@ $logo_url = $partner_logos[$id_mitra] ?? $partner_logos[1];
                                 <span class="text-label-md font-bold"><?= $rating; ?></span>
                             </div>
                             <?php if ($status_buka): ?>
-                                <span class="bg-secondary text-on-secondary px-md py-1 rounded-full text-label-sm font-bold">Buka</span>
+                                <span class="bg-secondary text-on-secondary px-md py-1 rounded-full text-label-sm font-bold flex items-center gap-1">
+                                    <span class="w-1.5 h-1.5 rounded-full bg-white animate-pulse"></span> Buka
+                                </span>
                             <?php else: ?>
                                 <span class="bg-error text-on-error px-md py-1 rounded-full text-label-sm font-bold">Tutup</span>
+                                <?php if ($tutup_reason): ?>
+                                    <span class="bg-white/20 backdrop-blur-md text-white/80 px-xs py-1 rounded-lg text-[11px]"><?= htmlspecialchars($tutup_reason); ?></span>
+                                <?php endif; ?>
                             <?php endif; ?>
                         </div>
                     </div>
@@ -1428,6 +1443,16 @@ $logo_url = $partner_logos[$id_mitra] ?? $partner_logos[1];
         const isSelfService = <?= $is_self_service ? 'true' : 'false'; ?>;
         switchTab(isSelfService ? 'self' : 'kiloan');
 
+        // Disable order buttons visually when shop is closed
+        const isShopOpen = <?= $status_buka ? 'true' : 'false'; ?>;
+        if (!isShopOpen) {
+            document.querySelectorAll('button[onclick*="openOrderModal"]').forEach(btn => {
+                btn.classList.remove('bg-primary', 'text-on-primary', 'active:scale-[0.98]');
+                btn.classList.add('bg-slate-300', 'text-slate-500', 'cursor-not-allowed');
+                btn.innerHTML = '<span class="material-symbols-outlined text-[20px]">block</span> Toko Tutup';
+            });
+        }
+
         // Leaflet Map Initialization
         const lat = <?= floatval($mitra['latitude']); ?>;
         const lng = <?= floatval($mitra['longitude']); ?>;
@@ -1464,6 +1489,13 @@ $logo_url = $partner_logos[$id_mitra] ?? $partner_logos[1];
 
     // Open Order Modal
     function openOrderModal(serviceName, price, unitType, optionsList = null) {
+        // Check if shop is currently open
+        const isShopOpen = <?= $status_buka ? 'true' : 'false'; ?>;
+        if (!isShopOpen) {
+            alert('Maaf, toko sedang tutup saat ini. <?= addslashes($tutup_reason); ?>.');
+            return;
+        }
+
         // Check if user is logged in
         const isLoggedIn = <?= $is_logged_in ? 'true' : 'false'; ?>;
         if (!isLoggedIn) {

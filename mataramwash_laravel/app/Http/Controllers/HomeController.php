@@ -70,6 +70,12 @@ class HomeController extends Controller
         }
         $status_buka = ($mitra->status_buka == 1 && $isOpenNow);
         
+        // Determine reason for being closed
+        $tutup_reason = '';
+        if (!$status_buka) {
+            $tutup_reason = ($mitra->status_buka == 0) ? 'Dinonaktifkan oleh pengelola' : 'Di luar jam operasional';
+        }
+        
         $harga_per_kg = $mitra->harga_per_kg;
         $pricing = [
             'lipat_reguler' => $harga_per_kg,
@@ -405,7 +411,8 @@ class HomeController extends Controller
             'pricing', 
             'custom_tabs', 
             'custom_grids_html',
-            'status_buka'
+            'status_buka',
+            'tutup_reason'
         ));
     }
 
