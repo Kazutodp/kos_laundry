@@ -272,6 +272,12 @@ function getIndonesianMonthName($ym) {
                 </label>
             </div>
 
+            <!-- Kelola Layanan Link -->
+            <a href="layanan.php" class="flex items-center gap-1.5 text-xs font-bold text-primary hover:bg-blue-50 px-3.5 py-2 rounded-xl transition-all border border-transparent hover:border-blue-100 mr-2">
+                <span class="material-symbols-outlined text-[18px]">tune</span>
+                Kelola Layanan
+            </a>
+
             <!-- Logout Link -->
             <a href="logout.php" class="flex items-center gap-1.5 text-xs font-bold text-rose-600 hover:bg-rose-50 px-3.5 py-2 rounded-xl transition-all border border-transparent hover:border-rose-100">
                 <span class="material-symbols-outlined text-[18px]">logout</span>
