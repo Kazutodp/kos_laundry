@@ -1,4 +1,4 @@
-﻿<?php
+<?php
 session_start();
 if (!isset($_SESSION['admin_logged_in'])) {
     header("Location: admin.php");
@@ -126,6 +126,10 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     $fasilitas = isset($_POST['fasilitas']) ? implode(',', $_POST['fasilitas']) : '';
     $keunggulan_lainnya = trim($_POST['keunggulan_lainnya'] ?? '');
     
+    // Credentials
+    $username_input = trim($_POST['username_input'] ?? '');
+    $password_input = trim($_POST['password_input'] ?? '');
+    
     // Custom Pricing Overrides
     $harga_pengeringan = (int)($_POST['harga_pengeringan'] ?? 6000);
     $harga_setrika_reguler = (int)($_POST['harga_setrika_reguler'] ?? 13000);
@@ -135,62 +139,99 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     $harga_satuan_bed_cover = (int)($_POST['harga_satuan_bed_cover'] ?? 30000);
 
     // Validation
-    if (empty($nama_mitra) || empty($latitude) || empty($longitude) || empty($alamat) || empty($harga_per_kg)) {
-        $error = 'Nama Mitra, Koordinat (Latitude & Longitude), Alamat, dan Harga wajib diisi.';
+    if (empty($nama_mitra) || empty($latitude) || empty($longitude) || empty($alamat) || empty($harga_per_kg) || empty($username_input)) {
+        $error = 'Nama Mitra, Koordinat (Latitude & Longitude), Alamat, Harga, dan Username wajib diisi.';
     } else {
+        // Check if username is already taken by another partner
+        try {
+            $check_stmt = $pdo->prepare("SELECT id FROM mitra_laundry WHERE username = ? AND id != ?");
+            $check_stmt->execute([$username_input, $id]);
+            if ($check_stmt->fetch()) {
+                $error = 'Username kemitraan sudah digunakan oleh mitra lain. Silakan cari username yang unik.';
+            }
+        } catch (PDOException $e) {
+            $error = 'Gagal memeriksa keunikan username: ' . $e->getMessage();
+        }
+
         // File Upload
         $foto_toko = $mitra['foto_toko']; // keep old by default
-        
-        if (isset($_FILES['foto_toko']) && $_FILES['foto_toko']['error'] === UPLOAD_ERR_OK) {
-            $file_tmp = $_FILES['foto_toko']['tmp_name'];
-            $file_name = basename($_FILES['foto_toko']['name']);
-            $file_ext = strtolower(pathinfo($file_name, PATHINFO_EXTENSION));
-            
-            // Validate extension
-            $allowed_exts = ['jpg', 'jpeg', 'png', 'webp'];
-            if (!in_array($file_ext, $allowed_exts)) {
-                $error = 'Format file gambar tidak didukung (gunakan JPG, PNG, atau WEBP).';
-            } else {
-                // Create unique name
-                $new_file_name = 'mitra_' . time() . '_' . rand(1000, 9999) . '.' . $file_ext;
-                $upload_dir = '../uploads/';
-                if (!is_dir($upload_dir)) {
-                    mkdir($upload_dir, 0777, true);
-                }
+        if (empty($error)) {
+            if (isset($_FILES['foto_toko']) && $_FILES['foto_toko']['error'] === UPLOAD_ERR_OK) {
+                $file_tmp = $_FILES['foto_toko']['tmp_name'];
+                $file_name = basename($_FILES['foto_toko']['name']);
+                $file_ext = strtolower(pathinfo($file_name, PATHINFO_EXTENSION));
                 
-                if (move_uploaded_file($file_tmp, $upload_dir . $new_file_name)) {
-                    // Delete old photo if not a default/placeholder photo
-                    if (!empty($mitra['foto_toko']) && file_exists('../' . $mitra['foto_toko']) && $mitra['foto_toko'] !== 'uploads/mitra_1.png') {
-                        @unlink('../' . $mitra['foto_toko']);
-                    }
-                    $foto_toko = 'uploads/' . $new_file_name;
+                // Validate extension
+                $allowed_exts = ['jpg', 'jpeg', 'png', 'webp'];
+                if (!in_array($file_ext, $allowed_exts)) {
+                    $error = 'Format file gambar tidak didukung (gunakan JPG, PNG, atau WEBP).';
                 } else {
-                    $error = 'Gagal mengunggah foto toko baru ke server.';
+                    // Create unique name
+                    $new_file_name = 'mitra_' . time() . '_' . rand(1000, 9999) . '.' . $file_ext;
+                    $upload_dir = '../uploads/';
+                    if (!is_dir($upload_dir)) {
+                        mkdir($upload_dir, 0777, true);
+                    }
+                    
+                    if (move_uploaded_file($file_tmp, $upload_dir . $new_file_name)) {
+                        // Delete old photo if not a default/placeholder photo
+                        if (!empty($mitra['foto_toko']) && file_exists('../' . $mitra['foto_toko']) && $mitra['foto_toko'] !== 'uploads/mitra_1.png') {
+                            @unlink('../' . $mitra['foto_toko']);
+                        }
+                        $foto_toko = 'uploads/' . $new_file_name;
+                    } else {
+                        $error = 'Gagal mengunggah foto toko baru ke server.';
+                    }
                 }
             }
         }
 
         if (empty($error)) {
             try {
-                // Update database
-                $stmt = $pdo->prepare("UPDATE mitra_laundry SET nama_mitra = ?, foto_toko = ?, latitude = ?, longitude = ?, alamat = ?, no_telp = ?, rating = ?, harga_per_kg = ?, jam_buka = ?, status_buka = ?, icon_type = ?, is_rekomendasi = ?, fasilitas = ?, keunggulan_lainnya = ? WHERE id = ?");
-                $stmt->execute([
-                    $nama_mitra,
-                    $foto_toko,
-                    $latitude,
-                    $longitude,
-                    $alamat,
-                    $no_telp,
-                    $rating,
-                    $harga_per_kg,
-                    $jam_buka,
-                    $status_buka,
-                    $icon_type,
-                    $is_rekomendasi,
-                    $fasilitas,
-                    $keunggulan_lainnya,
-                    $id
-                ]);
+                // Update database (conditional password update)
+                if (!empty($password_input)) {
+                    $hashed_password = password_hash($password_input, PASSWORD_DEFAULT);
+                    $stmt = $pdo->prepare("UPDATE mitra_laundry SET nama_mitra = ?, username = ?, password = ?, foto_toko = ?, latitude = ?, longitude = ?, alamat = ?, no_telp = ?, rating = ?, harga_per_kg = ?, jam_buka = ?, status_buka = ?, icon_type = ?, is_rekomendasi = ?, fasilitas = ?, keunggulan_lainnya = ? WHERE id = ?");
+                    $stmt->execute([
+                        $nama_mitra,
+                        $username_input,
+                        $hashed_password,
+                        $foto_toko,
+                        $latitude,
+                        $longitude,
+                        $alamat,
+                        $no_telp,
+                        $rating,
+                        $harga_per_kg,
+                        $jam_buka,
+                        $status_buka,
+                        $icon_type,
+                        $is_rekomendasi,
+                        $fasilitas,
+                        $keunggulan_lainnya,
+                        $id
+                    ]);
+                } else {
+                    $stmt = $pdo->prepare("UPDATE mitra_laundry SET nama_mitra = ?, username = ?, foto_toko = ?, latitude = ?, longitude = ?, alamat = ?, no_telp = ?, rating = ?, harga_per_kg = ?, jam_buka = ?, status_buka = ?, icon_type = ?, is_rekomendasi = ?, fasilitas = ?, keunggulan_lainnya = ? WHERE id = ?");
+                    $stmt->execute([
+                        $nama_mitra,
+                        $username_input,
+                        $foto_toko,
+                        $latitude,
+                        $longitude,
+                        $alamat,
+                        $no_telp,
+                        $rating,
+                        $harga_per_kg,
+                        $jam_buka,
+                        $status_buka,
+                        $icon_type,
+                        $is_rekomendasi,
+                        $fasilitas,
+                        $keunggulan_lainnya,
+                        $id
+                    ]);
+                }
 
                 // Manage template files
                 $old_slug = str_replace(' ', '_', $mitra['nama_mitra']) . '.php';
@@ -489,6 +530,16 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                                 <div class="space-y-xs">
                                     <label for="no_telp" class="text-label-md font-bold text-on-surface-variant">No. Telepon / WhatsApp</label>
                                     <input type="text" id="no_telp" name="no_telp" value="<?= htmlspecialchars($mitra['no_telp']); ?>" placeholder="Contoh: 081234567890" class="w-full rounded-xl border-outline-variant focus:ring-primary focus:border-primary text-body-md py-2.5 px-md bg-white">
+                                </div>
+                            </div>
+                            <div class="grid grid-cols-1 md:grid-cols-2 gap-md">
+                                <div class="space-y-xs">
+                                    <label for="username_input" class="text-label-md font-bold text-on-surface-variant">Username Kemitraan (untuk Login) *</label>
+                                    <input type="text" id="username_input" name="username_input" required value="<?= htmlspecialchars($mitra['username'] ?? ''); ?>" placeholder="Contoh: outletwashtra" class="w-full rounded-xl border-outline-variant focus:ring-primary focus:border-primary text-body-md py-2.5 px-md bg-white">
+                                </div>
+                                <div class="space-y-xs">
+                                    <label for="password_input" class="text-label-md font-bold text-on-surface-variant">Ubah Kata Sandi (Kosongkan jika tetap)</label>
+                                    <input type="password" id="password_input" name="password_input" placeholder="Masukkan kata sandi baru jika ingin diubah" class="w-full rounded-xl border-outline-variant focus:ring-primary focus:border-primary text-body-md py-2.5 px-md bg-white">
                                 </div>
                             </div>
                             <div class="space-y-xs">
