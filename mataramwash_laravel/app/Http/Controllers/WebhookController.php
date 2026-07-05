@@ -81,6 +81,16 @@ class WebhookController extends Controller
             }
             $order->update($updateData);
 
+            // Trigger WA notification to partner for successful payment
+            if ($status_pembayaran === 'success') {
+                try {
+                    require_once base_path('../wa_helper.php');
+                    notify_mitra_new_order($order->id, \DB::getPdo());
+                } catch (\Exception $wa_ex) {
+                    \Log::error('WA Notification failed: ' . $wa_ex->getMessage());
+                }
+            }
+
             return response()->json([
                 'status' => 'success',
                 'message' => 'Order status updated to ' . $status_pembayaran

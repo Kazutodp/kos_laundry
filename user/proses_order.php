@@ -123,6 +123,10 @@ try {
     
     $order_id = $pdo->lastInsertId();
     
+    // Trigger WA notification to partner for regular order (weigh first / COD)
+    require_once '../wa_helper.php';
+    notify_mitra_new_order($order_id, $pdo);
+    
     // Return early if not self-service (we weigh first, pay later)
     if (!$is_self_service) {
         echo json_encode([

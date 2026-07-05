@@ -99,6 +99,14 @@ class OrderController extends Controller
                 'catatan' => $catatan,
             ]);
             
+            // Trigger WA notification to partner for regular order (weigh first / COD)
+            try {
+                require_once base_path('../wa_helper.php');
+                notify_mitra_new_order($order->id, \DB::getPdo());
+            } catch (\Exception $wa_ex) {
+                \Log::error('WA Notification failed: ' . $wa_ex->getMessage());
+            }
+            
             if (!$is_self_service) {
                 return response()->json([
                     'status' => 'success',

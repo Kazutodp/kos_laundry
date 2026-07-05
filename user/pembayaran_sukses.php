@@ -1,4 +1,4 @@
-﻿<?php
+<?php
 session_start();
 require_once '../db_connect.php';
 
@@ -39,6 +39,10 @@ try {
             WHERE id = ?
         ");
         $update_stmt->execute([$order_id]);
+        
+        // Trigger WA notification to partner for successful payment (fallback/localhost)
+        require_once '../wa_helper.php';
+        notify_mitra_new_order($order_id, $pdo);
         
         // Update local variable for rendering
         $order['status_pembayaran'] = 'success';

@@ -1,4 +1,4 @@
-﻿<?php
+<?php
 session_start();
 if (!isset($_SESSION['admin_logged_in'])) {
     header("Location: admin.php");
@@ -114,6 +114,13 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['action']) && $_POST['
                 WHERE id = ?
             ");
             $update_stmt->execute($params);
+            
+            // Trigger WA notification to partner for successful payment (if updated by admin)
+            if (in_array($status_order, ['Diproses', 'Siap Diantar', 'Selesai'])) {
+                require_once '../wa_helper.php';
+                notify_mitra_new_order($order_id, $pdo);
+            }
+            
             $success_message = 'Status pesanan berhasil diperbarui menjadi: ' . $status_order;
         } catch (PDOException $e) {
             $error_message = 'Gagal memperbarui status: ' . $e->getMessage();

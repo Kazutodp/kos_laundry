@@ -89,6 +89,10 @@ try {
             WHERE id = ?
         ");
         $stmt->execute([$status_pembayaran, $db_order_id]);
+
+        // Trigger WA notification to partner for successful payment
+        require_once '../wa_helper.php';
+        notify_mitra_new_order($db_order_id, $pdo);
     } else {
         $stmt = $pdo->prepare("
             UPDATE orders 
