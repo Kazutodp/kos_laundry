@@ -87,35 +87,88 @@ if (!$mitra) {
 
 // Statistics Calculations
 try {
-    // 1. Total Payout (90% of successful orders)
-    $stmt_payout = $pdo->prepare("SELECT SUM(total_harga) as total_revenue FROM orders WHERE mitra_id = ? AND status_pembayaran = 'success'");
-    $stmt_payout->execute([$mitra_id]);
-    $revenue_data = $stmt_payout->fetch(PDO::FETCH_ASSOC);
-    $total_revenue = $revenue_data['total_revenue'] ?? 0;
-    $payout_bersih = $total_revenue * 0.9; // 90% payout
+    // 1. Get unique list of months/years that have orders for this partner (for the dropdown filter)
+    $stmt_months = $pdo->prepare("SELECT DISTINCT DATE_FORMAT(created_at, '%Y-%m') as ym FROM orders WHERE mitra_id = ? ORDER BY ym DESC");
+    $stmt_months->execute([$mitra_id]);
+    $available_months = $stmt_months->fetchAll(PDO::FETCH_COLUMN);
 
-    // 2. Orders today
+    // Get selected filter month from GET parameter
+    $selected_month = trim($_GET['filter_month'] ?? 'all');
+    if ($selected_month !== 'all' && !preg_match('/^\d{4}-\d{2}$/', $selected_month)) {
+        $selected_month = 'all';
+    }
+
+    // 2. Orders today (always shows today's count)
     $stmt_today = $pdo->prepare("SELECT COUNT(*) as count FROM orders WHERE mitra_id = ? AND DATE(created_at) = CURRENT_DATE");
     $stmt_today->execute([$mitra_id]);
     $orders_today = $stmt_today->fetch(PDO::FETCH_ASSOC)['count'] ?? 0;
 
-    // 3. Total successful orders
-    $stmt_success = $pdo->prepare("SELECT COUNT(*) as count FROM orders WHERE mitra_id = ? AND status_pembayaran = 'success'");
-    $stmt_success->execute([$mitra_id]);
-    $total_success_orders = $stmt_success->fetch(PDO::FETCH_ASSOC)['count'] ?? 0;
+    // 3. Calculate This Month's Net Revenue (Kalender Berjalan)
+    $this_month_ym = date('Y-m');
+    $stmt_this_month = $pdo->prepare("SELECT SUM(total_harga) as rev, COUNT(*) as count FROM orders WHERE mitra_id = ? AND status_pembayaran = 'success' AND DATE_FORMAT(created_at, '%Y-%m') = ?");
+    $stmt_this_month->execute([$mitra_id, $this_month_ym]);
+    $this_month_data = $stmt_this_month->fetch(PDO::FETCH_ASSOC);
+    $revenue_this_month = $this_month_data['rev'] ?? 0;
+    $payout_this_month = $revenue_this_month * 0.9;
+    $orders_this_month = $this_month_data['count'] ?? 0;
 
-    // 4. Fetch orders list (latest first)
-    $stmt_orders = $pdo->prepare("SELECT * FROM orders WHERE mitra_id = ? ORDER BY id DESC");
-    $stmt_orders->execute([$mitra_id]);
-    $orders = $stmt_orders->fetchAll(PDO::FETCH_ASSOC);
-    
-    // Get highest order ID for notification checkpointing
-    $latest_order_id = 0;
-    if (count($orders) > 0) {
-        $latest_order_id = (int)$orders[0]['id'];
+    // Calculate Last Month's Net Revenue (Bulan Lalu)
+    $last_month_ym = date('Y-m', strtotime('first day of last month'));
+    $stmt_last_month = $pdo->prepare("SELECT SUM(total_harga) as rev, COUNT(*) as count FROM orders WHERE mitra_id = ? AND status_pembayaran = 'success' AND DATE_FORMAT(created_at, '%Y-%m') = ?");
+    $stmt_last_month->execute([$mitra_id, $last_month_ym]);
+    $last_month_data = $stmt_last_month->fetch(PDO::FETCH_ASSOC);
+    $revenue_last_month = $last_month_data['rev'] ?? 0;
+    $payout_last_month = $revenue_last_month * 0.9;
+    $orders_last_month = $last_month_data['count'] ?? 0;
+
+    // 4. Calculate Payout Bersih and successful orders based on SELECTED filter
+    if ($selected_month === 'all') {
+        $stmt_payout = $pdo->prepare("SELECT SUM(total_harga) as total_revenue FROM orders WHERE mitra_id = ? AND status_pembayaran = 'success'");
+        $stmt_payout->execute([$mitra_id]);
+        
+        $stmt_success = $pdo->prepare("SELECT COUNT(*) as count FROM orders WHERE mitra_id = ? AND status_pembayaran = 'success'");
+        $stmt_success->execute([$mitra_id]);
+        
+        $stmt_orders = $pdo->prepare("SELECT * FROM orders WHERE mitra_id = ? ORDER BY id DESC");
+        $stmt_orders->execute([$mitra_id]);
+    } else {
+        $stmt_payout = $pdo->prepare("SELECT SUM(total_harga) as total_revenue FROM orders WHERE mitra_id = ? AND status_pembayaran = 'success' AND DATE_FORMAT(created_at, '%Y-%m') = ?");
+        $stmt_payout->execute([$mitra_id, $selected_month]);
+        
+        $stmt_success = $pdo->prepare("SELECT COUNT(*) as count FROM orders WHERE mitra_id = ? AND status_pembayaran = 'success' AND DATE_FORMAT(created_at, '%Y-%m') = ?");
+        $stmt_success->execute([$mitra_id, $selected_month]);
+        
+        $stmt_orders = $pdo->prepare("SELECT * FROM orders WHERE mitra_id = ? AND DATE_FORMAT(created_at, '%Y-%m') = ? ORDER BY id DESC");
+        $stmt_orders->execute([$mitra_id, $selected_month]);
     }
+    
+    $revenue_data = $stmt_payout->fetch(PDO::FETCH_ASSOC);
+    $total_revenue = $revenue_data['total_revenue'] ?? 0;
+    $payout_bersih = $total_revenue * 0.9;
+    $total_success_orders = $stmt_success->fetch(PDO::FETCH_ASSOC)['count'] ?? 0;
+    $orders = $stmt_orders->fetchAll(PDO::FETCH_ASSOC);
+
+    // Get absolute highest order ID of ALL orders for polling checkpointing
+    $stmt_latest_checkpoint = $pdo->prepare("SELECT MAX(id) as max_id FROM orders WHERE mitra_id = ?");
+    $stmt_latest_checkpoint->execute([$mitra_id]);
+    $latest_order_id = (int)($stmt_latest_checkpoint->fetch(PDO::FETCH_ASSOC)['max_id'] ?? 0);
 } catch (PDOException $e) {
     die("Database Error: " . $e->getMessage());
+}
+
+// Indonesian Month Names Helper Function
+function getIndonesianMonthName($ym) {
+    if (!$ym || $ym === 'all') return 'Semua Waktu';
+    $parts = explode('-', $ym);
+    if (count($parts) !== 2) return $ym;
+    $year = $parts[0];
+    $month = (int)$parts[1];
+    $monthNames = [
+        1 => 'Januari', 2 => 'Februari', 3 => 'Maret', 4 => 'April',
+        5 => 'Mei', 6 => 'Juni', 7 => 'Juli', 8 => 'Agustus',
+        9 => 'September', 10 => 'Oktober', 11 => 'November', 12 => 'Desember'
+    ];
+    return ($monthNames[$month] ?? $parts[1]) . ' ' . $year;
 }
 ?>
 <!DOCTYPE html>
@@ -223,7 +276,7 @@ try {
                 <div>
                     <p class="text-xs font-bold text-slate-400 uppercase tracking-wider mb-1">Payout Bersih Anda (90%)</p>
                     <h2 class="text-2xl font-black text-slate-900 tracking-tight">Rp <?= number_format($payout_bersih, 0, ',', '.'); ?></h2>
-                    <p class="text-[10px] text-slate-400 mt-1">Potongan komisi platform 10%</p>
+                    <p class="text-[10px] text-slate-400 mt-1">Periode: <span class="font-bold text-primary"><?= getIndonesianMonthName($selected_month); ?></span></p>
                 </div>
             </div>
 
@@ -253,21 +306,64 @@ try {
                 <div>
                     <p class="text-xs font-bold text-slate-400 uppercase tracking-wider mb-1">Total Pesanan Sukses</p>
                     <h2 class="text-2xl font-black text-slate-900 tracking-tight"><?= $total_success_orders; ?></h2>
-                    <p class="text-[10px] text-slate-400 mt-1">Akumulasi pesanan dibayar</p>
+                    <p class="text-[10px] text-slate-400 mt-1">Periode: <span class="font-bold text-amber-600"><?= getIndonesianMonthName($selected_month); ?></span></p>
+                </div>
+            </div>
+        </div>
+
+        <!-- Monthly Comparison Banner -->
+        <div class="bg-gradient-to-r from-slate-900 to-slate-800 rounded-2xl p-6 text-white border border-slate-800/80 shadow-lg flex flex-col md:flex-row md:items-center justify-between gap-6 relative overflow-hidden">
+            <!-- Subtle glow accents -->
+            <div class="absolute w-40 h-40 bg-primary/10 rounded-full blur-3xl -top-20 -left-20"></div>
+            <div class="absolute w-40 h-40 bg-secondary/10 rounded-full blur-3xl -bottom-20 -right-20"></div>
+            
+            <div class="space-y-1 relative z-10">
+                <span class="text-[10px] font-bold text-slate-400 uppercase tracking-widest">Laporan Perbandingan Bulanan</span>
+                <h3 class="text-lg font-bold">Ringkasan Pendapatan Bersih</h3>
+                <p class="text-xs text-slate-400">Membandingkan hasil bulan ini dengan bulan kemarin (setelah potongan platform 10%)</p>
+            </div>
+            
+            <div class="grid grid-cols-2 gap-8 md:gap-16 relative z-10">
+                <div class="space-y-1">
+                    <span class="text-[10px] font-bold text-slate-400 uppercase">Bulan Ini (<?= getIndonesianMonthName($this_month_ym); ?>)</span>
+                    <div class="text-xl font-extrabold text-secondary">Rp <?= number_format($payout_this_month, 0, ',', '.'); ?></div>
+                    <div class="text-[10px] text-slate-400 font-medium"><?= $orders_this_month; ?> Transaksi Sukses</div>
+                </div>
+                <div class="space-y-1 border-l border-slate-700/60 pl-8">
+                    <span class="text-[10px] font-bold text-slate-400 uppercase">Bulan Lalu (<?= getIndonesianMonthName($last_month_ym); ?>)</span>
+                    <div class="text-xl font-extrabold text-slate-300">Rp <?= number_format($payout_last_month, 0, ',', '.'); ?></div>
+                    <div class="text-[10px] text-slate-400 font-medium"><?= $orders_last_month; ?> Transaksi Sukses</div>
                 </div>
             </div>
         </div>
 
         <!-- Orders Table Container -->
         <div class="bg-white rounded-2xl border border-slate-100 shadow-sm overflow-hidden">
-            <div class="px-6 py-5 border-b border-slate-100 flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
+            <div class="px-6 py-5 border-b border-slate-100 flex flex-col md:flex-row md:items-center md:justify-between gap-4">
                 <div>
                     <h2 class="font-bold text-slate-900 text-lg leading-tight">Daftar Transaksi Masuk</h2>
                     <p class="text-xs text-slate-400 mt-0.5">Memantau proses pengerjaan cucian pelanggan secara real-time</p>
                 </div>
-                <div class="flex items-center gap-2 text-xs font-bold text-slate-400 bg-slate-50 px-3 py-1.5 rounded-lg border border-slate-200/50">
-                    <span class="w-2 h-2 rounded-full bg-emerald-500 animate-ping"></span>
-                    Auto Refresh Aktif
+                
+                <div class="flex flex-wrap items-center gap-4">
+                    <!-- Month Filter Dropdown -->
+                    <form method="GET" action="" class="flex items-center gap-2">
+                        <label for="filter_month" class="text-xs font-bold text-slate-500 whitespace-nowrap">Filter Bulan:</label>
+                        <select name="filter_month" id="filter_month" onchange="this.form.submit()" 
+                                class="text-xs font-semibold rounded-lg bg-white border border-slate-200 text-slate-700 py-1.5 pl-3 pr-8 focus:outline-none focus:ring-1 focus:ring-primary focus:border-primary transition-all">
+                            <option value="all" <?= $selected_month === 'all' ? 'selected' : ''; ?>>Semua Waktu</option>
+                            <?php foreach ($available_months as $m): ?>
+                                <option value="<?= $m; ?>" <?= $selected_month === $m ? 'selected' : ''; ?>>
+                                    <?= getIndonesianMonthName($m); ?>
+                                </option>
+                            <?php endforeach; ?>
+                        </select>
+                    </form>
+
+                    <div class="flex items-center gap-2 text-xs font-bold text-slate-400 bg-slate-50 px-3 py-1.5 rounded-lg border border-slate-200/50">
+                        <span class="w-2 h-2 rounded-full bg-emerald-500 animate-ping"></span>
+                        Auto Refresh Aktif
+                    </div>
                 </div>
             </div>
 
