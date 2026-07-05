@@ -289,6 +289,14 @@ function getIndonesianMonthName($ym) {
     <!-- Main Content -->
     <main class="flex-1 max-w-7xl w-full mx-auto p-6 space-y-6">
 
+        <!-- No Data Warning Alert -->
+        <?php if (isset($_GET['error']) && $_GET['error'] === 'nodata'): ?>
+            <div class="p-4 bg-rose-600 text-white rounded-2xl shadow-lg shadow-rose-600/20 flex items-center gap-3 animate-pulse">
+                <span class="material-symbols-outlined text-[24px]">warning</span>
+                <span class="text-sm font-bold">Tidak ada data transaksi sukses untuk periode <?= htmlspecialchars(getIndonesianMonthName($_GET['filter_month'] ?? '')); ?> untuk diunduh sebagai PDF.</span>
+            </div>
+        <?php endif; ?>
+
         <!-- Banner & Notification Indicator Alert -->
         <div id="new-order-alert" class="hidden p-4 bg-amber-500 text-white rounded-2xl shadow-lg shadow-amber-500/20 flex items-center justify-between animate-bounce">
             <div class="flex items-center gap-3">
@@ -399,6 +407,13 @@ function getIndonesianMonthName($ym) {
                             <?php endforeach; ?>
                         </select>
                     </form>
+
+                    <!-- PDF Download Button -->
+                    <a href="unduh_pdf.php?filter_month=<?= urlencode($selected_month); ?>" target="_blank"
+                       class="flex items-center gap-1.5 text-xs font-bold text-white bg-red-600 hover:bg-red-700 px-3.5 py-1.5 rounded-xl shadow-sm shadow-red-600/10 hover:brightness-110 active:scale-[0.98] transition-all">
+                        <span class="material-symbols-outlined text-[18px]">picture_as_pdf</span>
+                        Unduh PDF
+                    </a>
 
                     <div class="flex items-center gap-2 text-xs font-bold text-slate-400 bg-slate-50 px-3 py-1.5 rounded-lg border border-slate-200/50">
                         <span class="w-2 h-2 rounded-full bg-emerald-500 animate-ping"></span>
