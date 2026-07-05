@@ -65,7 +65,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     $no_telp = trim($_POST['no_telp'] ?? '');
     $alamat = trim($_POST['alamat'] ?? '');
     $jam_buka = trim($_POST['jam_buka'] ?? '');
-    $fasilitas = trim($_POST['fasilitas'] ?? '');
+    $fasilitas = isset($_POST['fasilitas']) ? implode(',', $_POST['fasilitas']) : '';
     $keunggulan_lainnya = trim($_POST['keunggulan_lainnya'] ?? '');
 
     // Collect file custom pricing values
@@ -282,26 +282,51 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                 </div>
 
                 <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
-                    <!-- Facilities Input -->
-                    <div class="space-y-2">
-                        <label for="fasilitas" class="block text-xs font-bold text-slate-500 uppercase tracking-wider">Fasilitas (Dipisah Koma)</label>
-                        <div class="relative">
-                            <span class="material-symbols-outlined absolute left-4 top-4 text-[20px] text-slate-400">local_laundry_service</span>
-                            <textarea id="fasilitas" name="fasilitas" rows="3" placeholder="Contoh: Setrika Uap, Free Delivery, Timbangan Digital, Deterjen Premium"
-                                      class="w-full pl-12 pr-4 py-3 bg-slate-50/50 border border-slate-200 focus:bg-white focus:border-primary focus:ring-1 focus:ring-primary rounded-xl text-sm transition-all outline-none"><?= htmlspecialchars($mitra['fasilitas']); ?></textarea>
+                    <!-- Facilities Checkboxes -->
+                    <div class="space-y-3">
+                        <label class="block text-xs font-bold text-slate-500 uppercase tracking-wider">Fasilitas Outlet</label>
+                        <?php 
+                        $selected_facilities = explode(',', $mitra['fasilitas'] ?? ''); 
+                        ?>
+                        <div class="bg-slate-50/50 border border-slate-200 rounded-2xl p-4 space-y-3">
+                            <label class="flex items-center gap-3 text-sm font-semibold text-slate-700 cursor-pointer select-none">
+                                <input type="checkbox" name="fasilitas[]" value="wifi" <?= in_array('wifi', $selected_facilities) ? 'checked' : ''; ?> 
+                                       class="rounded border-slate-300 text-primary focus:ring-primary h-4 w-4">
+                                <span>Wifi Gratis (Free Wi-Fi)</span>
+                            </label>
+                            <label class="flex items-center gap-3 text-sm font-semibold text-slate-700 cursor-pointer select-none">
+                                <input type="checkbox" name="fasilitas[]" value="ac" <?= in_array('ac', $selected_facilities) ? 'checked' : ''; ?> 
+                                       class="rounded border-slate-300 text-primary focus:ring-primary h-4 w-4">
+                                <span>Ruang Tunggu AC</span>
+                            </label>
+                            <label class="flex items-center gap-3 text-sm font-semibold text-slate-700 cursor-pointer select-none">
+                                <input type="checkbox" name="fasilitas[]" value="parkir" <?= in_array('parkir', $selected_facilities) ? 'checked' : ''; ?> 
+                                       class="rounded border-slate-300 text-primary focus:ring-primary h-4 w-4">
+                                <span>Parkir Luas & Aman</span>
+                            </label>
+                            <label class="flex items-center gap-3 text-sm font-semibold text-slate-700 cursor-pointer select-none">
+                                <input type="checkbox" name="fasilitas[]" value="air" <?= in_array('air', $selected_facilities) ? 'checked' : ''; ?> 
+                                       class="rounded border-slate-300 text-primary focus:ring-primary h-4 w-4">
+                                <span>Air Minum Gratis (Dispenser)</span>
+                            </label>
+                            <label class="flex items-center gap-3 text-sm font-semibold text-slate-700 cursor-pointer select-none">
+                                <input type="checkbox" name="fasilitas[]" value="antar" <?= in_array('antar', $selected_facilities) ? 'checked' : ''; ?> 
+                                       class="rounded border-slate-300 text-primary focus:ring-primary h-4 w-4">
+                                <span>Layanan Antar-Jemput</span>
+                            </label>
                         </div>
-                        <p class="text-[10px] text-slate-400">Gunakan tanda koma (,) untuk memisahkan setiap jenis fasilitas.</p>
                     </div>
 
                     <!-- Other Advantages Input -->
                     <div class="space-y-2">
-                        <label for="keunggulan_lainnya" class="block text-xs font-bold text-slate-500 uppercase tracking-wider">Keunggulan Lainnya (Dipisah Koma)</label>
+                        <label for="keunggulan_lainnya" class="block text-xs font-bold text-slate-500 uppercase tracking-wider">Keunggulan Utama (Satu per baris)</label>
                         <div class="relative">
                             <span class="material-symbols-outlined absolute left-4 top-4 text-[20px] text-slate-400">workspace_premium</span>
-                            <textarea id="keunggulan_lainnya" name="keunggulan_lainnya" rows="3" placeholder="Contoh: Proses 90 menit selesai, Pakaian tidak dicampur, Privasi aman"
+                            <textarea id="keunggulan_lainnya" name="keunggulan_lainnya" rows="6" 
+                                      placeholder="Contoh:&#10;Proses Cepat: Selesai hanya dalam waktu 90 menit.&#10;Higienis: Pakaian Anda tidak dicampur dengan pelanggan lain."
                                       class="w-full pl-12 pr-4 py-3 bg-slate-50/50 border border-slate-200 focus:bg-white focus:border-primary focus:ring-1 focus:ring-primary rounded-xl text-sm transition-all outline-none"><?= htmlspecialchars($mitra['keunggulan_lainnya']); ?></textarea>
                         </div>
-                        <p class="text-[10px] text-slate-400">Gunakan tanda koma (,) untuk memisahkan setiap keunggulan.</p>
+                        <p class="text-[10px] text-slate-400">Tulis keunggulan outlet Anda (format: "Judul: Deskripsi singkat") satu per baris.</p>
                     </div>
                 </div>
             </div>
