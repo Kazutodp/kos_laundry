@@ -1,4 +1,4 @@
-﻿<!DOCTYPE html>
+<!DOCTYPE html>
 <html lang="id">
 <head>
     <meta charset="utf-8"/>
@@ -359,28 +359,72 @@
                     <!-- Grid: Facility -->
                     <div id="grid-facility" class="grid-content hidden space-y-md">
                         <div class="bg-surface-container-lowest p-lg rounded-xl border border-outline-variant shadow-sm space-y-sm">
-                            <h3 class="font-headline-md text-[20px] text-primary font-bold">Kenapa Memilih WashTra?</h3>
+                            <h3 class="font-headline-md text-[20px] text-primary font-bold">Kenapa Memilih {{ $mitra->nama_mitra }}?</h3>
                             <ul class="space-y-sm text-body-md text-on-surface-variant">
-                                <li class="flex items-start gap-md">
-                                    <span class="material-symbols-outlined text-secondary mt-[2px]">check_circle</span>
-                                    <span><strong>Laundry Ekspress Self Service Pertama</strong> di Mataram.</span>
-                                </li>
-                                <li class="flex items-start gap-md">
-                                    <span class="material-symbols-outlined text-secondary mt-[2px]">check_circle</span>
-                                    <span><strong>Mencuci Tanpa Timbang:</strong> Bebas mencuci pakaian sebanyak kapasitas mesin cuci tanpa khawatir berat timbangan.</span>
-                                </li>
-                                <li class="flex items-start gap-md">
-                                    <span class="material-symbols-outlined text-secondary mt-[2px]">check_circle</span>
-                                    <span><strong>Mencuci Hanya 15 Ribu:</strong> Sangat hemat, bersahabat dengan kantong mahasiswa.</span>
-                                </li>
-                                <li class="flex items-start gap-md">
-                                    <span class="material-symbols-outlined text-secondary mt-[2px]">check_circle</span>
-                                    <span><strong>Privasi Terjaga:</strong> Pengerjaan dikerjakan sendiri oleh konsumen sehingga pakaian dalam atau pakaian sensitif aman tidak tercampur atau tersentuh orang lain.</span>
-                                </li>
-                                <li class="flex items-start gap-md">
-                                    <span class="material-symbols-outlined text-secondary mt-[2px]">check_circle</span>
-                                    <span><strong>Ruang Tunggu Premium:</strong> Sambil menunggu, Anda bisa mengerjakan tugas kuliah atau bersantai di ruangan ber-AC dengan fasilitas Wifi gratis berkecepatan tinggi.</span>
-                                </li>
+                                @if (!empty($mitra->fasilitas) || !empty($mitra->keunggulan_lainnya))
+                                    @if (!empty($mitra->fasilitas))
+                                        @php
+                                            $facs = explode(',', $mitra->fasilitas);
+                                            $desc_map = [
+                                                'wifi' => ['Free Wi-Fi', 'Tersedia koneksi internet Wi-Fi gratis berkecepatan tinggi di area toko.'],
+                                                'ac' => ['Ruang Tunggu AC', 'Ruang tunggu ber-AC yang nyaman dan sejuk bagi pelanggan.'],
+                                                'parkir' => ['Parkir Luas', 'Area parkir luas dan aman untuk kendaraan roda dua maupun roda empat.'],
+                                                'air' => ['Air Minum Gratis', 'Tersedia fasilitas air minum gratis (dispenser/mineral) untuk pelanggan.'],
+                                                'antar' => ['Antar Jemput', 'Layanan jemput-antar laundry praktis langsung ke kosan Anda.']
+                                            ];
+                                        @endphp
+                                        @foreach ($facs as $fac)
+                                            @php $fac = trim($fac); @endphp
+                                            @if (isset($desc_map[$fac]))
+                                                <li class="flex items-start gap-md">
+                                                    <span class="material-symbols-outlined text-secondary mt-[2px]">check_circle</span>
+                                                    <span><strong>{{ $desc_map[$fac][0] }}:</strong> {{ $desc_map[$fac][1] }}</span>
+                                                </li>
+                                            @endif
+                                        @endforeach
+                                    @endif
+                                    
+                                    @if (!empty($mitra->keunggulan_lainnya))
+                                        @php
+                                            $lines = explode("\n", str_replace("\r", "", $mitra->keunggulan_lainnya));
+                                        @endphp
+                                        @foreach ($lines as $line)
+                                            @php $line = trim($line); @endphp
+                                            @if (!empty($line))
+                                                <li class="flex items-start gap-md">
+                                                    <span class="material-symbols-outlined text-secondary mt-[2px]">check_circle</span>
+                                                    @if (strpos($line, ':') !== false)
+                                                        @php $parts = explode(':', $line, 2); @endphp
+                                                        <span><strong>{{ trim($parts[0]) }}:</strong> {{ trim($parts[1]) }}</span>
+                                                    @else
+                                                        <span>{{ $line }}</span>
+                                                    @endif
+                                                </li>
+                                            @endif
+                                        @endforeach
+                                    @endif
+                                @else
+                                    <li class="flex items-start gap-md">
+                                        <span class="material-symbols-outlined text-secondary mt-[2px]">check_circle</span>
+                                        <span><strong>Laundry Ekspress Self Service Pertama</strong> di Mataram.</span>
+                                    </li>
+                                    <li class="flex items-start gap-md">
+                                        <span class="material-symbols-outlined text-secondary mt-[2px]">check_circle</span>
+                                        <span><strong>Mencuci Tanpa Timbang:</strong> Bebas mencuci pakaian sebanyak kapasitas mesin cuci tanpa khawatir berat timbangan.</span>
+                                    </li>
+                                    <li class="flex items-start gap-md">
+                                        <span class="material-symbols-outlined text-secondary mt-[2px]">check_circle</span>
+                                        <span><strong>Mencuci Hanya 15 Ribu:</strong> Sangat hemat, bersahabat dengan kantong mahasiswa.</span>
+                                    </li>
+                                    <li class="flex items-start gap-md">
+                                        <span class="material-symbols-outlined text-secondary mt-[2px]">check_circle</span>
+                                        <span><strong>Privasi Terjaga:</strong> Pengerjaan dikerjakan sendiri oleh konsumen sehingga pakaian dalam atau pakaian sensitif aman tidak tercampur atau tersentuh orang lain.</span>
+                                    </li>
+                                    <li class="flex items-start gap-md">
+                                        <span class="material-symbols-outlined text-secondary mt-[2px]">check_circle</span>
+                                        <span><strong>Ruang Tunggu Premium:</strong> Sambil menunggu, Anda bisa mengerjakan tugas kuliah atau bersantai di ruangan ber-AC dengan fasilitas Wifi gratis berkecepatan tinggi.</span>
+                                    </li>
+                                @endif
                             </ul>
                         </div>
                     </div>
