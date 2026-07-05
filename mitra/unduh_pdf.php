@@ -193,7 +193,7 @@ foreach ($orders as $order) {
     $net_row = (float)$order['total_harga'] * 0.90;
 
     $pdf->Cell(10, 8, $no++, 1, 0, 'C', $fill);
-    $pdf->Cell(35, 8, ' ' . $order['invoice_number'], 1, 0, 'C', $fill);
+    $pdf->Cell(35, 8, ' #' . $order['id'], 1, 0, 'C', $fill);
     $pdf->Cell(35, 8, $date_formatted, 1, 0, 'C', $fill);
     $pdf->Cell(40, 8, ' ' . $order['nama_pelanggan'], 1, 0, 'L', $fill);
     $pdf->Cell(35, 8, 'Rp ' . number_format($order['total_harga'], 0, ',', '.'), 1, 0, 'R', $fill);
