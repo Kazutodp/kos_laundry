@@ -52,6 +52,40 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['action']) && $_POST['
     exit();
 }
 
+// Handle Order Delete / Hide Action (Soft vs Hard Delete)
+if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['action']) && $_POST['action'] === 'delete_order') {
+    header('Content-Type: application/json');
+    $order_id = isset($_POST['order_id']) ? (int)$_POST['order_id'] : 0;
+    $type = trim($_POST['type'] ?? 'hide'); // 'hide' or 'permanent'
+
+    if ($order_id > 0) {
+        try {
+            // Verify order belongs to this partner
+            $check_stmt = $pdo->prepare("SELECT id FROM orders WHERE id = ? AND mitra_id = ?");
+            $check_stmt->execute([$order_id, $mitra_id]);
+            if ($check_stmt->fetch()) {
+                if ($type === 'permanent') {
+                    // Hard Delete: remove row completely from database
+                    $stmt = $pdo->prepare("DELETE FROM orders WHERE id = ?");
+                    $stmt->execute([$order_id]);
+                } else {
+                    // Soft Delete / Hide: update column to 1
+                    $stmt = $pdo->prepare("UPDATE orders SET is_hidden_mitra = 1 WHERE id = ?");
+                    $stmt->execute([$order_id]);
+                }
+                echo json_encode(['success' => true]);
+            } else {
+                echo json_encode(['success' => false, 'message' => 'Pesanan tidak ditemukan atau bukan milik Anda.']);
+            }
+        } catch (PDOException $e) {
+            echo json_encode(['success' => false, 'message' => $e->getMessage()]);
+        }
+    } else {
+        echo json_encode(['success' => false, 'message' => 'Parameter tidak lengkap.']);
+    }
+    exit();
+}
+
 // Handle Check New Orders (AJAX Polling)
 if ($_SERVER['REQUEST_METHOD'] === 'GET' && isset($_GET['action']) && $_GET['action'] === 'check_new_orders') {
     header('Content-Type: application/json');
@@ -129,7 +163,7 @@ try {
         $stmt_success = $pdo->prepare("SELECT COUNT(*) as count FROM orders WHERE mitra_id = ? AND status_pembayaran = 'success'");
         $stmt_success->execute([$mitra_id]);
         
-        $stmt_orders = $pdo->prepare("SELECT * FROM orders WHERE mitra_id = ? ORDER BY id DESC");
+        $stmt_orders = $pdo->prepare("SELECT * FROM orders WHERE mitra_id = ? AND is_hidden_mitra = 0 ORDER BY id DESC");
         $stmt_orders->execute([$mitra_id]);
     } else {
         $stmt_payout = $pdo->prepare("SELECT SUM(total_harga) as total_revenue FROM orders WHERE mitra_id = ? AND status_pembayaran = 'success' AND DATE_FORMAT(created_at, '%Y-%m') = ?");
@@ -138,7 +172,7 @@ try {
         $stmt_success = $pdo->prepare("SELECT COUNT(*) as count FROM orders WHERE mitra_id = ? AND status_pembayaran = 'success' AND DATE_FORMAT(created_at, '%Y-%m') = ?");
         $stmt_success->execute([$mitra_id, $selected_month]);
         
-        $stmt_orders = $pdo->prepare("SELECT * FROM orders WHERE mitra_id = ? AND DATE_FORMAT(created_at, '%Y-%m') = ? ORDER BY id DESC");
+        $stmt_orders = $pdo->prepare("SELECT * FROM orders WHERE mitra_id = ? AND DATE_FORMAT(created_at, '%Y-%m') = ? AND is_hidden_mitra = 0 ORDER BY id DESC");
         $stmt_orders->execute([$mitra_id, $selected_month]);
     }
     
@@ -379,13 +413,14 @@ function getIndonesianMonthName($ym) {
                             <th class="px-6 py-4 text-center">Jumlah</th>
                             <th class="px-6 py-4 text-right">Total Bayar</th>
                             <th class="px-6 py-4">Status Pemrosesan</th>
+                            <th class="px-6 py-4 text-center">Pembayaran</th>
                             <th class="px-6 py-4 text-center">Aksi</th>
                         </tr>
                     </thead>
                     <tbody class="divide-y divide-slate-100">
                         <?php if (empty($orders)): ?>
                             <tr>
-                                <td colspan="9" class="px-6 py-12 text-center text-slate-400">
+                                <td colspan="10" class="px-6 py-12 text-center text-slate-400">
                                     <span class="material-symbols-outlined text-[48px] text-slate-300 mb-2">inbox</span>
                                     <p class="text-sm font-semibold">Belum ada pesanan masuk untuk outlet Anda.</p>
                                 </td>
@@ -427,6 +462,14 @@ function getIndonesianMonthName($ym) {
                                             <span class="w-1.5 h-1.5 rounded-full <?= $is_success ? 'bg-emerald-500' : 'bg-rose-500'; ?>"></span>
                                             <?= $is_success ? 'LUNAS' : 'PENDING'; ?>
                                         </span>
+                                    </td>
+                                    <td class="px-6 py-4 text-center">
+                                        <!-- Delete action button -->
+                                        <button onclick="confirmDelete(<?= $order['id']; ?>, '<?= htmlspecialchars($order['nama_pelanggan'], ENT_QUOTES); ?>')" 
+                                                class="p-2 text-rose-600 hover:bg-rose-50 rounded-xl transition-colors inline-flex items-center justify-center border border-transparent hover:border-rose-100" 
+                                                title="Hapus / Sembunyikan Pesanan">
+                                            <span class="material-symbols-outlined text-[18px]">delete</span>
+                                        </button>
                                     </td>
                                 </tr>
                             <?php endforeach; ?>
@@ -562,6 +605,121 @@ function getIndonesianMonthName($ym) {
         function dismissAlert() {
             location.reload();
         }
+
+        // Delete Confirmation Modal Controls
+        let selectedDeleteOrderId = null;
+
+        function confirmDelete(orderId, customerName) {
+            selectedDeleteOrderId = orderId;
+            document.getElementById('delete-modal-subtitle').innerText = 'Pesanan #' + orderId;
+            document.getElementById('delete-modal-name').innerText = customerName;
+            
+            const modal = document.getElementById('delete-modal');
+            modal.classList.remove('hidden');
+            // Animate scale in
+            setTimeout(() => {
+                modal.firstElementChild.classList.remove('scale-95');
+                modal.firstElementChild.classList.add('scale-100');
+            }, 10);
+        }
+
+        function closeDeleteModal() {
+            const modal = document.getElementById('delete-modal');
+            modal.firstElementChild.classList.remove('scale-100');
+            modal.firstElementChild.classList.add('scale-95');
+            setTimeout(() => {
+                modal.classList.add('hidden');
+                selectedDeleteOrderId = null;
+            }, 150);
+        }
+
+        function executeDelete() {
+            if (!selectedDeleteOrderId) return;
+            
+            const type = document.querySelector('input[name="delete_type"]:checked').value;
+            const btn = document.getElementById('confirm-delete-btn');
+            btn.disabled = true;
+            btn.innerHTML = '<span>Memproses...</span>';
+
+            const formData = new FormData();
+            formData.append('action', 'delete_order');
+            formData.append('order_id', selectedDeleteOrderId);
+            formData.append('type', type);
+
+            fetch('dashboard.php', {
+                method: 'POST',
+                body: formData
+            })
+            .then(res => res.json())
+            .then(data => {
+                if (data.success) {
+                    closeDeleteModal();
+                    location.reload(); // Reload to refresh tables and recalculate statistics
+                } else {
+                    alert('Gagal menghapus pesanan: ' + (data.message || 'Error'));
+                    btn.disabled = false;
+                    btn.innerHTML = '<span>Hapus Pesanan</span><span class="material-symbols-outlined text-[16px]">check</span>';
+                }
+            })
+            .catch(err => {
+                console.error(err);
+                alert('Kesalahan jaringan.');
+                btn.disabled = false;
+                btn.innerHTML = '<span>Hapus Pesanan</span><span class="material-symbols-outlined text-[16px]">check</span>';
+            });
+        }
     </script>
+
+    <!-- Delete Confirmation Modal -->
+    <div id="delete-modal" class="fixed inset-0 z-50 hidden bg-slate-900/60 backdrop-blur-sm flex items-center justify-center p-4">
+        <div class="bg-white rounded-3xl max-w-md w-full p-6 shadow-2xl border border-slate-100 relative overflow-hidden transform scale-95 transition-all duration-300">
+            <!-- Header -->
+            <div class="flex items-center gap-3.5 mb-4 text-rose-600">
+                <div class="p-2.5 bg-rose-50 rounded-xl">
+                    <span class="material-symbols-outlined text-[26px]">delete_forever</span>
+                </div>
+                <div>
+                    <h3 class="font-extrabold text-slate-900 text-lg leading-tight">Hapus Pesanan</h3>
+                    <p class="text-xs text-slate-500 mt-0.5" id="delete-modal-subtitle">Pesanan #</p>
+                </div>
+            </div>
+
+            <!-- Content -->
+            <div class="space-y-4 text-slate-600 text-xs leading-relaxed">
+                <p>Bagaimana Anda ingin menghapus pesanan dari pelanggan <span class="font-bold text-slate-900" id="delete-modal-name"></span>?</p>
+                
+                <div class="grid grid-cols-1 gap-3 mt-2">
+                    <!-- Option 1: Hide -->
+                    <label class="relative flex items-start gap-3 p-3 bg-slate-50 border border-slate-200/60 hover:border-primary/40 rounded-2xl cursor-pointer select-none transition-all">
+                        <input type="radio" name="delete_type" value="hide" checked class="mt-0.5 text-primary border-slate-300 focus:ring-primary">
+                        <div>
+                            <span class="block font-bold text-slate-900 text-xs">Sembunyikan dari Tampilan</span>
+                            <span class="block text-[10px] text-slate-400 mt-0.5">Pesanan disembunyikan dari tabel ini, tetapi datanya tetap tersimpan untuk perhitungan statistik pendapatan.</span>
+                        </div>
+                    </label>
+
+                    <!-- Option 2: Permanent -->
+                    <label class="relative flex items-start gap-3 p-3 bg-rose-50/20 border border-rose-100 hover:border-rose-300 rounded-2xl cursor-pointer select-none transition-all">
+                        <input type="radio" name="delete_type" value="permanent" class="mt-0.5 text-rose-600 border-rose-200 focus:ring-rose-500">
+                        <div>
+                            <span class="block font-bold text-rose-950 text-xs">Hapus Permanen</span>
+                            <span class="block text-[10px] text-rose-400 mt-0.5">Menghapus pesanan secara permanen dari database. Angka pendapatan/statistik Anda akan otomatis berkurang.</span>
+                        </div>
+                    </label>
+                </div>
+            </div>
+
+            <!-- Actions -->
+            <div class="flex items-center justify-end gap-2.5 mt-6">
+                <button onclick="closeDeleteModal()" class="text-xs font-bold text-slate-500 hover:bg-slate-100 px-4 py-2.5 rounded-xl transition-all">
+                    Batal
+                </button>
+                <button id="confirm-delete-btn" onclick="executeDelete()" class="bg-rose-600 hover:bg-rose-700 text-white text-xs font-bold px-4 py-2.5 rounded-xl transition-all flex items-center gap-1.5 shadow-md shadow-rose-600/10">
+                    <span>Hapus Pesanan</span>
+                    <span class="material-symbols-outlined text-[16px]">check</span>
+                </button>
+            </div>
+        </div>
+    </div>
 </body>
 </html>
