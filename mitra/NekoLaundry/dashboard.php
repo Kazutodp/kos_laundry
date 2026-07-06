@@ -1,11 +1,11 @@
 <?php
 // mitra/dashboard.php
 session_start();
-require_once '../db_connect.php';
+require_once '../../db_connect.php';
 
 // Authentication Check
 if (!isset($_SESSION['mitra_logged_in']) || !isset($_SESSION['mitra_id'])) {
-    header("Location: ../mitra/login.php");
+    header("Location: ../login.php");
     exit();
 }
 
@@ -107,7 +107,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['action']) && $_POST['
 
                 // Trigger WA notification to this partner
                 try {
-                    require_once '../wa_helper.php';
+                    require_once '../../wa_helper.php';
                     notify_mitra_new_order($order_id, $pdo);
                 } catch (Exception $wa_ex) { /* silent fail */ }
 
@@ -153,7 +153,7 @@ $mitra = $stmt->fetch(PDO::FETCH_ASSOC);
 if (!$mitra) {
     // Session invalid if partner deleted
     unset($_SESSION['mitra_logged_in']);
-    header("Location: ../mitra/login.php");
+    header("Location: ../login.php");
     exit();
 }
 
@@ -289,7 +289,7 @@ function getIndonesianMonthName($ym) {
     <nav class="sticky top-0 z-40 bg-white border-b border-slate-100 px-6 py-4 flex justify-between items-center shadow-sm">
         <div class="flex items-center gap-3">
             <div class="p-2 bg-blue-50 rounded-xl flex items-center justify-center">
-                <img alt="MataramWash Logo" class="h-8 w-8 object-contain" src="../Logo_MataramWash.png">
+                <img alt="MataramWash Logo" class="h-8 w-8 object-contain" src="../../Logo_MataramWash.png">
             </div>
             <div>
                 <span class="text-xs font-bold text-slate-400 uppercase tracking-widest">Portal Mitra</span>

@@ -7,15 +7,15 @@ require_once '../db_connect.php';
 function get_redirect_url($username) {
     switch ($username) {
         case 'washtra':
-            return '../WashTrash/dashboard.php';
+            return 'WashTrash/dashboard.php';
         case 'lombok':
-            return '../LAUNDRY_LOMBOK/dashboard.php';
+            return 'LAUNDRY_LOMBOK/dashboard.php';
         case 'maulaundry':
-            return '../MAULaundry/dashboard.php';
+            return 'MAULaundry/dashboard.php';
         case 'mateshoes':
-            return '../MateShoesCare/dashboard.php';
+            return 'MateShoesCare/dashboard.php';
         case 'nekolaundry':
-            return '../NekoLaundry/dashboard.php';
+            return 'NekoLaundry/dashboard.php';
         default:
             return 'dashboard.php'; // fallback generic folder
     }

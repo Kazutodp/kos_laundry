@@ -6,5 +6,5 @@ unset($_SESSION['mitra_id']);
 unset($_SESSION['mitra_nama']);
 session_destroy();
 
-header("Location: ../mitra/login.php");
+header("Location: ../login.php");
 exit();

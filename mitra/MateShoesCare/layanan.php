@@ -1,11 +1,11 @@
 <?php
 // mitra/layanan.php
 session_start();
-require_once '../db_connect.php';
+require_once '../../db_connect.php';
 
 // Authentication Check
 if (!isset($_SESSION['mitra_logged_in']) || !isset($_SESSION['mitra_id'])) {
-    header("Location: ../mitra/login.php");
+    header("Location: ../login.php");
     exit();
 }
 
@@ -18,13 +18,13 @@ $mitra = $stmt->fetch(PDO::FETCH_ASSOC);
 
 if (!$mitra) {
     unset($_SESSION['mitra_logged_in']);
-    header("Location: ../mitra/login.php");
+    header("Location: ../login.php");
     exit();
 }
 
 // Load custom pricing from the partner file if it exists
 $file_name = str_replace(' ', '_', $mitra['nama_mitra']) . '.php';
-$file_path = '../Mitra laundry/' . $file_name;
+$file_path = '../../Mitra laundry/' . $file_name;
 
 // Default values
 $harga_pengeringan = 6000;

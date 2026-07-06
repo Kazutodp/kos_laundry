@@ -4,12 +4,12 @@ session_start();
 
 // Authentication check
 if (!isset($_SESSION['mitra_logged_in']) || !isset($_SESSION['mitra_id'])) {
-    header("Location: ../mitra/login.php");
+    header("Location: ../login.php");
     exit();
 }
 
-require_once '../db_connect.php';
-require_once '../admin/laporan/fpdf.php';
+require_once '../../db_connect.php';
+require_once '../../admin/laporan/fpdf.php';
 
 $mitra_id = $_SESSION['mitra_id'];
 
@@ -75,8 +75,8 @@ class PDF extends FPDF {
 
     // Page header
     function Header() {
-        if (file_exists('../Logo_MataramWash.png')) {
-            $this->Image('../Logo_MataramWash.png', 10, 8, 15);
+        if (file_exists('../../Logo_MataramWash.png')) {
+            $this->Image('../../Logo_MataramWash.png', 10, 8, 15);
         }
         $this->SetFont('Arial', 'B', 16);
         $this->SetTextColor(21, 28, 39); // on-surface color
