@@ -86,6 +86,44 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['action']) && $_POST['
     exit();
 }
 
+// Handle Manual Payment Confirmation (Tandai Lunas - COD/Cash) by Mitra
+if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['action']) && $_POST['action'] === 'tandai_lunas') {
+    header('Content-Type: application/json');
+    $order_id = isset($_POST['order_id']) ? (int)$_POST['order_id'] : 0;
+
+    if ($order_id > 0) {
+        try {
+            // Verify order belongs to this partner and is still pending
+            $check_stmt = $pdo->prepare("SELECT id FROM orders WHERE id = ? AND mitra_id = ? AND status_pembayaran = 'pending'");
+            $check_stmt->execute([$order_id, $mitra_id]);
+            if ($check_stmt->fetch()) {
+                $stmt = $pdo->prepare("
+                    UPDATE orders 
+                    SET status_pembayaran = 'success',
+                        status_order = CASE WHEN status_order NOT IN ('Selesai', 'Diproses') THEN 'Diproses' ELSE status_order END
+                    WHERE id = ?
+                ");
+                $stmt->execute([$order_id]);
+
+                // Trigger WA notification to this partner
+                try {
+                    require_once '../wa_helper.php';
+                    notify_mitra_new_order($order_id, $pdo);
+                } catch (Exception $wa_ex) { /* silent fail */ }
+
+                echo json_encode(['success' => true]);
+            } else {
+                echo json_encode(['success' => false, 'message' => 'Pesanan tidak valid atau sudah lunas.']);
+            }
+        } catch (PDOException $e) {
+            echo json_encode(['success' => false, 'message' => $e->getMessage()]);
+        }
+    } else {
+        echo json_encode(['success' => false, 'message' => 'Parameter tidak lengkap.']);
+    }
+    exit();
+}
+
 // Handle Check New Orders (AJAX Polling)
 if ($_SERVER['REQUEST_METHOD'] === 'GET' && isset($_GET['action']) && $_GET['action'] === 'check_new_orders') {
     header('Content-Type: application/json');
@@ -478,11 +516,25 @@ function getIndonesianMonthName($ym) {
                                         <?php endif; ?>
                                     </td>
                                     <td class="px-6 py-4 text-center">
-                                        <!-- Quick detail or visual link -->
-                                        <span class="inline-flex items-center gap-1.5 px-2 py-1 rounded-lg text-xs font-bold <?= $is_success ? 'bg-emerald-50 text-emerald-600 border border-emerald-100' : 'bg-rose-50 text-rose-600 border border-rose-100'; ?>">
-                                            <span class="w-1.5 h-1.5 rounded-full <?= $is_success ? 'bg-emerald-500' : 'bg-rose-500'; ?>"></span>
-                                            <?= $is_success ? 'LUNAS' : 'PENDING'; ?>
-                                        </span>
+                                        <?php if ($is_success): ?>
+                                            <span class="inline-flex items-center gap-1.5 px-2 py-1 rounded-lg text-xs font-bold bg-emerald-50 text-emerald-600 border border-emerald-100">
+                                                <span class="w-1.5 h-1.5 rounded-full bg-emerald-500"></span>
+                                                LUNAS
+                                            </span>
+                                        <?php else: ?>
+                                            <div class="flex flex-col items-center gap-1.5">
+                                                <span class="inline-flex items-center gap-1.5 px-2 py-1 rounded-lg text-xs font-bold bg-rose-50 text-rose-600 border border-rose-100">
+                                                    <span class="w-1.5 h-1.5 rounded-full bg-rose-500"></span>
+                                                    PENDING
+                                                </span>
+                                                <button onclick="tandaiLunas(<?= $order['id']; ?>, '<?= htmlspecialchars($order['nama_pelanggan'], ENT_QUOTES); ?>')" 
+                                                        class="inline-flex items-center gap-1 px-2.5 py-1 rounded-lg text-[10px] font-bold bg-teal-500 text-white hover:bg-teal-600 active:scale-95 transition-all shadow-sm"
+                                                        title="Tandai pesanan ini sebagai Lunas (COD/Tunai)">
+                                                    <span class="material-symbols-outlined text-[12px]">payments</span>
+                                                    Tandai Lunas
+                                                </button>
+                                            </div>
+                                        <?php endif; ?>
                                     </td>
                                     <td class="px-6 py-4 text-center">
                                         <!-- Delete action button -->
@@ -625,6 +677,46 @@ function getIndonesianMonthName($ym) {
         // Dismiss warning banner & reload
         function dismissAlert() {
             location.reload();
+        }
+
+        // Tandai Lunas (Manual COD Payment Confirmation)
+        function tandaiLunas(orderId, customerName) {
+            if (!confirm('Tandai pesanan #' + orderId + ' dari ' + customerName + ' sebagai LUNAS?\n\nPastikan pembayaran tunai/COD sudah diterima sebelum melanjutkan.')) {
+                return;
+            }
+
+            const btn = event.currentTarget;
+            btn.disabled = true;
+            btn.innerHTML = '<span class="material-symbols-outlined text-[12px] animate-spin">progress_activity</span> Memproses...';
+
+            const formData = new FormData();
+            formData.append('action', 'tandai_lunas');
+            formData.append('order_id', orderId);
+
+            fetch(window.location.href, {
+                method: 'POST',
+                body: formData
+            })
+            .then(r => r.json())
+            .then(data => {
+                if (data.success) {
+                    // Update badge PENDING → LUNAS in place without full reload
+                    const td = btn.closest('td');
+                    td.innerHTML = `<span class="inline-flex items-center gap-1.5 px-2 py-1 rounded-lg text-xs font-bold bg-emerald-50 text-emerald-600 border border-emerald-100">
+                        <span class="w-1.5 h-1.5 rounded-full bg-emerald-500"></span>
+                        LUNAS
+                    </span>`;
+                } else {
+                    alert('Gagal: ' + (data.message || 'Terjadi kesalahan.'));
+                    btn.disabled = false;
+                    btn.innerHTML = '<span class="material-symbols-outlined text-[12px]">payments</span> Tandai Lunas';
+                }
+            })
+            .catch(() => {
+                alert('Terjadi kesalahan jaringan. Silakan coba lagi.');
+                btn.disabled = false;
+                btn.innerHTML = '<span class="material-symbols-outlined text-[12px]">payments</span> Tandai Lunas';
+            });
         }
 
         // Delete Confirmation Modal Controls
