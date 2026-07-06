@@ -128,12 +128,32 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['action']) && $_POST['
     }
 }
 
-// Fetch all orders
+// Handle Order Hide Action (Soft Delete for Admin) via AJAX/POST
+if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['action']) && $_POST['action'] === 'hide_order_admin') {
+    header('Content-Type: application/json');
+    $order_id = intval($_POST['order_id'] ?? 0);
+    
+    if ($order_id > 0) {
+        try {
+            $stmt = $pdo->prepare("UPDATE orders SET is_hidden_admin = 1 WHERE id = ?");
+            $stmt->execute([$order_id]);
+            echo json_encode(['success' => true]);
+        } catch (PDOException $e) {
+            echo json_encode(['success' => false, 'message' => $e->getMessage()]);
+        }
+    } else {
+        echo json_encode(['success' => false, 'message' => 'ID pesanan tidak valid.']);
+    }
+    exit();
+}
+
+// Fetch all orders (excluding hidden ones for admin)
 try {
     $stmt = $pdo->query("
         SELECT o.*, m.nama_mitra 
         FROM orders o
         JOIN mitra_laundry m ON o.mitra_id = m.id
+        WHERE o.is_hidden_admin = 0
         ORDER BY o.created_at DESC
     ");
     $all_orders = $stmt->fetchAll();
@@ -347,7 +367,7 @@ try {
                                 <th class="px-md py-sm text-label-sm text-slate-500 font-bold uppercase tracking-wider text-xs text-center">Aksi</th>
                             </tr>
                         </thead>
-                        <tbody class="divide-y divide-slate-100 text-slate-700 text-sm">
+                        <tbody id="orders-table-body" class="divide-y divide-slate-100 text-slate-700 text-sm">
                             <?php if (empty($all_orders)): ?>
                                 <tr>
                                     <td colspan="8" class="px-md py-xl text-center text-slate-400">Belum ada pesanan terdaftar di sistem.</td>
@@ -398,7 +418,7 @@ try {
                                                 <?= $order_status; ?>
                                             </span>
                                         </td>
-                                        <td class="px-md py-md text-center space-x-xs">
+                                        <td class="px-md py-md text-center space-x-xs align-middle">
                                             <?php if ($order_status !== 'Dibatalkan'): ?>
                                                 <!-- Weigh & upload photo timbangan -->
                                                 <?php if ($is_kiloan && $order_status !== 'Selesai'): ?>
@@ -412,7 +432,14 @@ try {
                                                     Status
                                                 </button>
                                             <?php else: ?>
-                                                <span class="text-xs text-rose-600 font-semibold bg-rose-50 border border-rose-100 px-md py-1 rounded-lg">Dibatalkan</span>
+                                                <div class="inline-flex items-center gap-2">
+                                                    <span class="text-xs text-rose-600 font-semibold bg-rose-50 border border-rose-100 px-3 py-1.5 rounded-lg">Dibatalkan</span>
+                                                    <button onclick="hideOrderAdmin(<?= $order['id']; ?>, '<?= htmlspecialchars($order['nama_pelanggan'], ENT_QUOTES); ?>')" 
+                                                            class="p-1.5 text-rose-600 hover:bg-rose-50 rounded-lg border border-transparent hover:border-rose-100 transition-all active:scale-95 flex items-center justify-center" 
+                                                            title="Sembunyikan Pesanan dari Daftar">
+                                                        <span class="material-symbols-outlined text-[18px]">delete</span>
+                                                    </button>
+                                                </div>
                                             <?php endif; ?>
                                         </td>
                                     </tr>
@@ -520,6 +547,58 @@ try {
     
     function closeStatusModal() {
         document.getElementById('status-modal').classList.add('hidden');
+    }
+    
+    // Hide Cancelled Order smoothly from Admin View (AJAX)
+    function hideOrderAdmin(orderId, customerName) {
+        if (!confirm('Sembunyikan pesanan dibatalkan #' + orderId + ' dari ' + customerName + '?\n\nPilihan ini hanya menyembunyikan dari daftar, data di database tetap utuh.')) {
+            return;
+        }
+        
+        const row = event.currentTarget.closest('tr');
+        const formData = new FormData();
+        formData.append('action', 'hide_order_admin');
+        formData.append('order_id', orderId);
+        
+        fetch(window.location.href, {
+            method: 'POST',
+            body: formData
+        })
+        .then(r => r.json())
+        .then(data => {
+            if (data.success) {
+                // Fade out animation
+                row.style.transition = 'all 0.4s ease';
+                row.style.opacity = '0';
+                row.style.transform = 'translateX(50px)';
+                
+                setTimeout(() => {
+                    row.remove();
+                    // Check if table is empty, display placeholder
+                    const tableBody = document.getElementById('orders-table-body');
+                    const remainingRows = tableBody.querySelectorAll('tr');
+                    if (remainingRows.length === 0) {
+                        tableBody.innerHTML = `
+                            <tr>
+                                <td colspan="8" class="px-md py-xl text-center text-slate-400">Belum ada pesanan terdaftar di sistem.</td>
+                            </tr>
+                        `;
+                    } else {
+                        // Re-index No. column
+                        let idx = 1;
+                        tableBody.querySelectorAll('tr').forEach(r => {
+                            const numCell = r.querySelector('td:first-child');
+                            if (numCell) numCell.innerText = idx++;
+                        });
+                    }
+                }, 400);
+            } else {
+                alert('Gagal menyembunyikan pesanan: ' + (data.message || 'Terjadi kesalahan.'));
+            }
+        })
+        .catch(() => {
+            alert('Kesalahan jaringan. Gagal menghubungi server.');
+        });
     }
 </script>
 </body>
