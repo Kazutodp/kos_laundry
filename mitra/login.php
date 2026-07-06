@@ -3,10 +3,39 @@
 session_start();
 require_once '../db_connect.php';
 
-// If already logged in, redirect to dashboard
-if (isset($_SESSION['mitra_logged_in'])) {
-    header("Location: dashboard.php");
-    exit();
+// Helper to route partners to their respective custom folders
+function get_redirect_url($username) {
+    switch ($username) {
+        case 'washtra':
+            return '../WashTrash/dashboard.php';
+        case 'lombok':
+            return '../LAUNDRY_LOMBOK/dashboard.php';
+        case 'maulaundry':
+            return '../MAULaundry/dashboard.php';
+        case 'mateshoes':
+            return '../MateShoesCare/dashboard.php';
+        case 'nekolaundry':
+            return '../NekoLaundry/dashboard.php';
+        default:
+            return 'dashboard.php'; // fallback generic folder
+    }
+}
+
+// If already logged in, redirect to their folder
+if (isset($_SESSION['mitra_logged_in']) && isset($_SESSION['mitra_id'])) {
+    try {
+        $stmt = $pdo->prepare("SELECT username FROM mitra_laundry WHERE id = ?");
+        $stmt->execute([$_SESSION['mitra_id']]);
+        $m = $stmt->fetch(PDO::FETCH_ASSOC);
+        if ($m) {
+            header("Location: " . get_redirect_url($m['username']));
+            exit();
+        }
+    } catch (PDOException $e) {
+        // Fallback if query fails
+        header("Location: dashboard.php");
+        exit();
+    }
 }
 
 $error = '';
@@ -28,7 +57,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                 $_SESSION['mitra_id'] = $mitra['id'];
                 $_SESSION['mitra_nama'] = $mitra['nama_mitra'];
                 
-                header("Location: dashboard.php");
+                header("Location: " . get_redirect_url($mitra['username']));
                 exit();
             } else {
                 $error = 'Username atau password salah.';
