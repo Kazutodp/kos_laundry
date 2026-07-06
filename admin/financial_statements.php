@@ -1,4 +1,4 @@
-﻿<?php
+<?php
 session_start();
 if (!isset($_SESSION['admin_logged_in'])) {
     header("Location: admin.php");
@@ -6,6 +6,73 @@ if (!isset($_SESSION['admin_logged_in'])) {
 }
 
 require_once '../db_connect.php';
+
+// Handle AJAX Request for Financial Data
+if (isset($_GET['action']) && $_GET['action'] === 'get_financial_data') {
+    header('Content-Type: application/json');
+    $req_month = isset($_GET['bulan']) ? (int)$_GET['bulan'] : (int)date('n');
+    $req_year = isset($_GET['tahun']) ? (int)$_GET['tahun'] : (int)date('Y');
+    
+    if ($req_month < 1 || $req_month > 12) $req_month = (int)date('n');
+    if ($req_year < 2024 || $req_year > 2030) $req_year = (int)date('Y');
+    
+    try {
+        $stmt = $pdo->prepare("SELECT m.*, 
+                                   COUNT(o.id) as real_orders, 
+                                   COALESCE(SUM(o.total_harga), 0) as real_gross
+                            FROM mitra_laundry m
+                            LEFT JOIN orders o ON m.id = o.mitra_id 
+                                AND o.status_pembayaran = 'success'
+                                AND MONTH(o.created_at) = ?
+                                AND YEAR(o.created_at) = ?
+                            GROUP BY m.id
+                            ORDER BY real_gross DESC");
+        $stmt->execute([$req_month, $req_year]);
+        $raw_mitras = $stmt->fetchAll(PDO::FETCH_ASSOC);
+        
+        $mitra_list = [];
+        $total_gross = 0;
+        $total_orders = 0;
+        
+        foreach ($raw_mitras as $mitra) {
+            $file_name = str_replace(' ', '_', $mitra['nama_mitra']) . '.php';
+            if (file_exists('../Mitra laundry/' . $file_name)) {
+                $orders = (int)$mitra['real_orders'];
+                $gross = (float)$mitra['real_gross'];
+                
+                $mitra['simulated_orders'] = $orders;
+                $mitra['simulated_gross'] = $gross;
+                $mitra['simulated_platform'] = $gross * 0.10;
+                $mitra['simulated_net'] = $gross * 0.90;
+                
+                $total_orders += $orders;
+                $total_gross += $gross;
+                $mitra_list[] = $mitra;
+            }
+        }
+        
+        $active_count = count($mitra_list);
+        $platform_share = $total_gross * 0.10;
+        $net_share = $total_gross * 0.90;
+        $avg_transaction = $active_count > 0 ? round($net_share / $active_count) : 0;
+        
+        echo json_encode([
+            'success' => true,
+            'total_orders' => $total_orders,
+            'total_gross' => $total_gross,
+            'platform_share' => $platform_share,
+            'net_share' => $net_share,
+            'avg_transaction' => $avg_transaction,
+            'mitras' => $mitra_list
+        ]);
+    } catch (PDOException $e) {
+        echo json_encode([
+            'success' => false,
+            'message' => $e->getMessage()
+        ]);
+    }
+    exit();
+}
 
 // Indonesian month names
 $bulan_indo = [
@@ -25,7 +92,7 @@ if ($selected_year < 2024 || $selected_year > 2030) $selected_year = (int)date('
 $selected_label = $bulan_indo[$selected_month] . ' ' . $selected_year;
 
 try {
-    // Fetch all active partners with order metrics filtered by selected month
+    // Fetch all active partners with order metrics filtered by selected month, ordered by revenue descending
     $stmt = $pdo->prepare("SELECT m.*, 
                                COUNT(o.id) as real_orders, 
                                COALESCE(SUM(o.total_harga), 0) as real_gross
@@ -35,7 +102,7 @@ try {
                             AND MONTH(o.created_at) = ?
                             AND YEAR(o.created_at) = ?
                         GROUP BY m.id
-                        ORDER BY m.rating DESC");
+                        ORDER BY real_gross DESC");
     $stmt->execute([$selected_month, $selected_year]);
     $raw_mitras = $stmt->fetchAll();
     
@@ -265,17 +332,19 @@ try {
                         <h1 class="text-headline-lg font-headline-lg text-on-surface">Pusat Laporan Keuangan</h1>
                         <p class="text-body-md text-on-surface-variant">Laporan bagi hasil platform 10% dan total rincian pembayaran ke mitra laundry.</p>
                     </div>
-                    <?php if ($total_orders == 0 && $total_gross == 0): ?>
-                        <button onclick="showNoDataToast()" class="bg-slate-100 border border-slate-200 text-slate-400 px-lg py-sm rounded-xl font-bold flex items-center gap-sm cursor-not-allowed w-fit" title="Tidak ada data keuangan pada periode ini">
-                            <span class="material-symbols-outlined text-slate-400">download</span>
-                            Unduh Laporan (PDF)
-                        </button>
-                    <?php else: ?>
-                        <a href="laporan/unduh_pdf.php?bulan=<?= $selected_month; ?>&tahun=<?= $selected_year; ?>" class="bg-primary text-on-primary px-lg py-sm rounded-xl font-bold flex items-center gap-sm shadow-md hover:brightness-110 active:scale-95 transition-all w-fit">
-                            <span class="material-symbols-outlined">download</span>
-                            Unduh Laporan (PDF)
-                        </a>
-                    <?php endif; ?>
+                    <div id="download-btn-container">
+                        <?php if ($total_orders == 0 && $total_gross == 0): ?>
+                            <button onclick="showNoDataToast()" class="bg-slate-100 border border-slate-200 text-slate-400 px-lg py-sm rounded-xl font-bold flex items-center gap-sm cursor-not-allowed w-fit" title="Tidak ada data keuangan pada periode ini">
+                                <span class="material-symbols-outlined text-slate-400">download</span>
+                                Unduh Laporan (PDF)
+                            </button>
+                        <?php else: ?>
+                            <a href="laporan/unduh_pdf.php?bulan=<?= $selected_month; ?>&tahun=<?= $selected_year; ?>" class="bg-primary text-on-primary px-lg py-sm rounded-xl font-bold flex items-center gap-sm shadow-md hover:brightness-110 active:scale-95 transition-all w-fit">
+                                <span class="material-symbols-outlined">download</span>
+                                Unduh Laporan (PDF)
+                            </a>
+                        <?php endif; ?>
+                    </div>
                 </div>
 
                 <!-- Financial Stats Summary -->
@@ -283,28 +352,28 @@ try {
                     <div class="bento-card p-lg rounded-xl flex items-center gap-md border-l-4 border-l-primary">
                         <div>
                             <p class="text-label-sm text-on-surface-variant font-medium">Total Omset Pendapatan</p>
-                            <p class="text-headline-sm font-bold text-on-surface">Rp <?= number_format($total_gross, 0, ',', '.'); ?></p>
-                            <p class="text-[10px] text-outline mt-base">Dari <?= $total_orders; ?> pesanan — <?= $selected_label; ?></p>
+                            <p id="stat-total-gross" class="text-headline-sm font-bold text-on-surface">Rp <?= number_format($total_gross, 0, ',', '.'); ?></p>
+                            <p id="stat-total-orders-label" class="text-[10px] text-outline mt-base">Dari <?= $total_orders; ?> pesanan — <?= $selected_label; ?></p>
                         </div>
                     </div>
                     <div class="bento-card p-lg rounded-xl flex items-center gap-md border-l-4 border-l-secondary">
                         <div>
                             <p class="text-label-sm text-on-surface-variant font-medium">Bagi Hasil Platform (10%)</p>
-                            <p class="text-headline-sm font-bold text-secondary">Rp <?= number_format($platform_share, 0, ',', '.'); ?></p>
+                            <p id="stat-platform-share" class="text-headline-sm font-bold text-secondary">Rp <?= number_format($platform_share, 0, ',', '.'); ?></p>
                             <p class="text-[10px] text-outline mt-base">Biaya administrasi sistem</p>
                         </div>
                     </div>
                     <div class="bento-card p-lg rounded-xl flex items-center gap-md border-l-4 border-l-tertiary">
                         <div>
                             <p class="text-label-sm text-on-surface-variant font-medium">Payout Bersih Mitra (90%)</p>
-                            <p class="text-headline-sm font-bold text-tertiary">Rp <?= number_format($net_share, 0, ',', '.'); ?></p>
+                            <p id="stat-net-share" class="text-headline-sm font-bold text-tertiary">Rp <?= number_format($net_share, 0, ',', '.'); ?></p>
                             <p class="text-[10px] text-outline mt-base">Ditransfer ke rekening mitra</p>
                         </div>
                     </div>
                     <div class="bento-card p-lg rounded-xl flex items-center gap-md border-l-4 border-l-slate-400">
                         <div>
                             <p class="text-label-sm text-on-surface-variant font-medium">Rata-rata Payout Toko</p>
-                            <p class="text-headline-sm font-bold text-on-surface">Rp <?= number_format($active_count > 0 ? round($net_share / $active_count) : 0, 0, ',', '.'); ?></p>
+                            <p id="stat-avg-payout" class="text-headline-sm font-bold text-on-surface">Rp <?= number_format($active_count > 0 ? round($net_share / $active_count) : 0, 0, ',', '.'); ?></p>
                             <p class="text-[10px] text-outline mt-base">Payout per outlet aktif</p>
                         </div>
                     </div>
@@ -334,18 +403,17 @@ try {
                         <table class="w-full text-left border-collapse">
                             <thead>
                                 <tr class="bg-surface-container-low border-b border-outline-variant">
-                                    <th class="pl-lg pr-1 py-md text-label-sm text-on-surface-variant font-bold uppercase tracking-wider">No</th>
+                                    <th class="pl-lg pr-1 py-md text-label-sm text-on-surface-variant font-bold uppercase tracking-wider text-center">No</th>
                                     <th class="px-lg py-md text-label-sm text-on-surface-variant font-bold uppercase tracking-wider">Mitra Laundry</th>
                                     <th class="px-lg py-md text-label-sm text-on-surface-variant font-bold uppercase tracking-wider text-center">Total Orders</th>
                                     <th class="px-lg py-md text-label-sm text-on-surface-variant font-bold uppercase tracking-wider text-right">Omset Bruto</th>
                                     <th class="px-lg py-md text-label-sm text-on-surface-variant font-bold uppercase tracking-wider text-right">Komisi Platform (10%)</th>
                                     <th class="px-lg py-md text-label-sm text-on-surface-variant font-bold uppercase tracking-wider text-right">Payout Mitra (90%)</th>
-
                                 </tr>
                             </thead>
-                            <tbody class="divide-y divide-outline-variant">
+                            <tbody id="mitra-table-body" class="divide-y divide-outline-variant">
                                 <?php if (empty($mitra_list)): ?>
-                                    <tr>
+                                    <tr id="no-data-row">
                                         <td colspan="6" class="px-lg py-12 text-center text-on-surface-variant">
                                             <span class="material-symbols-outlined text-outline text-[48px] mb-2">money_off</span>
                                             <p class="text-body-md font-semibold">Belum ada transaksi laporan keuangan terdaftar</p>
@@ -354,9 +422,8 @@ try {
                                 <?php else: ?>
                                     <?php $no = 1; ?>
                                     <?php foreach ($mitra_list as $mitra): ?>
-
-                                        <tr class="hover:bg-surface-container-low transition-colors">
-                                            <td class="pl-lg pr-1 py-md text-body-sm text-slate-500 font-medium text-center"><?= $no++; ?></td>
+                                        <tr data-mitra-id="<?= $mitra['id']; ?>" class="hover:bg-surface-container-low transition-colors duration-200">
+                                            <td class="pl-lg pr-1 py-md text-body-sm text-slate-500 font-medium text-center row-number"><?= $no++; ?></td>
                                             <td class="px-lg py-md">
                                                 <div class="flex items-center gap-sm">
                                                     <img src="../<?= htmlspecialchars($mitra['foto_toko']); ?>" alt="" class="w-10 h-10 rounded object-cover border border-outline-variant">
@@ -366,11 +433,10 @@ try {
                                                     </div>
                                                 </div>
                                             </td>
-                                            <td class="px-lg py-md text-center text-body-sm font-semibold text-on-surface-variant"><?= $mitra['simulated_orders']; ?></td>
-                                            <td class="px-lg py-md text-right text-body-sm font-bold text-on-surface">Rp <?= number_format($mitra['simulated_gross'], 0, ',', '.'); ?></td>
-                                            <td class="px-lg py-md text-right text-body-sm font-bold text-secondary">- Rp <?= number_format($mitra['simulated_platform'], 0, ',', '.'); ?></td>
-                                            <td class="px-lg py-md text-right text-body-sm font-extrabold text-primary">Rp <?= number_format($mitra['simulated_net'], 0, ',', '.'); ?></td>
-
+                                            <td class="px-lg py-md text-center text-body-sm font-semibold text-on-surface-variant row-orders"><?= $mitra['simulated_orders']; ?></td>
+                                            <td class="px-lg py-md text-right text-body-sm font-bold text-on-surface row-gross">Rp <?= number_format($mitra['simulated_gross'], 0, ',', '.'); ?></td>
+                                            <td class="px-lg py-md text-right text-body-sm font-bold text-secondary row-platform">- Rp <?= number_format($mitra['simulated_platform'], 0, ',', '.'); ?></td>
+                                            <td class="px-lg py-md text-right text-body-sm font-extrabold text-primary row-net">Rp <?= number_format($mitra['simulated_net'], 0, ',', '.'); ?></td>
                                         </tr>
                                     <?php endforeach; ?>
                                 <?php endif; ?>
@@ -428,10 +494,169 @@ try {
             showToast("Unduh Gagal", "Tidak ada data transaksi yang dapat diunduh pada periode ini.", "error");
         }
 
+        // Helper to format currency
+        function formatRupiah(value) {
+            return 'Rp ' + new Intl.NumberFormat('id-ID').format(Math.round(value));
+        }
+
         function filterByPeriod() {
             const bulan = document.getElementById('filter-bulan').value;
             const tahun = document.getElementById('filter-tahun').value;
-            window.location.href = `financial_statements.php?bulan=${bulan}&tahun=${tahun}`;
+            
+            // 1. Get current layout positions (FLIP: First)
+            const tableBody = document.getElementById('mitra-table-body');
+            const rows = Array.from(tableBody.querySelectorAll('tr[data-mitra-id]'));
+            const firstPositions = {};
+            
+            rows.forEach(row => {
+                const id = row.getAttribute('data-mitra-id');
+                firstPositions[id] = row.getBoundingClientRect().top;
+            });
+            
+            // Disable inputs during fetch
+            document.getElementById('filter-bulan').disabled = true;
+            document.getElementById('filter-tahun').disabled = true;
+
+            fetch(`financial_statements.php?action=get_financial_data&bulan=${bulan}&tahun=${tahun}`)
+                .then(r => r.json())
+                .then(res => {
+                    if (res.success) {
+                        // Get Month Name for label
+                        const monthSelect = document.getElementById('filter-bulan');
+                        const monthLabel = monthSelect.options[monthSelect.selectedIndex].text;
+                        
+                        // Update Stat Cards with simple text replacement
+                        document.getElementById('stat-total-gross').innerText = formatRupiah(res.total_gross);
+                        document.getElementById('stat-total-orders-label').innerText = `Dari ${res.total_orders} pesanan — ${monthLabel} ${tahun}`;
+                        document.getElementById('stat-platform-share').innerText = formatRupiah(res.platform_share);
+                        document.getElementById('stat-net-share').innerText = formatRupiah(res.net_share);
+                        document.getElementById('stat-avg-payout').innerText = formatRupiah(res.avg_transaction);
+                        
+                        // Update Download Link Container
+                        const downloadContainer = document.getElementById('download-btn-container');
+                        if (res.total_orders === 0 && res.total_gross === 0) {
+                            downloadContainer.innerHTML = `
+                                <button onclick="showNoDataToast()" class="bg-slate-100 border border-slate-200 text-slate-400 px-lg py-sm rounded-xl font-bold flex items-center gap-sm cursor-not-allowed w-fit" title="Tidak ada data keuangan pada periode ini">
+                                    <span class="material-symbols-outlined text-slate-400">download</span>
+                                    Unduh Laporan (PDF)
+                                </button>
+                            `;
+                        } else {
+                            downloadContainer.innerHTML = `
+                                <a href="laporan/unduh_pdf.php?bulan=${bulan}&tahun=${tahun}" class="bg-primary text-on-primary px-lg py-sm rounded-xl font-bold flex items-center gap-sm shadow-md hover:brightness-110 active:scale-95 transition-all w-fit">
+                                    <span class="material-symbols-outlined">download</span>
+                                    Unduh Laporan (PDF)
+                                </a>
+                            `;
+                        }
+
+                        // Check if no mitras returned
+                        if (!res.mitras || res.mitras.length === 0) {
+                            tableBody.innerHTML = `
+                                <tr id="no-data-row">
+                                    <td colspan="6" class="px-lg py-12 text-center text-on-surface-variant">
+                                        <span class="material-symbols-outlined text-outline text-[48px] mb-2">money_off</span>
+                                        <p class="text-body-md font-semibold">Belum ada transaksi laporan keuangan terdaftar</p>
+                                    </td>
+                                </tr>
+                            `;
+                            return;
+                        }
+
+                        // Remove empty row indicator if present
+                        const emptyRow = document.getElementById('no-data-row');
+                        if (emptyRow) emptyRow.remove();
+
+                        // Map data for fast DOM updates
+                        const mitrasMap = {};
+                        res.mitras.forEach(m => {
+                            mitrasMap[m.id] = m;
+                        });
+
+                        // 2. Update values of existing rows & re-append in new order (FLIP: Last)
+                        const sortedRows = [];
+                        res.mitras.forEach((mitraData, index) => {
+                            let row = tableBody.querySelector(`tr[data-mitra-id="${mitraData.id}"]`);
+                            
+                            // If row doesn't exist, create it (fallback case)
+                            if (!row) {
+                                row = document.createElement('tr');
+                                row.setAttribute('data-mitra-id', mitraData.id);
+                                row.className = 'hover:bg-surface-container-low transition-colors duration-200';
+                                row.innerHTML = `
+                                    <td class="pl-lg pr-1 py-md text-body-sm text-slate-500 font-medium text-center row-number">${index + 1}</td>
+                                    <td class="px-lg py-md">
+                                        <div class="flex items-center gap-sm">
+                                            <img src="../${mitraData.foto_toko}" alt="" class="w-10 h-10 rounded object-cover border border-outline-variant">
+                                            <div>
+                                                <p class="text-body-sm font-bold text-on-surface leading-tight">${mitraData.nama_mitra}</p>
+                                                <p class="text-[10px] text-outline">Tarif: Rp ${new Intl.NumberFormat('id-ID').format(mitraData.harga_per_kg)}/kg</p>
+                                            </div>
+                                        </div>
+                                    </td>
+                                    <td class="px-lg py-md text-center text-body-sm font-semibold text-on-surface-variant row-orders">${mitraData.simulated_orders}</td>
+                                    <td class="px-lg py-md text-right text-body-sm font-bold text-on-surface row-gross">${formatRupiah(mitraData.simulated_gross)}</td>
+                                    <td class="px-lg py-md text-right text-body-sm font-bold text-secondary row-platform">- ${formatRupiah(mitraData.simulated_platform)}</td>
+                                    <td class="px-lg py-md text-right text-body-sm font-extrabold text-primary row-net">${formatRupiah(mitraData.simulated_net)}</td>
+                                `;
+                            } else {
+                                // Update row values
+                                row.querySelector('.row-number').innerText = index + 1;
+                                row.querySelector('.row-orders').innerText = mitraData.simulated_orders;
+                                row.querySelector('.row-gross').innerText = formatRupiah(mitraData.simulated_gross);
+                                row.querySelector('.row-platform').innerText = '- ' + formatRupiah(mitraData.simulated_platform);
+                                row.querySelector('.row-net').innerText = formatRupiah(mitraData.simulated_net);
+                            }
+                            
+                            // Re-append to change DOM order
+                            tableBody.appendChild(row);
+                            sortedRows.push(row);
+                        });
+
+                        // 3. FLIP: Invert and Play
+                        sortedRows.forEach(row => {
+                            const id = row.getAttribute('data-mitra-id');
+                            const firstY = firstPositions[id];
+                            
+                            if (firstY !== undefined) {
+                                const lastY = row.getBoundingClientRect().top;
+                                const diffY = firstY - lastY;
+                                
+                                if (diffY !== 0) {
+                                    // Invert position instantly (disable transition)
+                                    row.style.transition = 'none';
+                                    row.style.transform = `translateY(${diffY}px)`;
+                                    
+                                    // Highlight row temporarily during transition
+                                    row.classList.add('bg-blue-50/50');
+                                    
+                                    // Play animation in next repaint
+                                    requestAnimationFrame(() => {
+                                        row.style.transition = 'transform 0.6s cubic-bezier(0.34, 1.56, 0.64, 1)';
+                                        row.style.transform = '';
+                                        
+                                        // Remove highlight after transition completes
+                                        setTimeout(() => {
+                                            row.classList.remove('bg-blue-50/50');
+                                            row.style.transition = '';
+                                        }, 600);
+                                    });
+                                }
+                            }
+                        });
+
+                    } else {
+                        showToast("Gagal Memuat Laporan", res.message || "Terjadi kesalahan.", "error");
+                    }
+                })
+                .catch(() => {
+                    showToast("Kesalahan Jaringan", "Gagal memproses data laporan keuangan.", "error");
+                })
+                .finally(() => {
+                    // Re-enable inputs
+                    document.getElementById('filter-bulan').disabled = false;
+                    document.getElementById('filter-tahun').disabled = false;
+                });
         }
 
         // Detect URL error parameters on load
