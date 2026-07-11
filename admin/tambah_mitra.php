@@ -65,29 +65,31 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     $alamat = trim($_POST['alamat'] ?? '');
     $no_telp = trim($_POST['no_telp'] ?? '');
     $harga_per_kg = trim($_POST['harga_per_kg'] ?? '');
-    $jam_buka = trim($_POST['jam_buka'] ?? '');
+    
+    // Defaults: simplified to be set by partner later
+    $jam_buka = 'Senin - Minggu 08:00 - 22:00';
     $icon_type = $_POST['icon_type'] ?? 'kiloan';
     $status_buka = isset($_POST['status_buka']) ? 1 : 0;
     $is_rekomendasi = isset($_POST['is_rekomendasi']) ? 1 : 0;
     $rating = trim($_POST['rating'] ?? '5.0');
-    $fasilitas = isset($_POST['fasilitas']) ? implode(',', $_POST['fasilitas']) : '';
-    $keunggulan_lainnya = trim($_POST['keunggulan_lainnya'] ?? '');
+    $fasilitas = '';
+    $keunggulan_lainnya = '';
     
     // Credentials
     $username_input = trim($_POST['username_input'] ?? '');
     $password_input = trim($_POST['password_input'] ?? '');
     
-    // Custom Pricing Overrides
-    $harga_pengeringan = (int)($_POST['harga_pengeringan'] ?? 6000);
-    $harga_setrika_reguler = (int)($_POST['harga_setrika_reguler'] ?? 13000);
-    $harga_setrika_saja = (int)($_POST['harga_setrika_saja'] ?? 7000);
-    $harga_satuan_jaket = (int)($_POST['harga_satuan_jaket'] ?? 15000);
-    $harga_satuan_selimut = (int)($_POST['harga_satuan_selimut'] ?? 20000);
-    $harga_satuan_bed_cover = (int)($_POST['harga_satuan_bed_cover'] ?? 30000);
+    // Default Custom Pricing Overrides
+    $harga_pengeringan = 6000;
+    $harga_setrika_reguler = 13000;
+    $harga_setrika_saja = 7000;
+    $harga_satuan_jaket = 15000;
+    $harga_satuan_selimut = 20000;
+    $harga_satuan_bed_cover = 30000;
 
     // Validation
     if (empty($nama_mitra) || empty($latitude) || empty($longitude) || empty($alamat) || empty($harga_per_kg) || empty($username_input) || empty($password_input)) {
-        $error = 'Nama Mitra, Koordinat (Latitude & Longitude), Alamat, Harga, Username, dan Password wajib diisi.';
+        $error = 'Nama Mitra, Koordinat (Latitude & Longitude), Alamat, Harga Dasar, Username, dan Password wajib diisi.';
     } else {
         // Check if username is already taken
         try {
@@ -498,62 +500,17 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                                     <input type="number" id="rating" name="rating" min="0" max="5" step="0.1" value="5.0" class="w-full rounded-xl border-outline-variant focus:ring-primary focus:border-primary text-body-md py-2.5 px-md bg-white">
                                 </div>
                             </div>
-                            <div class="grid grid-cols-1 md:grid-cols-2 gap-md">
-                                <div class="space-y-xs">
-                                    <label for="jam_buka" class="text-label-md font-bold text-on-surface-variant">Jam Operasional</label>
-                                    <textarea id="jam_buka" name="jam_buka" rows="3" placeholder="Contoh:&#10;Senin - Sabtu: 07:00 - 21:00&#10;Minggu: 08:00 - 18:00" class="w-full rounded-xl border-outline-variant focus:ring-primary focus:border-primary text-body-md py-2.5 px-md bg-white resize-none"></textarea>
-                                </div>
-                                <div class="flex flex-col gap-sm pt-xs justify-center">
-                                    <label class="relative inline-flex items-center cursor-pointer select-none">
-                                        <input type="checkbox" name="status_buka" value="1" checked class="sr-only peer">
-                                        <div class="w-11 h-6 bg-slate-300 peer-focus:outline-none rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-slate-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-primary"></div>
-                                        <span class="ml-3 text-label-md font-bold text-on-surface-variant">Status: Buka &amp; Aktif</span>
-                                    </label>
-                                    <label class="relative inline-flex items-center cursor-pointer select-none">
-                                        <input type="checkbox" name="is_rekomendasi" value="1" checked class="sr-only peer">
-                                        <div class="w-11 h-6 bg-slate-300 peer-focus:outline-none rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-slate-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-primary"></div>
-                                        <span class="ml-3 text-label-md font-bold text-on-surface-variant">Tampilkan di Rekomendasi Beranda</span>
-                                    </label>
-                                </div>
-                            </div>
-                        </div>
-
-                        <!-- Custom Pricing Bento Card -->
-                        <div class="bento-card p-xl rounded-xl space-y-md">
-                            <h2 class="text-headline-sm font-bold text-primary flex items-center gap-xs">
-                                <span class="material-symbols-outlined">payments</span>
-                                <span>Tarif Kustom Layanan (Opsional)</span>
-                            </h2>
-                            <p class="text-xs text-on-surface-variant">Kustomisasi tarif jika ingin berbeda dari tarif kelipatan dasar sistem.</p>
-                            
-                            <div class="grid grid-cols-1 md:grid-cols-3 gap-md">
-                                <div class="space-y-xs">
-                                    <label for="harga_pengeringan" class="text-label-md font-bold text-on-surface-variant">Harga Pengeringan (Rp)</label>
-                                    <input type="number" id="harga_pengeringan" name="harga_pengeringan" value="6000" class="w-full rounded-xl border-outline-variant focus:ring-primary focus:border-primary text-body-md py-2.5 px-md bg-white">
-                                </div>
-                                <div class="space-y-xs">
-                                    <label for="harga_setrika_reguler" class="text-label-md font-bold text-on-surface-variant">Harga Setrika Reguler (Rp)</label>
-                                    <input type="number" id="harga_setrika_reguler" name="harga_setrika_reguler" value="13000" class="w-full rounded-xl border-outline-variant focus:ring-primary focus:border-primary text-body-md py-2.5 px-md bg-white">
-                                </div>
-                                <div class="space-y-xs">
-                                    <label for="harga_setrika_saja" class="text-label-md font-bold text-on-surface-variant">Harga Setrika Saja (Rp)</label>
-                                    <input type="number" id="harga_setrika_saja" name="harga_setrika_saja" value="7000" class="w-full rounded-xl border-outline-variant focus:ring-primary focus:border-primary text-body-md py-2.5 px-md bg-white">
-                                </div>
-                            </div>
-                            
-                            <div class="grid grid-cols-1 md:grid-cols-3 gap-md">
-                                <div class="space-y-xs">
-                                    <label for="harga_satuan_jaket" class="text-label-md font-bold text-on-surface-variant">Harga Satuan Jaket (Rp)</label>
-                                    <input type="number" id="harga_satuan_jaket" name="harga_satuan_jaket" value="15000" class="w-full rounded-xl border-outline-variant focus:ring-primary focus:border-primary text-body-md py-2.5 px-md bg-white">
-                                </div>
-                                <div class="space-y-xs">
-                                    <label for="harga_satuan_selimut" class="text-label-md font-bold text-on-surface-variant">Harga Satuan Selimut (Rp)</label>
-                                    <input type="number" id="harga_satuan_selimut" name="harga_satuan_selimut" value="20000" class="w-full rounded-xl border-outline-variant focus:ring-primary focus:border-primary text-body-md py-2.5 px-md bg-white">
-                                </div>
-                                <div class="space-y-xs">
-                                    <label for="harga_satuan_bed_cover" class="text-label-md font-bold text-on-surface-variant">Harga Satuan Bed Cover (Rp)</label>
-                                    <input type="number" id="harga_satuan_bed_cover" name="harga_satuan_bed_cover" value="30000" class="w-full rounded-xl border-outline-variant focus:ring-primary focus:border-primary text-body-md py-2.5 px-md bg-white">
-                                </div>
+                            <div class="pt-sm border-t border-slate-100 flex flex-col sm:flex-row gap-md sm:items-center">
+                                <label class="relative inline-flex items-center cursor-pointer select-none">
+                                    <input type="checkbox" name="status_buka" value="1" checked class="sr-only peer">
+                                    <div class="w-11 h-6 bg-slate-300 peer-focus:outline-none rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-slate-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-primary"></div>
+                                    <span class="ml-3 text-label-md font-bold text-on-surface-variant">Status: Buka &amp; Aktif</span>
+                                </label>
+                                <label class="relative inline-flex items-center cursor-pointer select-none">
+                                    <input type="checkbox" name="is_rekomendasi" value="1" checked class="sr-only peer">
+                                    <div class="w-11 h-6 bg-slate-300 peer-focus:outline-none rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-slate-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-primary"></div>
+                                    <span class="ml-3 text-label-md font-bold text-on-surface-variant">Tampilkan di Rekomendasi Beranda</span>
+                                </label>
                             </div>
                         </div>
 
@@ -607,47 +564,6 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                                     <img id="image-preview" class="absolute inset-0 w-full h-full object-cover rounded-2xl hidden" alt="Preview Foto">
                                 </div>
                                 <button type="button" id="remove-preview-btn" onclick="removePreview(event)" class="w-full py-xs border border-error text-error rounded-xl text-label-md font-bold hover:bg-error-container/10 transition-all hidden">Hapus Foto</button>
-                            </div>
-                        </div>
-
-                        <!-- Fasilitas & Keunggulan Bento Card -->
-                        <div class="bento-card p-xl rounded-xl space-y-md">
-                            <h2 class="text-headline-sm font-bold text-primary flex items-center gap-xs">
-                                <span class="material-symbols-outlined">workspace_premium</span>
-                                <span>Fasilitas &amp; Keunggulan (Opsional)</span>
-                            </h2>
-                            <p class="text-xs text-on-surface-variant">Tentukan fasilitas yang tersedia dan keunggulan laundry Anda.</p>
-                            
-                            <div class="space-y-md">
-                                <div class="space-y-xs">
-                                    <label class="text-label-md font-bold text-on-surface-variant">Fasilitas Standar</label>
-                                    <div class="flex flex-col gap-y-sm pt-xs">
-                                        <label class="inline-flex items-center gap-sm cursor-pointer select-none">
-                                            <input type="checkbox" name="fasilitas[]" value="wifi" class="rounded border-outline-variant text-primary focus:ring-primary">
-                                            <span class="text-body-md text-on-surface">Free Wi-Fi</span>
-                                        </label>
-                                        <label class="inline-flex items-center gap-sm cursor-pointer select-none">
-                                            <input type="checkbox" name="fasilitas[]" value="ac" class="rounded border-outline-variant text-primary focus:ring-primary">
-                                            <span class="text-body-md text-on-surface">Ruang Tunggu AC</span>
-                                        </label>
-                                        <label class="inline-flex items-center gap-sm cursor-pointer select-none">
-                                            <input type="checkbox" name="fasilitas[]" value="parkir" class="rounded border-outline-variant text-primary focus:ring-primary">
-                                            <span class="text-body-md text-on-surface">Parkir Luas</span>
-                                        </label>
-                                        <label class="inline-flex items-center gap-sm cursor-pointer select-none">
-                                            <input type="checkbox" name="fasilitas[]" value="air" class="rounded border-outline-variant text-primary focus:ring-primary">
-                                            <span class="text-body-md text-on-surface">Air Minum Gratis</span>
-                                        </label>
-                                        <label class="inline-flex items-center gap-sm cursor-pointer select-none">
-                                            <input type="checkbox" name="fasilitas[]" value="antar" class="rounded border-outline-variant text-primary focus:ring-primary">
-                                            <span class="text-body-md text-on-surface">Antar Jemput</span>
-                                        </label>
-                                    </div>
-                                </div>
-                                <div class="space-y-xs">
-                                    <label for="keunggulan_lainnya" class="text-label-md font-bold text-on-surface-variant">Keunggulan Lainnya</label>
-                                    <textarea id="keunggulan_lainnya" name="keunggulan_lainnya" rows="3" placeholder="Contoh:&#10;Menggunakan deterjen ramah lingkungan&#10;Pengerjaan ekspres 2 jam selesai" class="w-full rounded-xl border-outline-variant focus:ring-primary focus:border-primary text-body-md py-2.5 px-md bg-white resize-none"></textarea>
-                                </div>
                             </div>
                         </div>
 
