@@ -140,7 +140,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                 $hashed_password = password_hash($password_input, PASSWORD_DEFAULT);
 
                 // Insert into database
-                $stmt = $pdo->prepare("INSERT INTO mitra_laundry (nama_mitra, username, password, foto_toko, latitude, longitude, alamat, no_telp, rating, harga_per_kg, jam_buka, status_buka, icon_type, is_rekomendasi, fasilitas, keunggulan_lainnya) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)");
+                $stmt = $pdo->prepare("INSERT INTO mitra_laundry (nama_mitra, username, password, foto_toko, latitude, longitude, google_maps_link, alamat, no_telp, rating, harga_per_kg, jam_buka, status_buka, icon_type, is_rekomendasi, fasilitas, keunggulan_lainnya) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)");
                 $stmt->execute([
                     $nama_mitra,
                     $username_input,
@@ -148,6 +148,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                     $foto_toko,
                     $latitude,
                     $longitude,
+                    $google_maps_link,
                     $alamat,
                     $no_telp,
                     $rating,
@@ -159,6 +160,32 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                     $fasilitas,
                     $keunggulan_lainnya
                 ]);
+                $new_mitra_id = $pdo->lastInsertId();
+
+                // Seed default services for this new partner
+                $base_val = (int)$harga_per_kg;
+                
+                // Kiloan
+                $pdo->prepare("INSERT INTO `mitra_layanan` (mitra_id, nama_layanan, harga, detail, kategori) VALUES (?, ?, ?, ?, ?)")
+                    ->execute([$new_mitra_id, 'Cuci Lipat Reguler', $base_val, 'Layanan cuci bersih dan lipat rapi tanpa setrika. Cocok untuk kebutuhan sehari-hari.', 'kiloan']);
+                $pdo->prepare("INSERT INTO `mitra_layanan` (mitra_id, nama_layanan, harga, detail, kategori) VALUES (?, ?, ?, ?, ?)")
+                    ->execute([$new_mitra_id, 'Cuci Setrika Reguler', 13000, 'Layanan cuci bersih, dikeringkan, dan disetrika licin menggunakan uap.', 'kiloan']);
+                $pdo->prepare("INSERT INTO `mitra_layanan` (mitra_id, nama_layanan, harga, detail, kategori) VALUES (?, ?, ?, ?, ?)")
+                    ->execute([$new_mitra_id, 'Setrika Saja Reguler', 7000, 'Layanan setrika pakaian saja menggunakan setrika uap komersil agar pakaian rapi dan higienis.', 'kiloan']);
+
+                // Satuan
+                $pdo->prepare("INSERT INTO `mitra_layanan` (mitra_id, nama_layanan, harga, detail, kategori) VALUES (?, ?, ?, ?, ?)")
+                    ->execute([$new_mitra_id, 'Cuci Satuan Jaket', 15000, 'Layanan pencucian satuan untuk jaket agar bersih tanpa merusak bahan.', 'satuan']);
+                $pdo->prepare("INSERT INTO `mitra_layanan` (mitra_id, nama_layanan, harga, detail, kategori) VALUES (?, ?, ?, ?, ?)")
+                    ->execute([$new_mitra_id, 'Cuci Satuan Selimut', 20000, 'Layanan pencucian satuan untuk selimut tebal.', 'satuan']);
+                $pdo->prepare("INSERT INTO `mitra_layanan` (mitra_id, nama_layanan, harga, detail, kategori) VALUES (?, ?, ?, ?, ?)")
+                    ->execute([$new_mitra_id, 'Cuci Satuan Bed Cover', 30000, 'Layanan pencucian satuan untuk bed cover.', 'satuan']);
+
+                // Express
+                $pdo->prepare("INSERT INTO `mitra_layanan` (mitra_id, nama_layanan, harga, detail, kategori) VALUES (?, ?, ?, ?, ?)")
+                    ->execute([$new_mitra_id, 'Cuci Lipat Express (6 Jam)', $base_val + 4000, 'Layanan cuci lipat ekspres selesai dalam waktu maksimal 6 jam.', 'express']);
+                $pdo->prepare("INSERT INTO `mitra_layanan` (mitra_id, nama_layanan, harga, detail, kategori) VALUES (?, ?, ?, ?, ?)")
+                    ->execute([$new_mitra_id, 'Cuci Setrika Express (6 Jam)', $base_val + 6000, 'Layanan cuci setrika ekspres selesai dalam waktu maksimal 6 jam.', 'express']);
 
                 // Create the detail template page in "../Mitra laundry/"
                 $slug = str_replace(' ', '_', $nama_mitra) . '.php';

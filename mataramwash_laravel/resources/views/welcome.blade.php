@@ -1,4 +1,4 @@
-﻿<!DOCTYPE html>
+<!DOCTYPE html>
 <html lang="id">
 <head>
     <meta charset="utf-8">
@@ -986,15 +986,7 @@
     }
 
     // Autocomplete Search Suggestions
-    const searchPartners = @json($all_mitra->map(function($m) {
-        return [
-            'nama' => $m->nama_mitra,
-            'rating' => $m->rating,
-            'alamat' => $m->alamat,
-            'url' => route('mitra.show', $m->id),
-            'tipe' => $m->icon_type
-        ];
-    }));
+    const searchPartners = @json($all_mitra);
 
     const staticSuggestions = [
         // Services

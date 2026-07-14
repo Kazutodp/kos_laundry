@@ -191,7 +191,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                 // Update database (conditional password update)
                 if (!empty($password_input)) {
                     $hashed_password = password_hash($password_input, PASSWORD_DEFAULT);
-                    $stmt = $pdo->prepare("UPDATE mitra_laundry SET nama_mitra = ?, username = ?, password = ?, foto_toko = ?, latitude = ?, longitude = ?, alamat = ?, no_telp = ?, rating = ?, harga_per_kg = ?, jam_buka = ?, status_buka = ?, icon_type = ?, is_rekomendasi = ?, fasilitas = ?, keunggulan_lainnya = ? WHERE id = ?");
+                    $stmt = $pdo->prepare("UPDATE mitra_laundry SET nama_mitra = ?, username = ?, password = ?, foto_toko = ?, latitude = ?, longitude = ?, google_maps_link = ?, alamat = ?, no_telp = ?, rating = ?, harga_per_kg = ?, jam_buka = ?, status_buka = ?, icon_type = ?, is_rekomendasi = ?, fasilitas = ?, keunggulan_lainnya = ? WHERE id = ?");
                     $stmt->execute([
                         $nama_mitra,
                         $username_input,
@@ -199,6 +199,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                         $foto_toko,
                         $latitude,
                         $longitude,
+                        $google_maps_link,
                         $alamat,
                         $no_telp,
                         $rating,
@@ -212,13 +213,14 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                         $id
                     ]);
                 } else {
-                    $stmt = $pdo->prepare("UPDATE mitra_laundry SET nama_mitra = ?, username = ?, foto_toko = ?, latitude = ?, longitude = ?, alamat = ?, no_telp = ?, rating = ?, harga_per_kg = ?, jam_buka = ?, status_buka = ?, icon_type = ?, is_rekomendasi = ?, fasilitas = ?, keunggulan_lainnya = ? WHERE id = ?");
+                    $stmt = $pdo->prepare("UPDATE mitra_laundry SET nama_mitra = ?, username = ?, foto_toko = ?, latitude = ?, longitude = ?, google_maps_link = ?, alamat = ?, no_telp = ?, rating = ?, harga_per_kg = ?, jam_buka = ?, status_buka = ?, icon_type = ?, is_rekomendasi = ?, fasilitas = ?, keunggulan_lainnya = ? WHERE id = ?");
                     $stmt->execute([
                         $nama_mitra,
                         $username_input,
                         $foto_toko,
                         $latitude,
                         $longitude,
+                        $google_maps_link,
                         $alamat,
                         $no_telp,
                         $rating,
@@ -640,7 +642,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                             <p class="text-xs text-on-surface-variant">Koordinat sangat penting untuk pencarian laundry terdekat berdasarkan jarak.</p>
                             <div class="space-y-xs">
                                 <label for="google_maps_link" class="text-label-md font-bold text-on-surface-variant">Link Google Maps (Opsional)</label>
-                                <input type="url" id="google_maps_link" name="google_maps_link" placeholder="https://www.google.com/maps/place/..." class="w-full rounded-xl border-outline-variant focus:ring-primary focus:border-primary text-body-md py-2.5 px-md bg-white">
+                                <input type="url" id="google_maps_link" name="google_maps_link" value="<?= htmlspecialchars($mitra['google_maps_link'] ?? ''); ?>" placeholder="https://www.google.com/maps/place/..." class="w-full rounded-xl border-outline-variant focus:ring-primary focus:border-primary text-body-md py-2.5 px-md bg-white">
                                 <div id="link_info" class="text-[11px] font-semibold text-outline">Tempel link Google Maps di sini untuk mengisi koordinat secara otomatis.</div>
                             </div>
                             <div class="grid grid-cols-1 md:grid-cols-2 gap-md">

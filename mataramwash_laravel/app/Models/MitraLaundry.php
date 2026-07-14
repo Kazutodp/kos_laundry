@@ -17,6 +17,7 @@ class MitraLaundry extends Model
         'foto_toko',
         'latitude',
         'longitude',
+        'google_maps_link',
         'alamat',
         'no_telp',
         'rating',
@@ -25,6 +26,14 @@ class MitraLaundry extends Model
         'status_buka',
         'icon_type',
     ];
+
+    /**
+     * Relationship: A Mitra has many Services.
+     */
+    public function layanan()
+    {
+        return $this->hasMany(MitraLayanan::class, 'mitra_id');
+    }
 
     /**
      * Relationship: A Mitra has many Orders.

@@ -22,155 +22,206 @@ if (!$mitra) {
     exit();
 }
 
-// Load custom pricing from the partner file if it exists
-$file_name = str_replace(' ', '_', $mitra['nama_mitra']) . '.php';
-$file_path = '../Mitra laundry/' . $file_name;
-
-// Default values
-$harga_pengeringan = 6000;
-$harga_setrika_reguler = 13000;
-$harga_setrika_saja = 7000;
-$harga_satuan_jaket = 15000;
-$harga_satuan_selimut = 20000;
-$harga_satuan_bed_cover = 30000;
-
-if (file_exists($file_path)) {
-    $content = file_get_contents($file_path);
-    if (preg_match('/\$custom_harga_pengeringan\s*=\s*(\d+)/', $content, $matches)) {
-        $harga_pengeringan = (int)$matches[1];
-    }
-    if (preg_match('/\$custom_harga_setrika_reguler\s*=\s*(\d+)/', $content, $matches)) {
-        $harga_setrika_reguler = (int)$matches[1];
-    }
-    if (preg_match('/\$custom_harga_setrika_saja\s*=\s*(\d+)/', $content, $matches)) {
-        $harga_setrika_saja = (int)$matches[1];
-    }
-    if (preg_match('/\$custom_harga_satuan_jaket\s*=\s*(\d+)/', $content, $matches)) {
-        $harga_satuan_jaket = (int)$matches[1];
-    }
-    if (preg_match('/\$custom_harga_satuan_selimut\s*=\s*(\d+)/', $content, $matches)) {
-        $harga_satuan_selimut = (int)$matches[1];
-    }
-    if (preg_match('/\$custom_harga_satuan_bed_cover\s*=\s*(\d+)/', $content, $matches)) {
-        $harga_satuan_bed_cover = (int)$matches[1];
-    }
-}
-
 $success = '';
 $error = '';
 
-if ($_SERVER['REQUEST_METHOD'] === 'POST') {
-    // Collect DB values
-    $harga_per_kg = (int)($_POST['harga_per_kg'] ?? 0);
-    $no_telp = trim($_POST['no_telp'] ?? '');
-    $alamat = trim($_POST['alamat'] ?? '');
-    $jam_buka = trim($_POST['jam_buka'] ?? '');
-    $fasilitas = isset($_POST['fasilitas']) ? implode(',', $_POST['fasilitas']) : '';
-    $keunggulan_lainnya = trim($_POST['keunggulan_lainnya'] ?? '');
+// Helper function to extract coordinates from Google Maps Link
+function get_coords_from_google_maps($url) {
+    $url = trim($url);
+    if (empty($url)) return null;
 
-    // Collect file custom pricing values
-    $in_harga_pengeringan = (int)($_POST['harga_pengeringan'] ?? 6000);
-    $in_harga_setrika_reguler = (int)($_POST['harga_setrika_reguler'] ?? 13000);
-    $in_harga_setrika_saja = (int)($_POST['harga_setrika_saja'] ?? 7000);
-    $in_harga_satuan_jaket = (int)($_POST['harga_satuan_jaket'] ?? 15000);
-    $in_harga_satuan_selimut = (int)($_POST['harga_satuan_selimut'] ?? 20000);
-    $in_harga_satuan_bed_cover = (int)($_POST['harga_satuan_bed_cover'] ?? 30000);
-
-    if ($harga_per_kg <= 0 || $in_harga_pengeringan <= 0 || $in_harga_setrika_reguler <= 0 || $in_harga_setrika_saja <= 0) {
-        $error = 'Semua tarif harga harus berupa angka positif.';
-    } else {
-        try {
-            // 1. Update Database
-            $stmt_update = $pdo->prepare("UPDATE mitra_laundry SET harga_per_kg = ?, no_telp = ?, alamat = ?, jam_buka = ?, fasilitas = ?, keunggulan_lainnya = ? WHERE id = ?");
-            $stmt_update->execute([
-                $harga_per_kg,
-                $no_telp,
-                $alamat,
-                $jam_buka,
-                $fasilitas,
-                $keunggulan_lainnya,
-                $mitra_id
-            ]);
-
-            // 2. Update the Partner PHP Template File dynamically
-            if (file_exists($file_path)) {
-                $file_content = file_get_contents($file_path);
-
-                // Helper local function to replace or prepend PHP variables
-                function update_var(&$content, $name, $value) {
-                    $pattern = '/\$' . preg_quote($name) . '\s*=\s*[^;]+;/s';
-                    $replacement = '$' . $name . ' = ' . (int)$value . ';';
-                    if (preg_match($pattern, $content)) {
-                        $content = preg_replace($pattern, $replacement, $content);
-                    } else {
-                        // Find include and prepend
-                        $include_pattern = '/include\s+[\'"]detail_template\.php[\'"];/i';
-                        if (preg_match($include_pattern, $content)) {
-                            $content = preg_replace($include_pattern, $replacement . "\n" . 'include \'detail_template.php\';', $content);
-                        } else {
-                            $content = str_replace('<?php', "<?php\n" . $replacement, $content);
-                        }
-                    }
-                }
-
-                // Update jam operasional HTML representation in the PHP file
-                $jam_operasional_html_content = "<div class=\"w-full space-y-1\">\n";
-                $lines = explode("\n", str_replace("\r", "", $jam_buka));
-                foreach ($lines as $line) {
-                    $line = trim($line);
-                    if (empty($line)) continue;
-                    if (strpos($line, ':') !== false) {
-                        $parts = explode(':', $line, 2);
-                        $day = trim($parts[0]);
-                        $time = trim($parts[1]);
-                    } else {
-                        $day = 'Jam Kerja';
-                        $time = $line;
-                    }
-                    $jam_operasional_html_content .= "    <div class=\"flex py-[2px] text-sm\">\n" .
-                                                     "        <span class=\"text-on-surface-variant w-28 shrink-0 text-left\">" . htmlspecialchars($day) . "</span>\n" .
-                                                     "        <span class=\"font-bold text-on-surface flex-1 text-left\">" . htmlspecialchars($time) . "</span>\n" .
-                                                     "    </div>\n";
-                }
-                $jam_operasional_html_content .= "</div>";
-
-                // Replace jam operasional variable
-                $pattern_jam = '/\$jam_operasional_html\s*=\s*[^;]+;/s';
-                $replacement_jam = '$jam_operasional_html = ' . var_export($jam_operasional_html_content, true) . ';';
-                if (preg_match($pattern_jam, $file_content)) {
-                    $file_content = preg_replace($pattern_jam, $replacement_jam, $file_content);
-                }
-
-                // Replace pricing variables
-                update_var($file_content, 'custom_harga_lipat_reguler', $harga_per_kg);
-                update_var($file_content, 'custom_harga_pengeringan', $in_harga_pengeringan);
-                update_var($file_content, 'custom_harga_setrika_reguler', $in_harga_setrika_reguler);
-                update_var($file_content, 'custom_harga_setrika_saja', $in_harga_setrika_saja);
-                update_var($file_content, 'custom_harga_satuan_jaket', $in_harga_satuan_jaket);
-                update_var($file_content, 'custom_harga_satuan_selimut', $in_harga_satuan_selimut);
-                update_var($file_content, 'custom_harga_satuan_bed_cover', $in_harga_satuan_bed_cover);
-
-                file_put_contents($file_path, $file_content);
+    // Follow short link redirect if maps.app.goo.gl or g.co is found
+    if (strpos($url, 'maps.app.goo.gl') !== false || strpos($url, 'g.co') !== false) {
+        $headers = @get_headers($url, 1);
+        if ($headers) {
+            $location = '';
+            if (isset($headers['Location'])) {
+                $location = is_array($headers['Location']) ? end($headers['Location']) : $headers['Location'];
+            } elseif (isset($headers['location'])) {
+                $location = is_array($headers['location']) ? end($headers['location']) : $headers['location'];
             }
+            if ($location) {
+                $url = $location;
+            }
+        }
+    }
+    
+    // Pattern 1: @latitude,longitude
+    if (preg_match('/@(-?\d+\.\d+),(-?\d+\.\d+)/', $url, $matches)) {
+        return ['latitude' => $matches[1], 'longitude' => $matches[2]];
+    }
+    
+    // Pattern 2: q=latitude,longitude
+    if (preg_match('/[?&]q=(-?\d+\.\d+),(-?\d+\.\d+)/', $url, $matches)) {
+        return ['latitude' => $matches[1], 'longitude' => $matches[2]];
+    }
+    
+    // Pattern 3: ll=latitude,longitude
+    if (preg_match('/[?&]ll=(-?\d+\.\d+),(-?\d+\.\d+)/', $url, $matches)) {
+        return ['latitude' => $matches[1], 'longitude' => $matches[2]];
+    }
+    
+    return null;
+}
 
-            $success = 'Pengaturan layanan & harga berhasil diperbarui.';
+// Handle Form Submissions
+if ($_SERVER['REQUEST_METHOD'] === 'POST') {
+    // 1. UPDATE PROFILE & LOCATION & FOTO TOKO
+    if (isset($_POST['action']) && $_POST['action'] === 'update_profile') {
+        $no_telp = trim($_POST['no_telp'] ?? '');
+        $alamat = trim($_POST['alamat'] ?? '');
+        $jam_buka = trim($_POST['jam_buka'] ?? '');
+        $google_maps_link = trim($_POST['google_maps_link'] ?? '');
+        $fasilitas = isset($_POST['fasilitas']) ? implode(',', $_POST['fasilitas']) : '';
+        $keunggulan_lainnya = trim($_POST['keunggulan_lainnya'] ?? '');
+        
+        $latitude = $mitra['latitude'];
+        $longitude = $mitra['longitude'];
+
+        // Coordinate extraction from maps link
+        if (!empty($google_maps_link)) {
+            $coords = get_coords_from_google_maps($google_maps_link);
+            if ($coords) {
+                $latitude = $coords['latitude'];
+                $longitude = $coords['longitude'];
+            }
+        }
+
+        // Image upload handling
+        $foto_toko = $mitra['foto_toko'];
+        if (isset($_FILES['foto_toko']) && $_FILES['foto_toko']['error'] === UPLOAD_ERR_OK) {
+            $file_tmp = $_FILES['foto_toko']['tmp_name'];
+            $file_name = basename($_FILES['foto_toko']['name']);
+            $file_ext = strtolower(pathinfo($file_name, PATHINFO_EXTENSION));
             
-            // Reload the local variables to match updated state
-            $harga_pengeringan = $in_harga_pengeringan;
-            $harga_setrika_reguler = $in_harga_setrika_reguler;
-            $harga_setrika_saja = $in_harga_setrika_saja;
-            $harga_satuan_jaket = $in_harga_satuan_jaket;
-            $harga_satuan_selimut = $in_harga_satuan_selimut;
-            $harga_satuan_bed_cover = $in_harga_satuan_bed_cover;
-            
-            // Refresh DB state
-            $stmt->execute([$mitra_id]);
-            $mitra = $stmt->fetch(PDO::FETCH_ASSOC);
-        } catch (Exception $e) {
-            $error = 'Terjadi kesalahan: ' . $e->getMessage();
+            $allowed_exts = ['jpg', 'jpeg', 'png', 'webp'];
+            if (!in_array($file_ext, $allowed_exts)) {
+                $error = 'Format file gambar tidak didukung (gunakan JPG, PNG, atau WEBP).';
+            } else {
+                $new_file_name = 'mitra_' . time() . '_' . rand(1000, 9999) . '.' . $file_ext;
+                $upload_dir = '../uploads/';
+                if (!is_dir($upload_dir)) {
+                    mkdir($upload_dir, 0777, true);
+                }
+                
+                if (move_uploaded_file($file_tmp, $upload_dir . $new_file_name)) {
+                    // Delete old photo if exists and is not default
+                    if (!empty($mitra['foto_toko']) && file_exists('../' . $mitra['foto_toko']) && $mitra['foto_toko'] !== 'uploads/mitra_1.png') {
+                        @unlink('../' . $mitra['foto_toko']);
+                    }
+                    $foto_toko = 'uploads/' . $new_file_name;
+                } else {
+                    $error = 'Gagal mengunggah foto toko.';
+                }
+            }
+        }
+
+        if (empty($error)) {
+            try {
+                // Update mitra_laundry in DB
+                $stmt_up = $pdo->prepare("UPDATE mitra_laundry SET no_telp = ?, alamat = ?, jam_buka = ?, google_maps_link = ?, latitude = ?, longitude = ?, foto_toko = ?, fasilitas = ?, keunggulan_lainnya = ? WHERE id = ?");
+                $stmt_up->execute([
+                    $no_telp,
+                    $alamat,
+                    $jam_buka,
+                    $google_maps_link,
+                    $latitude,
+                    $longitude,
+                    $foto_toko,
+                    $fasilitas,
+                    $keunggulan_lainnya,
+                    $mitra_id
+                ]);
+
+                // Sync the template file (opening hours, location, name, etc.)
+                $file_name = str_replace(' ', '_', $mitra['nama_mitra']) . '.php';
+                $file_path = '../Mitra laundry/' . $file_name;
+                if (file_exists($file_path)) {
+                    $file_content = file_get_contents($file_path);
+                    
+                    // Rebuild operasional html
+                    $jam_operasional_html_content = "<div class=\"w-full space-y-1\">\n";
+                    $lines = explode("\n", str_replace("\r", "", $jam_buka));
+                    foreach ($lines as $line) {
+                        $line = trim($line);
+                        if (empty($line)) continue;
+                        if (strpos($line, ':') !== false) {
+                            $parts = explode(':', $line, 2);
+                            $day = trim($parts[0]);
+                            $time = trim($parts[1]);
+                        } else {
+                            $day = 'Jam Kerja';
+                            $time = $line;
+                        }
+                        $jam_operasional_html_content .= "    <div class=\"flex py-[2px] text-sm\">\n" .
+                                                         "        <span class=\"text-on-surface-variant w-28 shrink-0 text-left\">" . htmlspecialchars($day) . "</span>\n" .
+                                                         "        <span class=\"font-bold text-on-surface flex-1 text-left\">" . htmlspecialchars($time) . "</span>\n" .
+                                                         "    </div>\n";
+                    }
+                    $jam_operasional_html_content .= "</div>";
+
+                    $pattern_jam = '/\$jam_operasional_html\s*=\s*[^;]+;/s';
+                    $replacement_jam = '$jam_operasional_html = ' . var_export($jam_operasional_html_content, true) . ';';
+                    if (preg_match($pattern_jam, $file_content)) {
+                        $file_content = preg_replace($pattern_jam, $replacement_jam, $file_content);
+                    }
+                    file_put_contents($file_path, $file_content);
+                }
+
+                $success = 'Profil outlet berhasil diperbarui.';
+                
+                // Refresh DB state
+                $stmt->execute([$mitra_id]);
+                $mitra = $stmt->fetch(PDO::FETCH_ASSOC);
+            } catch (Exception $e) {
+                $error = 'Terjadi kesalahan: ' . $e->getMessage();
+            }
+        }
+    }
+
+    // 2. ADD CUSTOM SERVICE
+    elseif (isset($_POST['action']) && $_POST['action'] === 'add_service') {
+        $nama_layanan = trim($_POST['nama_layanan'] ?? '');
+        $harga = (int)($_POST['harga'] ?? 0);
+        $detail = trim($_POST['detail'] ?? '');
+        $kategori = trim($_POST['kategori'] ?? 'kiloan');
+
+        if (empty($nama_layanan) || $harga <= 0) {
+            $error = 'Nama layanan dan harga positif wajib diisi.';
+        } else {
+            try {
+                $stmt_add = $pdo->prepare("INSERT INTO `mitra_layanan` (mitra_id, nama_layanan, harga, detail, kategori) VALUES (?, ?, ?, ?, ?)");
+                $stmt_add->execute([$mitra_id, $nama_layanan, $harga, $detail, $kategori]);
+                $success = 'Layanan baru berhasil ditambahkan.';
+            } catch (Exception $e) {
+                $error = 'Gagal menambahkan layanan: ' . $e->getMessage();
+            }
+        }
+    }
+
+    // 3. DELETE CUSTOM SERVICE
+    elseif (isset($_POST['action']) && $_POST['action'] === 'delete_service') {
+        $service_id = (int)($_POST['service_id'] ?? 0);
+        if ($service_id > 0) {
+            try {
+                $stmt_del = $pdo->prepare("DELETE FROM `mitra_layanan` WHERE id = ? AND mitra_id = ?");
+                $stmt_del->execute([$service_id, $mitra_id]);
+                if ($stmt_del->rowCount() > 0) {
+                    $success = 'Layanan berhasil dihapus.';
+                } else {
+                    $error = 'Layanan tidak ditemukan atau tidak berhak dihapus.';
+                }
+            } catch (Exception $e) {
+                $error = 'Gagal menghapus layanan: ' . $e->getMessage();
+            }
         }
     }
 }
+
+// Fetch all services of this partner
+$stmt_services = $pdo->prepare("SELECT * FROM `mitra_layanan` WHERE `mitra_id` = ? ORDER BY `kategori` ASC, `id` ASC");
+$stmt_services->execute([$mitra_id]);
+$services = $stmt_services->fetchAll(PDO::FETCH_ASSOC);
 ?>
 <!DOCTYPE html>
 <html lang="id">
@@ -198,6 +249,14 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         }
       }
     </script>
+    <style>
+        .modal {
+            transition: opacity 0.25s ease;
+        }
+        body.modal-active {
+            overflow: hidden;
+        }
+    </style>
 </head>
 <body class="bg-slate-50 text-slate-800 font-sans min-h-screen flex flex-col">
 
@@ -209,244 +268,309 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             </a>
             <div>
                 <span class="text-xs font-bold text-slate-400 uppercase tracking-widest">Portal Mitra</span>
-                <h1 class="text-md font-extrabold text-slate-900 leading-tight font-headline">Kelola Layanan & Tarif</h1>
+                <h1 class="text-md font-extrabold text-slate-900 leading-tight font-headline">Kelola Profil & Layanan</h1>
             </div>
         </div>
         
-        <div class="text-xs font-semibold text-slate-400 bg-slate-100 px-3.5 py-2 rounded-xl">
-            Outlet: <span class="font-bold text-slate-900"><?= htmlspecialchars($mitra['nama_mitra']); ?></span>
+        <div class="flex items-center gap-3">
+            <!-- Settings Link -->
+            <a href="settings.php" class="flex items-center gap-1.5 text-xs font-bold text-slate-600 hover:bg-slate-100 px-3.5 py-2 rounded-xl transition-all border border-transparent hover:border-slate-200" title="Pengaturan Akun">
+                <span class="material-symbols-outlined text-[18px]">settings</span>
+                Pengaturan
+            </a>
+            <div class="text-xs font-semibold text-slate-400 bg-slate-100 px-3.5 py-2 rounded-xl">
+                Outlet: <span class="font-bold text-slate-900"><?= htmlspecialchars($mitra['nama_mitra']); ?></span>
+            </div>
         </div>
     </nav>
 
     <!-- Main Content -->
-    <main class="flex-1 max-w-4xl w-full mx-auto p-6 space-y-6">
+    <main class="flex-grow max-w-5xl w-full mx-auto p-6 space-y-6">
 
-        <!-- Notification Banner Alerts -->
+        <!-- Notification Alerts -->
         <?php if (!empty($success)): ?>
-            <div class="p-4 bg-emerald-500 text-white rounded-2xl shadow-lg shadow-emerald-500/20 flex items-center gap-3 animate-fade-in">
+            <div class="p-4 bg-emerald-500 text-white rounded-2xl shadow-lg shadow-emerald-500/20 flex items-center gap-3">
                 <span class="material-symbols-outlined text-[24px]">check_circle</span>
                 <span class="text-sm font-bold"><?= htmlspecialchars($success); ?></span>
             </div>
         <?php endif; ?>
 
         <?php if (!empty($error)): ?>
-            <div class="p-4 bg-rose-600 text-white rounded-2xl shadow-lg shadow-rose-600/20 flex items-center gap-3 animate-fade-in">
+            <div class="p-4 bg-rose-600 text-white rounded-2xl shadow-lg shadow-rose-600/20 flex items-center gap-3">
                 <span class="material-symbols-outlined text-[24px]">error</span>
                 <span class="text-sm font-bold"><?= htmlspecialchars($error); ?></span>
             </div>
         <?php endif; ?>
 
-        <!-- Form Container -->
-        <form action="" method="POST" class="space-y-6">
-            
-            <!-- SECTION 1: PROFIL & INFORMASI TOKO -->
-            <div class="bg-white rounded-3xl border border-slate-100 shadow-sm p-6 space-y-6">
-                <div class="flex items-center gap-3 border-b border-slate-100 pb-4">
-                    <span class="material-symbols-outlined text-primary p-2 bg-blue-50 rounded-xl text-[24px]">storefront</span>
-                    <div>
-                        <h2 class="font-extrabold text-slate-900 text-md">Profil & Kontak Outlet</h2>
-                        <p class="text-xs text-slate-400">Detail alamat, telepon, dan jam buka toko Anda</p>
+        <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
+            <!-- LEFT PANEL: PROFILE & MEDIA -->
+            <div class="lg:col-span-1 space-y-6">
+                <div class="bg-white rounded-3xl border border-slate-100 shadow-sm p-6 space-y-5">
+                    <h2 class="text-md font-extrabold text-slate-900 border-b border-slate-50 pb-3 flex items-center gap-2">
+                        <span class="material-symbols-outlined text-primary text-[22px]">image</span>
+                        <span>Foto Toko</span>
+                    </h2>
+                    
+                    <!-- Foto Toko Preview -->
+                    <div class="relative group rounded-2xl overflow-hidden aspect-video border border-slate-200 bg-slate-50 flex items-center justify-center">
+                        <?php if (!empty($mitra['foto_toko'])): ?>
+                            <img id="foto_preview" src="../<?= htmlspecialchars($mitra['foto_toko']); ?>" alt="Foto Toko" class="w-full h-full object-cover">
+                        <?php else: ?>
+                            <img id="foto_preview" src="../uploads/mitra_1.png" alt="Foto Toko" class="w-full h-full object-cover">
+                        <?php endif; ?>
                     </div>
-                </div>
 
-                <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
-                    <!-- Telephone Input -->
-                    <div class="space-y-2">
-                        <label for="no_telp" class="block text-xs font-bold text-slate-500 uppercase tracking-wider">No. Telepon Kemitraan</label>
-                        <div class="relative">
-                            <span class="material-symbols-outlined absolute left-4 top-1/2 -translate-y-1/2 text-[20px] text-slate-400">call</span>
-                            <input type="text" id="no_telp" name="no_telp" value="<?= htmlspecialchars($mitra['no_telp']); ?>" placeholder="Contoh: 082341961954" required
-                                   class="w-full pl-12 pr-4 py-3.5 bg-slate-50/50 border border-slate-200 focus:bg-white focus:border-primary focus:ring-1 focus:ring-primary rounded-xl text-sm transition-all outline-none">
+                    <form action="" method="POST" enctype="multipart/form-data" class="space-y-4">
+                        <input type="hidden" name="action" value="update_profile">
+                        
+                        <div class="space-y-1">
+                            <label class="block text-xs font-bold text-slate-500 uppercase tracking-wider">Ganti Foto Toko</label>
+                            <input type="file" name="foto_toko" accept="image/*" onchange="previewImage(event)"
+                                   class="block w-full text-xs text-slate-500 file:mr-4 file:py-2.5 file:px-4 file:rounded-xl file:border-0 file:text-xs file:font-bold file:bg-blue-50 file:text-primary hover:file:bg-blue-100 cursor-pointer">
                         </div>
-                    </div>
 
-                    <!-- Hours of Operation Input -->
-                    <div class="space-y-2">
-                        <label for="jam_buka" class="block text-xs font-bold text-slate-500 uppercase tracking-wider">Jam Operasional (Teks)</label>
-                        <div class="relative">
-                            <span class="material-symbols-outlined absolute left-4 top-4 text-[20px] text-slate-400">schedule</span>
-                            <textarea id="jam_buka" name="jam_buka" rows="2" placeholder="Contoh:&#10;Senin - Minggu: 07:00 - 22:00" required
-                                      class="w-full pl-12 pr-4 py-3 bg-slate-50/50 border border-slate-200 focus:bg-white focus:border-primary focus:ring-1 focus:ring-primary rounded-xl text-sm transition-all outline-none"><?= htmlspecialchars($mitra['jam_buka']); ?></textarea>
+                        <hr class="border-slate-100 my-4">
+
+                        <!-- No Telp -->
+                        <div class="space-y-1">
+                            <label for="no_telp" class="block text-xs font-bold text-slate-500 uppercase tracking-wider">No. Telepon / WhatsApp</label>
+                            <input type="text" id="no_telp" name="no_telp" value="<?= htmlspecialchars($mitra['no_telp']); ?>" required
+                                   class="w-full px-4 py-3 bg-slate-50 border border-slate-200 focus:bg-white focus:border-primary focus:ring-1 focus:ring-primary rounded-xl text-sm outline-none">
                         </div>
-                    </div>
-                </div>
 
-                <!-- Address Input -->
-                <div class="space-y-2">
-                    <label for="alamat" class="block text-xs font-bold text-slate-500 uppercase tracking-wider">Alamat Lengkap Outlet</label>
-                    <div class="relative">
-                        <span class="material-symbols-outlined absolute left-4 top-4 text-[20px] text-slate-400">location_on</span>
-                        <textarea id="alamat" name="alamat" rows="2" placeholder="Contoh: Jl. Majapahit No.88C, Kekalik Jaya, Kec. Sekarbela, Kota Mataram" required
-                                  class="w-full pl-12 pr-4 py-3 bg-slate-50/50 border border-slate-200 focus:bg-white focus:border-primary focus:ring-1 focus:ring-primary rounded-xl text-sm transition-all outline-none"><?= htmlspecialchars($mitra['alamat']); ?></textarea>
-                    </div>
-                </div>
-
-                <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
-                    <!-- Facilities Checkboxes -->
-                    <div class="space-y-3">
-                        <label class="block text-xs font-bold text-slate-500 uppercase tracking-wider">Fasilitas Outlet</label>
-                        <?php 
-                        $selected_facilities = explode(',', $mitra['fasilitas'] ?? ''); 
-                        ?>
-                        <div class="bg-slate-50/50 border border-slate-200 rounded-2xl p-4 space-y-3">
-                            <label class="flex items-center gap-3 text-sm font-semibold text-slate-700 cursor-pointer select-none">
-                                <input type="checkbox" name="fasilitas[]" value="wifi" <?= in_array('wifi', $selected_facilities) ? 'checked' : ''; ?> 
-                                       class="rounded border-slate-300 text-primary focus:ring-primary h-4 w-4">
-                                <span>Wifi Gratis (Free Wi-Fi)</span>
-                            </label>
-                            <label class="flex items-center gap-3 text-sm font-semibold text-slate-700 cursor-pointer select-none">
-                                <input type="checkbox" name="fasilitas[]" value="ac" <?= in_array('ac', $selected_facilities) ? 'checked' : ''; ?> 
-                                       class="rounded border-slate-300 text-primary focus:ring-primary h-4 w-4">
-                                <span>Ruang Tunggu AC</span>
-                            </label>
-                            <label class="flex items-center gap-3 text-sm font-semibold text-slate-700 cursor-pointer select-none">
-                                <input type="checkbox" name="fasilitas[]" value="parkir" <?= in_array('parkir', $selected_facilities) ? 'checked' : ''; ?> 
-                                       class="rounded border-slate-300 text-primary focus:ring-primary h-4 w-4">
-                                <span>Parkir Luas & Aman</span>
-                            </label>
-                            <label class="flex items-center gap-3 text-sm font-semibold text-slate-700 cursor-pointer select-none">
-                                <input type="checkbox" name="fasilitas[]" value="air" <?= in_array('air', $selected_facilities) ? 'checked' : ''; ?> 
-                                       class="rounded border-slate-300 text-primary focus:ring-primary h-4 w-4">
-                                <span>Air Minum Gratis (Dispenser)</span>
-                            </label>
-                            <label class="flex items-center gap-3 text-sm font-semibold text-slate-700 cursor-pointer select-none">
-                                <input type="checkbox" name="fasilitas[]" value="antar" <?= in_array('antar', $selected_facilities) ? 'checked' : ''; ?> 
-                                       class="rounded border-slate-300 text-primary focus:ring-primary h-4 w-4">
-                                <span>Layanan Antar-Jemput</span>
-                            </label>
+                        <!-- Jam Buka -->
+                        <div class="space-y-1">
+                            <label for="jam_buka" class="block text-xs font-bold text-slate-500 uppercase tracking-wider">Jam Operasional</label>
+                            <textarea id="jam_buka" name="jam_buka" rows="2" required
+                                      class="w-full px-4 py-3 bg-slate-50 border border-slate-200 focus:bg-white focus:border-primary focus:ring-1 focus:ring-primary rounded-xl text-sm outline-none"><?= htmlspecialchars($mitra['jam_buka']); ?></textarea>
                         </div>
-                    </div>
 
-                    <!-- Other Advantages Input -->
-                    <div class="space-y-2">
-                        <label for="keunggulan_lainnya" class="block text-xs font-bold text-slate-500 uppercase tracking-wider">Keunggulan Utama (Satu per baris)</label>
-                        <div class="relative">
-                            <span class="material-symbols-outlined absolute left-4 top-4 text-[20px] text-slate-400">workspace_premium</span>
-                            <textarea id="keunggulan_lainnya" name="keunggulan_lainnya" rows="6" 
-                                      placeholder="Contoh:&#10;Proses Cepat: Selesai hanya dalam waktu 90 menit.&#10;Higienis: Pakaian Anda tidak dicampur dengan pelanggan lain."
-                                      class="w-full pl-12 pr-4 py-3 bg-slate-50/50 border border-slate-200 focus:bg-white focus:border-primary focus:ring-1 focus:ring-primary rounded-xl text-sm transition-all outline-none"><?= htmlspecialchars($mitra['keunggulan_lainnya']); ?></textarea>
+                        <!-- Alamat -->
+                        <div class="space-y-1">
+                            <label for="alamat" class="block text-xs font-bold text-slate-500 uppercase tracking-wider">Alamat Lengkap</label>
+                            <textarea id="alamat" name="alamat" rows="2" required
+                                      class="w-full px-4 py-3 bg-slate-50 border border-slate-200 focus:bg-white focus:border-primary focus:ring-1 focus:ring-primary rounded-xl text-sm outline-none"><?= htmlspecialchars($mitra['alamat']); ?></textarea>
                         </div>
-                        <p class="text-[10px] text-slate-400">Tulis keunggulan outlet Anda (format: "Judul: Deskripsi singkat") satu per baris.</p>
-                    </div>
-                </div>
-            </div>
 
-            <!-- SECTION 2: TARIF LAYANAN KILOAN -->
-            <div class="bg-white rounded-3xl border border-slate-100 shadow-sm p-6 space-y-6">
-                <div class="flex items-center gap-3 border-b border-slate-100 pb-4">
-                    <span class="material-symbols-outlined text-secondary p-2 bg-emerald-50 rounded-xl text-[24px]">payments</span>
-                    <div>
-                        <h2 class="font-extrabold text-slate-900 text-md">Tarif Layanan Kiloan</h2>
-                        <p class="text-xs text-slate-400">Sesuaikan tarif cuci per kg di outlet Anda</p>
-                    </div>
-                </div>
-
-                <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
-                    <!-- Harga Cuci Lipat Reguler -->
-                    <div class="space-y-2">
-                        <label for="harga_per_kg" class="block text-xs font-bold text-slate-500 uppercase tracking-wider">Cuci Lipat Reguler (Harga Dasar / kg) *</label>
-                        <div class="relative">
-                            <span class="absolute left-4 top-1/2 -translate-y-1/2 text-xs font-bold text-slate-400">Rp</span>
-                            <input type="number" id="harga_per_kg" name="harga_per_kg" value="<?= $mitra['harga_per_kg']; ?>" required min="1"
-                                   class="w-full pl-10 pr-4 py-3.5 bg-slate-50/50 border border-slate-200 focus:bg-white focus:border-primary focus:ring-1 focus:ring-primary rounded-xl text-sm transition-all outline-none">
+                        <!-- Google Maps Link -->
+                        <div class="space-y-1">
+                            <label for="google_maps_link" class="block text-xs font-bold text-slate-500 uppercase tracking-wider">Link Google Maps</label>
+                            <input type="url" id="google_maps_link" name="google_maps_link" value="<?= htmlspecialchars($mitra['google_maps_link'] ?? ''); ?>" placeholder="https://maps.google.com/..."
+                                   class="w-full px-4 py-3 bg-slate-50 border border-slate-200 focus:bg-white focus:border-primary focus:ring-1 focus:ring-primary rounded-xl text-sm outline-none">
+                            <span class="text-[9px] text-slate-400 block font-medium leading-tight">Tempel tautan lokasi Google Maps untuk menyinkronkan koordinat peta toko secara otomatis saat disimpan.</span>
                         </div>
-                    </div>
 
-                    <!-- Harga Pengeringan -->
-                    <div class="space-y-2">
-                        <label for="harga_pengeringan" class="block text-xs font-bold text-slate-500 uppercase tracking-wider">Layanan Pengeringan (/ kg) *</label>
-                        <div class="relative">
-                            <span class="absolute left-4 top-1/2 -translate-y-1/2 text-xs font-bold text-slate-400">Rp</span>
-                            <input type="number" id="harga_pengeringan" name="harga_pengeringan" value="<?= $harga_pengeringan; ?>" required min="1"
-                                   class="w-full pl-10 pr-4 py-3.5 bg-slate-50/50 border border-slate-200 focus:bg-white focus:border-primary focus:ring-1 focus:ring-primary rounded-xl text-sm transition-all outline-none">
+                        <!-- Fasilitas Checkboxes -->
+                        <div class="space-y-2 pt-2">
+                            <label class="block text-xs font-bold text-slate-500 uppercase tracking-wider">Fasilitas Toko</label>
+                            <?php $selected_facilities = explode(',', $mitra['fasilitas'] ?? ''); ?>
+                            <div class="bg-slate-50 border border-slate-200 rounded-xl p-3.5 space-y-2">
+                                <label class="flex items-center gap-3 text-xs font-semibold text-slate-700 cursor-pointer">
+                                    <input type="checkbox" name="fasilitas[]" value="wifi" <?= in_array('wifi', $selected_facilities) ? 'checked' : ''; ?> class="rounded border-slate-300 text-primary">
+                                    <span>Wifi Gratis</span>
+                                </label>
+                                <label class="flex items-center gap-3 text-xs font-semibold text-slate-700 cursor-pointer">
+                                    <input type="checkbox" name="fasilitas[]" value="ac" <?= in_array('ac', $selected_facilities) ? 'checked' : ''; ?> class="rounded border-slate-300 text-primary">
+                                    <span>Ruang Tunggu AC</span>
+                                </label>
+                                <label class="flex items-center gap-3 text-xs font-semibold text-slate-700 cursor-pointer">
+                                    <input type="checkbox" name="fasilitas[]" value="parkir" <?= in_array('parkir', $selected_facilities) ? 'checked' : ''; ?> class="rounded border-slate-300 text-primary">
+                                    <span>Parkir Luas</span>
+                                </label>
+                                <label class="flex items-center gap-3 text-xs font-semibold text-slate-700 cursor-pointer">
+                                    <input type="checkbox" name="fasilitas[]" value="air" <?= in_array('air', $selected_facilities) ? 'checked' : ''; ?> class="rounded border-slate-300 text-primary">
+                                    <span>Air Minum Gratis</span>
+                                </label>
+                                <label class="flex items-center gap-3 text-xs font-semibold text-slate-700 cursor-pointer">
+                                    <input type="checkbox" name="fasilitas[]" value="antar" <?= in_array('antar', $selected_facilities) ? 'checked' : ''; ?> class="rounded border-slate-300 text-primary">
+                                    <span>Antar Jemput</span>
+                                </label>
+                            </div>
                         </div>
-                    </div>
 
-                    <!-- Harga Setrika Reguler -->
-                    <div class="space-y-2">
-                        <label for="harga_setrika_reguler" class="block text-xs font-bold text-slate-500 uppercase tracking-wider">Cuci Setrika Reguler (/ kg) *</label>
-                        <div class="relative">
-                            <span class="absolute left-4 top-1/2 -translate-y-1/2 text-xs font-bold text-slate-400">Rp</span>
-                            <input type="number" id="harga_setrika_reguler" name="harga_setrika_reguler" value="<?= $harga_setrika_reguler; ?>" required min="1"
-                                   class="w-full pl-10 pr-4 py-3.5 bg-slate-50/50 border border-slate-200 focus:bg-white focus:border-primary focus:ring-1 focus:ring-primary rounded-xl text-sm transition-all outline-none">
+                        <!-- Keunggulan Lainnya -->
+                        <div class="space-y-1">
+                            <label for="keunggulan_lainnya" class="block text-xs font-bold text-slate-500 uppercase tracking-wider">Keunggulan Toko (Satu per baris)</label>
+                            <textarea id="keunggulan_lainnya" name="keunggulan_lainnya" rows="3" placeholder="Contoh:&#10;Proses Cepat: Selesai hanya dalam waktu 90 menit."
+                                      class="w-full px-4 py-3 bg-slate-50 border border-slate-200 focus:bg-white focus:border-primary focus:ring-1 focus:ring-primary rounded-xl text-sm outline-none"><?= htmlspecialchars($mitra['keunggulan_lainnya']); ?></textarea>
                         </div>
-                    </div>
 
-                    <!-- Harga Setrika Saja -->
-                    <div class="space-y-2">
-                        <label for="harga_setrika_saja" class="block text-xs font-bold text-slate-500 uppercase tracking-wider">Setrika Saja (/ kg) *</label>
-                        <div class="relative">
-                            <span class="absolute left-4 top-1/2 -translate-y-1/2 text-xs font-bold text-slate-400">Rp</span>
-                            <input type="number" id="harga_setrika_saja" name="harga_setrika_saja" value="<?= $harga_setrika_saja; ?>" required min="1"
-                                   class="w-full pl-10 pr-4 py-3.5 bg-slate-50/50 border border-slate-200 focus:bg-white focus:border-primary focus:ring-1 focus:ring-primary rounded-xl text-sm transition-all outline-none">
-                        </div>
-                    </div>
+                        <button type="submit" class="w-full bg-primary hover:brightness-110 text-white font-bold py-3 px-4 rounded-xl text-sm shadow-md transition-all flex items-center justify-center gap-2 mt-2">
+                            <span class="material-symbols-outlined text-[18px]">save</span>
+                            <span>Simpan Profil Outlet</span>
+                        </button>
+                    </form>
                 </div>
             </div>
 
-            <!-- SECTION 3: TARIF LAYANAN SATUAN -->
-            <div class="bg-white rounded-3xl border border-slate-100 shadow-sm p-6 space-y-6">
-                <div class="flex items-center gap-3 border-b border-slate-100 pb-4">
-                    <span class="material-symbols-outlined text-amber-600 p-2 bg-amber-50 rounded-xl text-[24px]">dry_cleaning</span>
-                    <div>
-                        <h2 class="font-extrabold text-slate-900 text-md">Tarif Layanan Satuan</h2>
-                        <p class="text-xs text-slate-400">Tentukan tarif khusus untuk item satuan pakaian tertentu</p>
-                    </div>
-                </div>
-
-                <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
-                    <!-- Harga Satuan Jaket -->
-                    <div class="space-y-2">
-                        <label for="harga_satuan_jaket" class="block text-xs font-bold text-slate-500 uppercase tracking-wider">Cuci Jaket (/ pcs) *</label>
-                        <div class="relative">
-                            <span class="absolute left-4 top-1/2 -translate-y-1/2 text-xs font-bold text-slate-400">Rp</span>
-                            <input type="number" id="harga_satuan_jaket" name="harga_satuan_jaket" value="<?= $harga_satuan_jaket; ?>" required min="1"
-                                   class="w-full pl-10 pr-4 py-3.5 bg-slate-50/50 border border-slate-200 focus:bg-white focus:border-primary focus:ring-1 focus:ring-primary rounded-xl text-sm transition-all outline-none">
+            <!-- RIGHT PANEL: DYNAMIC SERVICES MANAGEMENT -->
+            <div class="lg:col-span-2 space-y-6">
+                <div class="bg-white rounded-3xl border border-slate-100 shadow-sm p-6 space-y-6">
+                    <div class="flex justify-between items-center border-b border-slate-50 pb-4">
+                        <div class="flex items-center gap-2">
+                            <span class="material-symbols-outlined text-secondary text-[24px]">local_laundry_service</span>
+                            <div>
+                                <h2 class="text-md font-extrabold text-slate-900">Daftar Layanan Toko</h2>
+                                <p class="text-xs text-slate-400">Atur menu, harga, dan rincian produk laundry Anda</p>
+                            </div>
                         </div>
+                        <button onclick="toggleModal()" class="bg-secondary hover:brightness-105 active:scale-[0.98] text-white px-4 py-2 rounded-xl text-xs font-bold transition-all flex items-center gap-1.5 shadow-sm">
+                            <span class="material-symbols-outlined text-[16px]">add</span>
+                            <span>Tambah Layanan</span>
+                        </button>
                     </div>
 
-                    <!-- Harga Satuan Selimut -->
-                    <div class="space-y-2">
-                        <label for="harga_satuan_selimut" class="block text-xs font-bold text-slate-500 uppercase tracking-wider">Cuci Selimut (/ pcs) *</label>
-                        <div class="relative">
-                            <span class="absolute left-4 top-1/2 -translate-y-1/2 text-xs font-bold text-slate-400">Rp</span>
-                            <input type="number" id="harga_satuan_selimut" name="harga_satuan_selimut" value="<?= $harga_satuan_selimut; ?>" required min="1"
-                                   class="w-full pl-10 pr-4 py-3.5 bg-slate-50/50 border border-slate-200 focus:bg-white focus:border-primary focus:ring-1 focus:ring-primary rounded-xl text-sm transition-all outline-none">
+                    <!-- Services Table -->
+                    <?php if (empty($services)): ?>
+                        <div class="text-center py-12 space-y-3">
+                            <span class="material-symbols-outlined text-[64px] text-slate-200">grid_off</span>
+                            <p class="text-sm font-semibold text-slate-400">Belum ada layanan yang didaftarkan.</p>
                         </div>
-                    </div>
-
-                    <!-- Harga Satuan Bed Cover -->
-                    <div class="space-y-2">
-                        <label for="harga_satuan_bed_cover" class="block text-xs font-bold text-slate-500 uppercase tracking-wider">Cuci Bed Cover (/ pcs) *</label>
-                        <div class="relative">
-                            <span class="absolute left-4 top-1/2 -translate-y-1/2 text-xs font-bold text-slate-400">Rp</span>
-                            <input type="number" id="harga_satuan_bed_cover" name="harga_satuan_bed_cover" value="<?= $harga_satuan_bed_cover; ?>" required min="1"
-                                   class="w-full pl-10 pr-4 py-3.5 bg-slate-50/50 border border-slate-200 focus:bg-white focus:border-primary focus:ring-1 focus:ring-primary rounded-xl text-sm transition-all outline-none">
+                    <?php else: ?>
+                        <div class="overflow-x-auto">
+                            <table class="w-full text-left text-sm border-collapse">
+                                <thead>
+                                    <tr class="border-b border-slate-100 text-slate-400 font-bold text-xs uppercase">
+                                        <th class="py-3 px-4">Nama Layanan</th>
+                                        <th class="py-3 px-4">Kategori Tab</th>
+                                        <th class="py-3 px-4">Tarif Harga</th>
+                                        <th class="py-3 px-4">Detail Keterangan</th>
+                                        <th class="py-3 px-4 text-center">Aksi</th>
+                                    </tr>
+                                </thead>
+                                <tbody class="divide-y divide-slate-50">
+                                    <?php foreach ($services as $srv): ?>
+                                        <tr class="hover:bg-slate-50/50 transition-colors">
+                                            <td class="py-4 px-4 font-bold text-slate-950"><?= htmlspecialchars($srv['nama_layanan']); ?></td>
+                                            <td class="py-4 px-4">
+                                                <?php if ($srv['kategori'] === 'self'): ?>
+                                                    <span class="inline-block px-2.5 py-1 text-[10px] font-bold text-blue-700 bg-blue-50 border border-blue-100 rounded-full">Self Service</span>
+                                                <?php elseif ($srv['kategori'] === 'kiloan'): ?>
+                                                    <span class="inline-block px-2.5 py-1 text-[10px] font-bold text-emerald-700 bg-emerald-50 border border-emerald-100 rounded-full">Kiloan Drop-Off</span>
+                                                <?php elseif ($srv['kategori'] === 'satuan'): ?>
+                                                    <span class="inline-block px-2.5 py-1 text-[10px] font-bold text-amber-700 bg-amber-50 border border-amber-100 rounded-full">Satuan</span>
+                                                <?php else: ?>
+                                                    <span class="inline-block px-2.5 py-1 text-[10px] font-bold text-purple-700 bg-purple-50 border border-purple-100 rounded-full">Express</span>
+                                                <?php endif; ?>
+                                            </td>
+                                            <td class="py-4 px-4 font-bold text-primary">Rp <?= number_format($srv['harga'], 0, ',', '.'); ?></td>
+                                            <td class="py-4 px-4 text-xs text-slate-500 max-w-[200px] truncate" title="<?= htmlspecialchars($srv['detail']); ?>">
+                                                <?= htmlspecialchars($srv['detail']); ?>
+                                            </td>
+                                            <td class="py-4 px-4 text-center">
+                                                <form action="" method="POST" onsubmit="return confirm('Apakah Anda yakin ingin menghapus layanan ini?');">
+                                                    <input type="hidden" name="action" value="delete_service">
+                                                    <input type="hidden" name="service_id" value="<?= $srv['id']; ?>">
+                                                    <button type="submit" class="p-2 bg-rose-50 hover:bg-rose-100 text-rose-600 rounded-xl transition-colors inline-flex items-center justify-center border border-rose-100" title="Hapus Layanan">
+                                                        <span class="material-symbols-outlined text-[18px]">delete</span>
+                                                    </button>
+                                                </form>
+                                            </td>
+                                        </tr>
+                                    <?php endforeach; ?>
+                                </tbody>
+                            </table>
                         </div>
-                    </div>
+                    <?php endif; ?>
                 </div>
             </div>
-
-            <!-- Submit Buttons -->
-            <div class="flex items-center justify-end gap-3.5">
-                <a href="dashboard.php" class="text-sm font-bold text-slate-500 hover:bg-slate-200/50 px-5 py-3 rounded-xl transition-colors">
-                    Batal
-                </a>
-                <button type="submit" 
-                        class="bg-gradient-to-r from-primary to-blue-600 hover:brightness-110 active:scale-[0.98] text-white py-3.5 px-6 rounded-xl font-bold text-sm shadow-lg shadow-primary/20 transition-all flex items-center gap-2">
-                    <span>Simpan Pengaturan</span>
-                    <span class="material-symbols-outlined text-[18px]">save</span>
-                </button>
-            </div>
-            
-        </form>
-
+        </div>
     </main>
+
+    <!-- ADD SERVICE MODAL DIALOG -->
+    <div id="add_modal" class="modal opacity-0 pointer-events-none fixed w-full h-full top-0 left-0 flex items-center justify-center z-50">
+        <div class="modal-overlay absolute w-full h-full bg-slate-900/50 backdrop-blur-sm" onclick="toggleModal()"></div>
+        
+        <div class="modal-container bg-white w-11/12 md:max-w-md mx-auto rounded-3xl shadow-2xl z-50 overflow-y-auto transform scale-95 transition-transform duration-300">
+            <div class="modal-content py-6 text-left px-6 space-y-4">
+                <!-- Title -->
+                <div class="flex justify-between items-center pb-3 border-b border-slate-100">
+                    <h3 class="text-md font-extrabold text-slate-950 flex items-center gap-1.5">
+                        <span class="material-symbols-outlined text-secondary">add_circle</span>
+                        <span>Tambah Layanan Baru</span>
+                    </h3>
+                    <button class="modal-close cursor-pointer z-50 text-slate-400 hover:text-slate-600" onclick="toggleModal()">
+                        <span class="material-symbols-outlined">close</span>
+                    </button>
+                </div>
+
+                <!-- Form -->
+                <form action="" method="POST" class="space-y-4">
+                    <input type="hidden" name="action" value="add_service">
+
+                    <div class="space-y-1">
+                        <label for="nama_layanan" class="block text-xs font-bold text-slate-500 uppercase tracking-wider">Nama Layanan *</label>
+                        <input type="text" id="nama_layanan" name="nama_layanan" required placeholder="Contoh: Cuci Setrika Ekspres"
+                               class="w-full px-4 py-3 bg-slate-50 border border-slate-200 focus:bg-white focus:border-primary focus:ring-1 focus:ring-primary rounded-xl text-sm outline-none">
+                    </div>
+
+                    <div class="grid grid-cols-2 gap-4">
+                        <div class="space-y-1">
+                            <label for="harga" class="block text-xs font-bold text-slate-500 uppercase tracking-wider">Tarif Harga (Rp) *</label>
+                            <input type="number" id="harga" name="harga" required min="100" placeholder="Contoh: 15000"
+                                   class="w-full px-4 py-3 bg-slate-50 border border-slate-200 focus:bg-white focus:border-primary focus:ring-1 focus:ring-primary rounded-xl text-sm outline-none">
+                        </div>
+
+                        <div class="space-y-1">
+                            <label for="kategori" class="block text-xs font-bold text-slate-500 uppercase tracking-wider">Kategori Tab *</label>
+                            <select id="kategori" name="kategori" required
+                                    class="w-full px-4 py-3 bg-slate-50 border border-slate-200 focus:bg-white focus:border-primary focus:ring-1 focus:ring-primary rounded-xl text-sm outline-none cursor-pointer">
+                                <option value="kiloan">Cuci Kiloan</option>
+                                <option value="satuan">Cuci Satuan</option>
+                                <option value="express">Cuci Express</option>
+                                <option value="self">Self Service</option>
+                            </select>
+                        </div>
+                    </div>
+
+                    <div class="space-y-1">
+                        <label for="detail" class="block text-xs font-bold text-slate-500 uppercase tracking-wider">Keterangan / Detail Layanan</label>
+                        <textarea id="detail" name="detail" rows="3" placeholder="Contoh: Pengerjaan 6 jam selesai. Pakaian disetrika rapi menggunakan setrika uap."
+                                  class="w-full px-4 py-3 bg-slate-50 border border-slate-200 focus:bg-white focus:border-primary focus:ring-1 focus:ring-primary rounded-xl text-sm outline-none"></textarea>
+                    </div>
+
+                    <!-- Footer Buttons -->
+                    <div class="flex justify-end gap-3 pt-3 border-t border-slate-100">
+                        <button type="button" class="px-4 py-2.5 rounded-xl border border-slate-200 text-slate-500 text-xs font-bold hover:bg-slate-50 transition-colors" onclick="toggleModal()">Batal</button>
+                        <button type="submit" class="px-5 py-2.5 rounded-xl bg-secondary text-white text-xs font-bold hover:brightness-105 transition-all shadow-md">Simpan Layanan</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
 
     <!-- Footer -->
     <footer class="bg-white border-t border-slate-100 py-4 px-6 text-center text-xs text-slate-400 mt-12">
-        © 2026 MataramWash Portal Kemitraan. Pengaturan Mandiri Layanan & Tarif Outlet.
+        © 2026 MataramWash Portal Kemitraan. Pengaturan Mandiri Layanan & Profil Outlet.
     </footer>
 
+    <script>
+        function previewImage(event) {
+            const reader = new FileReader();
+            reader.onload = function(){
+                const output = document.getElementById('foto_preview');
+                output.src = reader.result;
+            };
+            reader.readAsDataURL(event.target.files[0]);
+        }
+
+        function toggleModal() {
+            const body = document.querySelector('body');
+            const modal = document.querySelector('#add_modal');
+            const modalContainer = modal.querySelector('.modal-container');
+            
+            modal.classList.toggle('opacity-0');
+            modal.classList.toggle('pointer-events-none');
+            body.classList.toggle('modal-active');
+            
+            if (modal.classList.contains('pointer-events-none')) {
+                modalContainer.classList.remove('scale-100');
+                modalContainer.classList.add('scale-95');
+            } else {
+                modalContainer.classList.remove('scale-95');
+                modalContainer.classList.add('scale-100');
+            }
+        }
+    </script>
 </body>
 </html>

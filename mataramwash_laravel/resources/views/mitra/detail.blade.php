@@ -290,332 +290,134 @@
                 <h2 class="font-headline-md text-on-surface mb-md">Menu Layanan</h2>
                 <!-- Tabs -->
                 <div class="flex gap-md border-b border-outline-variant mb-lg overflow-x-auto pb-1">
-                    @if ($custom_tabs)
-                        @php $first = true; @endphp
-                        @foreach ($custom_tabs as $tab_id => $tab_label)
-                            <button id="tab-{{ $tab_id }}" onclick="switchTab('{{ $tab_id }}')" class="tab-btn px-md py-sm border-b-2 border-transparent text-on-surface-variant hover:text-primary transition-colors whitespace-nowrap {{ $first ? 'active' : '' }}">{{ $tab_label }}</button>
-                            @php $first = false; @endphp
-                        @endforeach
-                    @elseif ($is_self_service)
-                        <button id="tab-self" onclick="switchTab('self')" class="tab-btn px-md py-sm border-b-2 border-transparent text-on-surface-variant hover:text-primary transition-colors whitespace-nowrap active">Self Service</button>
-                        <button id="tab-facility" onclick="switchTab('facility')" class="tab-btn px-md py-sm border-b-2 border-transparent text-on-surface-variant hover:text-primary transition-colors whitespace-nowrap">Fasilitas & Keunggulan</button>
-                    @else
-                        <button id="tab-kiloan" onclick="switchTab('kiloan')" class="tab-btn px-md py-sm border-b-2 border-transparent text-on-surface-variant hover:text-primary transition-colors whitespace-nowrap active">Cuci Kiloan</button>
-                        <button id="tab-satuan" onclick="switchTab('satuan')" class="tab-btn px-md py-sm border-b-2 border-transparent text-on-surface-variant hover:text-primary transition-colors whitespace-nowrap">Cuci Satuan</button>
-                        <button id="tab-express" onclick="switchTab('express')" class="tab-btn px-md py-sm border-b-2 border-transparent text-on-surface-variant hover:text-primary transition-colors whitespace-nowrap">Cuci Express</button>
-                        @if (!empty($mitra->fasilitas) || !empty($mitra->keunggulan_lainnya))
-                            <button id="tab-facility" onclick="switchTab('facility')" class="tab-btn px-md py-sm border-b-2 border-transparent text-on-surface-variant hover:text-primary transition-colors whitespace-nowrap">Fasilitas & Keunggulan</button>
-                        @endif
+                    @php
+                    $has_self = false;
+                    $has_kiloan = false;
+                    $has_satuan = false;
+                    $has_express = false;
+
+                    foreach ($mitra->layanan as $l) {
+                        if ($l->kategori === 'self') $has_self = true;
+                        if ($l->kategori === 'kiloan') $has_kiloan = true;
+                        if ($l->kategori === 'satuan') $has_satuan = true;
+                        if ($l->kategori === 'express') $has_express = true;
+                    }
+
+                    $tabs_to_show = [];
+                    if ($has_self) {
+                        $tabs_to_show['self'] = 'Self Service';
+                    }
+                    if ($has_kiloan) {
+                        $is_shoes = (strpos(strtolower($mitra->nama_mitra), 'shoes') !== false || strpos(strtolower($mitra->nama_mitra), 'sepatu') !== false);
+                        $tabs_to_show['kiloan'] = $is_shoes ? 'Cuci Sepatu' : 'Cuci Kiloan';
+                    }
+                    if ($has_satuan) {
+                        $is_shoes = (strpos(strtolower($mitra->nama_mitra), 'shoes') !== false || strpos(strtolower($mitra->nama_mitra), 'sepatu') !== false);
+                        $tabs_to_show['satuan'] = $is_shoes ? 'Perawatan Khusus' : 'Cuci Satuan';
+                    }
+                    if ($has_express) {
+                        $tabs_to_show['express'] = 'Cuci Express';
+                    }
+                    @endphp
+
+                    @php $first = true; @endphp
+                    @foreach ($tabs_to_show as $tab_id => $tab_label)
+                        <button id="tab-{{ $tab_id }}" onclick="switchTab('{{ $tab_id }}')" class="tab-btn px-md py-sm border-b-2 border-transparent text-on-surface-variant hover:text-primary transition-colors whitespace-nowrap {{ $first ? 'active' : '' }}">{{ $tab_label }}</button>
+                        @php $first = false; @endphp
+                    @endforeach
+                    @if (!empty($mitra->fasilitas) || !empty($mitra->keunggulan_lainnya))
+                        <button id="tab-facility" onclick="switchTab('facility')" class="tab-btn px-md py-sm border-b-2 border-transparent text-on-surface-variant hover:text-primary transition-colors whitespace-nowrap {{ empty($tabs_to_show) ? 'active' : '' }}">Fasilitas & Keunggulan</button>
                     @endif
                 </div>
                 
                 <!-- Items Grid -->
-                @if ($custom_grids_html)
-                    {!! $custom_grids_html !!}
-                @elseif ($is_self_service)
-                    <!-- Grid: Self Service -->
-                    <div id="grid-self" class="grid-content grid grid-cols-1 md:grid-cols-2 gap-md">
-                        <!-- Item 1 -->
-                        <div class="bg-surface-container-lowest p-lg rounded-xl border border-outline-variant hover:shadow-md transition-shadow flex flex-col justify-between">
-                            <div>
-                                <div class="flex justify-between items-start mb-sm">
-                                    <h3 class="font-headline-md text-[20px] text-on-surface">Cuci Mandiri (Self Service Wash)</h3>
-                                    <span class="text-primary font-bold text-lg">Rp 15.000/siklus</span>
+                @php $first = true; @endphp
+                @foreach ($tabs_to_show as $cat_id => $cat_label)
+                    <div id="grid-{{ $cat_id }}" class="grid-content {{ $first ? '' : 'hidden' }} grid grid-cols-1 md:grid-cols-2 gap-md">
+                        @foreach ($mitra->layanan as $l)
+                            @if ($l->kategori === $cat_id)
+                                @php
+                                $unit = 'kg';
+                                if ($l->kategori === 'self') {
+                                    $unit = 'siklus';
+                                } elseif ($l->kategori === 'satuan') {
+                                    $unit = 'pcs';
+                                } elseif (strpos(strtolower($mitra->nama_mitra), 'shoes') !== false || strpos(strtolower($mitra->nama_mitra), 'sepatu') !== false) {
+                                    $unit = 'pasang';
+                                }
+                                @endphp
+                                <div class="bg-surface-container-lowest p-lg rounded-xl border border-outline-variant hover:shadow-md transition-shadow flex flex-col justify-between">
+                                    <div>
+                                        <div class="flex justify-between items-start mb-sm">
+                                            <h3 class="font-headline-md text-[20px] text-on-surface">{{ $l->nama_layanan }}</h3>
+                                            <span class="text-primary font-bold text-lg whitespace-nowrap">Rp {{ number_format($l->harga, 0, ',', '.') }}/{{ $unit }}</span>
+                                        </div>
+                                        <p class="text-on-surface-variant text-body-md mb-lg">{{ $l->detail }}</p>
+                                    </div>
+                                    <button onclick="openOrderModal('{{ $l->nama_layanan }}', {{ $l->harga }}, '{{ $unit }}')" class="w-full bg-primary text-on-primary py-sm rounded-xl font-bold flex items-center justify-center gap-sm active:scale-[0.98] transition-transform">
+                                        <span class="material-symbols-outlined text-[20px]">shopping_cart_checkout</span> Pesan Sekarang
+                                    </button>
                                 </div>
-                                <p class="text-on-surface-variant text-body-md mb-lg">Mencuci pakaian Anda sendiri dengan mesin cuci koin premium tanpa timbang. Durasi pengerjaan ± 30 menit.</p>
-                            </div>
-                            <button onclick="openOrderModal('Self Service Wash', 15000, 'siklus')" class="w-full bg-primary text-on-primary py-sm rounded-xl font-bold flex items-center justify-center gap-sm active:scale-[0.98] transition-transform">
-                                <span class="material-symbols-outlined text-[20px]">shopping_cart_checkout</span> Pesan Sekarang
-                            </button>
-                        </div>
-                        <!-- Item 2 -->
-                        <div class="bg-surface-container-lowest p-lg rounded-xl border border-outline-variant hover:shadow-md transition-shadow flex flex-col justify-between">
-                            <div>
-                                <div class="flex justify-between items-start mb-sm">
-                                    <h3 class="font-headline-md text-[20px] text-on-surface">Keringkan Mandiri (Self Service Dry)</h3>
-                                    <span class="text-primary font-bold text-lg">Rp 15.000/siklus</span>
-                                </div>
-                                <p class="text-on-surface-variant text-body-md mb-lg">Mengeringkan pakaian Anda sendiri dengan mesin pengering profesional. Pakaian langsung kering 100% siap pakai. Durasi ± 30 menit.</p>
-                            </div>
-                            <button onclick="openOrderModal('Self Service Dry', 15000, 'siklus')" class="w-full bg-primary text-on-primary py-sm rounded-xl font-bold flex items-center justify-center gap-sm active:scale-[0.98] transition-transform">
-                                <span class="material-symbols-outlined text-[20px]">shopping_cart_checkout</span> Pesan Sekarang
-                            </button>
-                        </div>
-                        <!-- Item 3 -->
-                        <div class="bg-surface-container-lowest p-lg rounded-xl border border-outline-variant hover:shadow-md transition-shadow flex flex-col justify-between">
-                            <div>
-                                <div class="flex justify-between items-start mb-sm">
-                                    <h3 class="font-headline-md text-[20px] text-on-surface">Paket Lengkap Mandiri (Wash & Dry)</h3>
-                                    <span class="text-primary font-bold text-lg">Rp 30.000/paket</span>
-                                </div>
-                                <p class="text-on-surface-variant text-body-md mb-lg">Paket lengkap mencuci dan mengeringkan pakaian 100% tanpa timbang secara mandiri. Total pengerjaan hanya 1 jam.</p>
-                            </div>
-                            <button onclick="openOrderModal('Paket Lengkap Wash & Dry', 30000, 'paket')" class="w-full bg-primary text-on-primary py-sm rounded-xl font-bold flex items-center justify-center gap-sm active:scale-[0.98] transition-transform">
-                                <span class="material-symbols-outlined text-[20px]">shopping_cart_checkout</span> Pesan Sekarang
-                            </button>
-                        </div>
+                            @endif
+                        @endforeach
                     </div>
-                    
+                    @php $first = false; @endphp
+                @endforeach
+
+                @if (!empty($mitra->fasilitas) || !empty($mitra->keunggulan_lainnya))
                     <!-- Grid: Facility -->
                     <div id="grid-facility" class="grid-content hidden space-y-md">
                         <div class="bg-surface-container-lowest p-lg rounded-xl border border-outline-variant shadow-sm space-y-sm">
                             <h3 class="font-headline-md text-[20px] text-primary font-bold">Kenapa Memilih {{ $mitra->nama_mitra }}?</h3>
                             <ul class="space-y-sm text-body-md text-on-surface-variant">
-                                @if (!empty($mitra->fasilitas) || !empty($mitra->keunggulan_lainnya))
-                                    @if (!empty($mitra->fasilitas))
-                                        @php
-                                            $facs = explode(',', $mitra->fasilitas);
-                                            $desc_map = [
-                                                'wifi' => ['Free Wi-Fi', 'Tersedia koneksi internet Wi-Fi gratis berkecepatan tinggi di area toko.'],
-                                                'ac' => ['Ruang Tunggu AC', 'Ruang tunggu ber-AC yang nyaman dan sejuk bagi pelanggan.'],
-                                                'parkir' => ['Parkir Luas', 'Area parkir luas dan aman untuk kendaraan roda dua maupun roda empat.'],
-                                                'air' => ['Air Minum Gratis', 'Tersedia fasilitas air minum gratis (dispenser/mineral) untuk pelanggan.'],
-                                                'antar' => ['Antar Jemput', 'Layanan jemput-antar laundry praktis langsung ke kosan Anda.']
-                                            ];
-                                        @endphp
-                                        @foreach ($facs as $fac)
-                                            @php $fac = trim($fac); @endphp
-                                            @if (isset($desc_map[$fac]))
-                                                <li class="flex items-start gap-md">
-                                                    <span class="material-symbols-outlined text-secondary mt-[2px]">check_circle</span>
-                                                    <span><strong>{{ $desc_map[$fac][0] }}:</strong> {{ $desc_map[$fac][1] }}</span>
-                                                </li>
-                                            @endif
-                                        @endforeach
-                                    @endif
-                                    
-                                    @if (!empty($mitra->keunggulan_lainnya))
-                                        @php
-                                            $lines = explode("\n", str_replace("\r", "", $mitra->keunggulan_lainnya));
-                                        @endphp
-                                        @foreach ($lines as $line)
-                                            @php $line = trim($line); @endphp
-                                            @if (!empty($line))
-                                                <li class="flex items-start gap-md">
-                                                    <span class="material-symbols-outlined text-secondary mt-[2px]">check_circle</span>
-                                                    @if (strpos($line, ':') !== false)
-                                                        @php $parts = explode(':', $line, 2); @endphp
-                                                        <span><strong>{{ trim($parts[0]) }}:</strong> {{ trim($parts[1]) }}</span>
-                                                    @else
-                                                        <span>{{ $line }}</span>
-                                                    @endif
-                                                </li>
-                                            @endif
-                                        @endforeach
-                                    @endif
-                                @else
-                                    <li class="flex items-start gap-md">
-                                        <span class="material-symbols-outlined text-secondary mt-[2px]">check_circle</span>
-                                        <span><strong>Laundry Ekspress Self Service Pertama</strong> di Mataram.</span>
-                                    </li>
-                                    <li class="flex items-start gap-md">
-                                        <span class="material-symbols-outlined text-secondary mt-[2px]">check_circle</span>
-                                        <span><strong>Mencuci Tanpa Timbang:</strong> Bebas mencuci pakaian sebanyak kapasitas mesin cuci tanpa khawatir berat timbangan.</span>
-                                    </li>
-                                    <li class="flex items-start gap-md">
-                                        <span class="material-symbols-outlined text-secondary mt-[2px]">check_circle</span>
-                                        <span><strong>Mencuci Hanya 15 Ribu:</strong> Sangat hemat, bersahabat dengan kantong mahasiswa.</span>
-                                    </li>
-                                    <li class="flex items-start gap-md">
-                                        <span class="material-symbols-outlined text-secondary mt-[2px]">check_circle</span>
-                                        <span><strong>Privasi Terjaga:</strong> Pengerjaan dikerjakan sendiri oleh konsumen sehingga pakaian dalam atau pakaian sensitif aman tidak tercampur atau tersentuh orang lain.</span>
-                                    </li>
-                                    <li class="flex items-start gap-md">
-                                        <span class="material-symbols-outlined text-secondary mt-[2px]">check_circle</span>
-                                        <span><strong>Ruang Tunggu Premium:</strong> Sambil menunggu, Anda bisa mengerjakan tugas kuliah atau bersantai di ruangan ber-AC dengan fasilitas Wifi gratis berkecepatan tinggi.</span>
-                                    </li>
+                                @if (!empty($mitra->fasilitas))
+                                    @php
+                                        $facs = explode(',', $mitra->fasilitas);
+                                        $desc_map = [
+                                            'wifi' => ['Free Wi-Fi', 'Tersedia koneksi internet Wi-Fi gratis berkecepatan tinggi di area toko.'],
+                                            'ac' => ['Ruang Tunggu AC', 'Ruang tunggu ber-AC yang nyaman dan sejuk bagi pelanggan.'],
+                                            'parkir' => ['Parkir Luas', 'Area parkir luas dan aman untuk kendaraan roda dua maupun roda empat.'],
+                                            'air' => ['Air Minum Gratis', 'Tersedia fasilitas air minum gratis (dispenser/mineral) untuk pelanggan.'],
+                                            'antar' => ['Antar Jemput', 'Layanan jemput-antar laundry praktis langsung ke kosan Anda.']
+                                        ];
+                                    @endphp
+                                    @foreach ($facs as $fac)
+                                        @php $fac = trim($fac); @endphp
+                                        @if (isset($desc_map[$fac]))
+                                            <li class="flex items-start gap-md">
+                                                <span class="material-symbols-outlined text-secondary mt-[2px]">check_circle</span>
+                                                <span><strong>{{ $desc_map[$fac][0] }}:</strong> {{ $desc_map[$fac][1] }}</span>
+                                            </li>
+                                        @endif
+                                    @endforeach
+                                @endif
+                                
+                                @if (!empty($mitra->keunggulan_lainnya))
+                                    @php
+                                        $lines = explode("\n", str_replace("\r", "", $mitra->keunggulan_lainnya));
+                                    @endphp
+                                    @foreach ($lines as $line)
+                                        @php $line = trim($line); @endphp
+                                        @if (!empty($line))
+                                            <li class="flex items-start gap-md">
+                                                <span class="material-symbols-outlined text-secondary mt-[2px]">check_circle</span>
+                                                @if (strpos($line, ':') !== false)
+                                                    @php $parts = explode(':', $line, 2); @endphp
+                                                    <span><strong>{{ trim($parts[0]) }}:</strong> {{ trim($parts[1]) }}</span>
+                                                @else
+                                                    <span>{{ $line }}</span>
+                                                @endif
+                                            </li>
+                                        @endif
+                                    @endforeach
                                 @endif
                             </ul>
                         </div>
                     </div>
-                @else
-                    <!-- Grid 1: Kiloan -->
-                    <div id="grid-kiloan" class="grid-content grid grid-cols-1 md:grid-cols-2 gap-md">
-                        <!-- Item 1 -->
-                        <div class="bg-surface-container-lowest p-lg rounded-xl border border-outline-variant hover:shadow-md transition-shadow flex flex-col justify-between">
-                            <div>
-                                <div class="flex justify-between items-start mb-sm">
-                                    <h3 class="font-headline-md text-[20px] text-on-surface">Cuci Lipat Reguler</h3>
-                                    <span class="text-primary font-bold text-lg">Rp {{ number_format($pricing['lipat_reguler'], 0, ',', '.') }}/kg</span>
-                                </div>
-                                <p class="text-on-surface-variant text-body-md mb-lg">Layanan cuci bersih dan lipat rapi tanpa setrika. Cocok untuk kebutuhan sehari-hari.</p>
-                            </div>
-                            <button onclick="openOrderModal('Cuci Lipat Reguler', {{ $pricing['lipat_reguler'] }}, 'kg')" class="w-full bg-primary text-on-primary py-sm rounded-xl font-bold flex items-center justify-center gap-sm active:scale-[0.98] transition-transform">
-                                <span class="material-symbols-outlined text-[20px]">shopping_cart_checkout</span> Pesan Sekarang
-                            </button>
-                        </div>
-                        <!-- Item 2 -->
-                        <div class="bg-surface-container-lowest p-lg rounded-xl border border-outline-variant hover:shadow-md transition-shadow flex flex-col justify-between">
-                            <div>
-                                <div class="flex justify-between items-start mb-sm">
-                                    <h3 class="font-headline-md text-[20px] text-on-surface">Cuci Setrika Reguler</h3>
-                                    <span class="text-primary font-bold text-lg">Rp {{ number_format($pricing['setrika_reguler'], 0, ',', '.') }}/kg</span>
-                                </div>
-                                <p class="text-on-surface-variant text-body-md mb-lg">Layanan cuci bersih, dikeringkan, dan disetrika licin menggunakan uap.</p>
-                            </div>
-                            <button onclick="openOrderModal('Cuci Setrika Reguler', {{ $pricing['setrika_reguler'] }}, 'kg')" class="w-full bg-primary text-on-primary py-sm rounded-xl font-bold flex items-center justify-center gap-sm active:scale-[0.98] transition-transform">
-                                <span class="material-symbols-outlined text-[20px]">shopping_cart_checkout</span> Pesan Sekarang
-                            </button>
-                        </div>
-                        <!-- Item 3 -->
-                        <div class="bg-surface-container-lowest p-lg rounded-xl border border-outline-variant hover:shadow-md transition-shadow flex flex-col justify-between">
-                            <div>
-                                <div class="flex justify-between items-start mb-sm">
-                                    <h3 class="font-headline-md text-[20px] text-on-surface">Setrika Saja</h3>
-                                    <span class="text-primary font-bold text-lg">Rp {{ number_format($pricing['setrika_saja'], 0, ',', '.') }}/kg</span>
-                                </div>
-                                <p class="text-on-surface-variant text-body-md mb-lg">Hanya layanan setrika uap untuk pakaian yang sudah Anda cuci sendiri.</p>
-                            </div>
-                            <button onclick="openOrderModal('Setrika Saja', {{ $pricing['setrika_saja'] }}, 'kg')" class="w-full bg-primary text-on-primary py-sm rounded-xl font-bold flex items-center justify-center gap-sm active:scale-[0.98] transition-transform">
-                                <span class="material-symbols-outlined text-[20px]">shopping_cart_checkout</span> Pesan Sekarang
-                            </button>
-                        </div>
-                        @if ($pricing['pengeringan'])
-                            <!-- Item 4: Pengeringan -->
-                            <div class="bg-surface-container-lowest p-lg rounded-xl border border-outline-variant hover:shadow-md transition-shadow flex flex-col justify-between">
-                                <div>
-                                    <div class="flex justify-between items-start mb-sm">
-                                        <h3 class="font-headline-md text-[20px] text-on-surface">Pengeringan</h3>
-                                        <span class="text-primary font-bold text-lg">Rp {{ number_format($pricing['pengeringan'], 0, ',', '.') }}/kg</span>
-                                    </div>
-                                    <p class="text-on-surface-variant text-body-md mb-lg">Layanan pengeringan pakaian basah menggunakan mesin pengering komersial.</p>
-                                </div>
-                                <button onclick="openOrderModal('Pengeringan', {{ $pricing['pengeringan'] }}, 'kg')" class="w-full bg-primary text-on-primary py-sm rounded-xl font-bold flex items-center justify-center gap-sm active:scale-[0.98] transition-transform">
-                                    <span class="material-symbols-outlined text-[20px]">shopping_cart_checkout</span> Pesan Sekarang
-                                </button>
-                            </div>
-                        @endif
-                    </div>
-
-                    <!-- Grid 2: Satuan -->
-                    <div id="grid-satuan" class="grid-content hidden grid grid-cols-1 md:grid-cols-2 gap-md">
-                        <!-- Item 1 -->
-                        <div class="bg-surface-container-lowest p-lg rounded-xl border border-outline-variant hover:shadow-md transition-shadow flex flex-col justify-between">
-                            <div>
-                                <div class="flex justify-between items-start mb-sm">
-                                    <h3 class="font-headline-md text-[20px] text-on-surface">Cuci Satuan Jaket</h3>
-                                    <span class="text-primary font-bold text-lg">Rp {{ number_format($pricing['satuan_jaket'], 0, ',', '.') }}/pcs</span>
-                                </div>
-                                <p class="text-on-surface-variant text-body-md mb-lg">Layanan cuci satuan jaket tebal/kulit/denim dengan perawatan khusus serat kain.</p>
-                            </div>
-                            <button onclick="openOrderModal('Cuci Satuan Jaket', {{ $pricing['satuan_jaket'] }}, 'pcs')" class="w-full bg-primary text-on-primary py-sm rounded-xl font-bold flex items-center justify-center gap-sm active:scale-[0.98] transition-transform">
-                                <span class="material-symbols-outlined text-[20px]">shopping_cart_checkout</span> Pesan Sekarang
-                            </button>
-                        </div>
-                        <!-- Item 2 -->
-                        <div class="bg-surface-container-lowest p-lg rounded-xl border border-outline-variant hover:shadow-md transition-shadow flex flex-col justify-between">
-                            <div>
-                                <div class="flex justify-between items-start mb-sm">
-                                    <h3 class="font-headline-md text-[20px] text-on-surface">Cuci Satuan Selimut</h3>
-                                    <span class="text-primary font-bold text-lg">Rp {{ number_format($pricing['satuan_selimut'], 0, ',', '.') }}/pcs</span>
-                                </div>
-                                <p class="text-on-surface-variant text-body-md mb-lg">Layanan cuci selimut/bed cover ukuran sedang agar wangi dan bebas tungau.</p>
-                            </div>
-                            <button onclick="openOrderModal('Cuci Satuan Selimut', {{ $pricing['satuan_selimut'] }}, 'pcs')" class="w-full bg-primary text-on-primary py-sm rounded-xl font-bold flex items-center justify-center gap-sm active:scale-[0.98] transition-transform">
-                                <span class="material-symbols-outlined text-[20px]">shopping_cart_checkout</span> Pesan Sekarang
-                            </button>
-                        </div>
-                        <!-- Item 3 -->
-                        <div class="bg-surface-container-lowest p-lg rounded-xl border border-outline-variant hover:shadow-md transition-shadow flex flex-col justify-between">
-                            <div>
-                                <div class="flex justify-between items-start mb-sm">
-                                    <h3 class="font-headline-md text-[20px] text-on-surface">Cuci Satuan Bed Cover</h3>
-                                    <span class="text-primary font-bold text-lg">Rp {{ number_format($pricing['satuan_bed_cover'], 0, ',', '.') }}/pcs</span>
-                                </div>
-                                <p class="text-on-surface-variant text-body-md mb-lg">Layanan cuci bed cover jumbo lengkap dengan proses disinfeksi uap panas.</p>
-                            </div>
-                            <button onclick="openOrderModal('Cuci Satuan Bed Cover', {{ $pricing['satuan_bed_cover'] }}, 'pcs')" class="w-full bg-primary text-on-primary py-sm rounded-xl font-bold flex items-center justify-center gap-sm active:scale-[0.98] transition-transform">
-                                <span class="material-symbols-outlined text-[20px]">shopping_cart_checkout</span> Pesan Sekarang
-                            </button>
-                        </div>
-                    </div>
-
-                    <!-- Grid 3: Express -->
-                    <div id="grid-express" class="grid-content hidden grid grid-cols-1 md:grid-cols-2 gap-md">
-                        <!-- Item 1 -->
-                        <div class="bg-surface-container-lowest p-lg rounded-xl border border-outline-variant hover:shadow-md transition-shadow flex flex-col justify-between">
-                            <div>
-                                <div class="flex justify-between items-start mb-sm">
-                                    <h3 class="font-headline-md text-[20px] text-on-surface">Cuci Lipat Express</h3>
-                                    <span class="text-primary font-bold text-lg">Rp {{ number_format($pricing['express_lipat'], 0, ',', '.') }}/kg</span>
-                                </div>
-                                <p class="text-on-surface-variant text-body-md mb-lg">Cuci bersih & lipat kilat selesai dalam 6 jam. Solusi darurat baju bersih.</p>
-                            </div>
-                            <button onclick="openOrderModal('Cuci Lipat Express', {{ $pricing['express_lipat'] }}, 'kg')" class="w-full bg-primary text-on-primary py-sm rounded-xl font-bold flex items-center justify-center gap-sm active:scale-[0.98] transition-transform">
-                                <span class="material-symbols-outlined text-[20px]">shopping_cart_checkout</span> Pesan Sekarang
-                            </button>
-                        </div>
-                        <!-- Item 2 -->
-                        <div class="bg-surface-container-lowest p-lg rounded-xl border border-outline-variant hover:shadow-md transition-shadow flex flex-col justify-between">
-                            <div>
-                                <div class="flex justify-between items-start mb-sm">
-                                    <h3 class="font-headline-md text-[20px] text-on-surface">Cuci Setrika Express</h3>
-                                    <span class="text-primary font-bold text-lg">Rp {{ number_format($pricing['express_setrika'], 0, ',', '.') }}/kg</span>
-                                </div>
-                                <p class="text-on-surface-variant text-body-md mb-lg">Cuci, setrika licin dengan uap, wangi segar selesai dalam 6 jam.</p>
-                            </div>
-                            <button onclick="openOrderModal('Cuci Setrika Express', {{ $pricing['express_setrika'] }}, 'kg')" class="w-full bg-primary text-on-primary py-sm rounded-xl font-bold flex items-center justify-center gap-sm active:scale-[0.98] transition-transform">
-                                <span class="material-symbols-outlined text-[20px]">shopping_cart_checkout</span> Pesan Sekarang
-                            </button>
-                    </div>
-
-                    @if (!empty($mitra->fasilitas) || !empty($mitra->keunggulan_lainnya))
-                        <!-- Grid: Facility -->
-                        <div id="grid-facility" class="grid-content hidden space-y-md">
-                            <div class="bg-surface-container-lowest p-lg rounded-xl border border-outline-variant shadow-sm space-y-sm">
-                                <h3 class="font-headline-md text-[20px] text-primary font-bold">Kenapa Memilih {{ $mitra->nama_mitra }}?</h3>
-                                <ul class="space-y-sm text-body-md text-on-surface-variant">
-                                    @if (!empty($mitra->fasilitas))
-                                        @php
-                                            $facs = explode(',', $mitra->fasilitas);
-                                            $desc_map = [
-                                                'wifi' => ['Free Wi-Fi', 'Tersedia koneksi internet Wi-Fi gratis berkecepatan tinggi di area toko.'],
-                                                'ac' => ['Ruang Tunggu AC', 'Ruang tunggu ber-AC yang nyaman dan sejuk bagi pelanggan.'],
-                                                'parkir' => ['Parkir Luas', 'Area parkir luas dan aman untuk kendaraan roda dua maupun roda empat.'],
-                                                'air' => ['Air Minum Gratis', 'Tersedia fasilitas air minum gratis (dispenser/mineral) untuk pelanggan.'],
-                                                'antar' => ['Antar Jemput', 'Layanan jemput-antar laundry praktis langsung ke kosan Anda.']
-                                            ];
-                                        @endphp
-                                        @foreach ($facs as $fac)
-                                            @php $fac = trim($fac); @endphp
-                                            @if (isset($desc_map[$fac]))
-                                                <li class="flex items-start gap-md">
-                                                    <span class="material-symbols-outlined text-secondary mt-[2px]">check_circle</span>
-                                                    <span><strong>{{ $desc_map[$fac][0] }}:</strong> {{ $desc_map[$fac][1] }}</span>
-                                                </li>
-                                            @endif
-                                        @endforeach
-                                    @endif
-                                    
-                                    @if (!empty($mitra->keunggulan_lainnya))
-                                        @php
-                                            $lines = explode("\n", str_replace("\r", "", $mitra->keunggulan_lainnya));
-                                        @endphp
-                                        @foreach ($lines as $line)
-                                            @php $line = trim($line); @endphp
-                                            @if (!empty($line))
-                                                <li class="flex items-start gap-md">
-                                                    <span class="material-symbols-outlined text-secondary mt-[2px]">check_circle</span>
-                                                    @if (strpos($line, ':') !== false)
-                                                        @php
-                                                            $parts = explode(':', $line, 2);
-                                                        @endphp
-                                                        <span><strong>{{ trim($parts[0]) }}:</strong> {{ trim($parts[1]) }}</span>
-                                                    @else
-                                                        <span>{{ $line }}</span>
-                                                    @endif
-                                                </li>
-                                            @endif
-                                        @endforeach
-                                    @endif
-                                </ul>
-                            </div>
-                        </div>
-                    @endif
                 @endif
             </div>
-            
-            <!-- Reviews Section -->
+             
+             <!-- Reviews Section -->
             <div class="mt-xl">
                 <h2 class="font-headline-md text-on-surface mb-md">Ulasan Pelanggan</h2>
                 <!-- Filter Buttons -->
