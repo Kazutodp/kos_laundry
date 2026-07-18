@@ -720,7 +720,6 @@ $logo_url = $partner_logos[$id_mitra] ?? $partner_logos[1];
                             </div>
                         </div>
                     <?php endif; ?>
-                <?php endif; ?>
             </div>
         </div> <!-- End of lg:col-span-2 Left Column -->
         
