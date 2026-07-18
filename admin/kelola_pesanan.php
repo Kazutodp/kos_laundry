@@ -330,7 +330,7 @@ try {
                                             ?>
                                             <div class="inline-flex items-center gap-2">
                                                 <!-- Detail Button -->
-                                                <button onclick='openDetailModal(<?= $order_json; ?>)' 
+                                                <button data-order="<?= $order_json; ?>" onclick="openDetailModal(this)" 
                                                         class="text-xs bg-blue-50 text-blue-600 border border-blue-200 font-bold py-1.5 px-3 rounded-lg shadow-xs hover:bg-blue-100 transition-colors">
                                                     Detail
                                                 </button>
@@ -424,7 +424,8 @@ try {
 </div>
 
 <script>
-    function openDetailModal(order) {
+    function openDetailModal(button) {
+        const order = JSON.parse(button.getAttribute('data-order'));
         document.getElementById('detail-order-id').innerText = 'Pesanan #' + order.id;
         document.getElementById('detail-customer-name').innerText = order.nama_pelanggan;
         document.getElementById('detail-mitra-name').innerText = order.nama_mitra;
@@ -467,7 +468,6 @@ try {
 
     function closeDetailModal() {
         document.getElementById('detail-modal').classList.add('hidden');
-    }
     }
     
     // Delete Confirmation Modal Controls for Admin
