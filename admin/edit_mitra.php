@@ -31,37 +31,13 @@ try {
     exit();
 }
 
-// Load custom pricing from the partner file if it exists
-$file_name = str_replace(' ', '_', $mitra['nama_mitra']) . '.php';
-$file_path = '../Mitra laundry/' . $file_name;
+// Load default custom pricing values (used for template file generation)
 $harga_pengeringan = 6000;
 $harga_setrika_reguler = 13000;
 $harga_setrika_saja = 7000;
 $harga_satuan_jaket = 15000;
 $harga_satuan_selimut = 20000;
 $harga_satuan_bed_cover = 30000;
-
-if (file_exists($file_path)) {
-    $content = file_get_contents($file_path);
-    if (preg_match('/\$custom_harga_pengeringan\s*=\s*(\d+)/', $content, $matches)) {
-        $harga_pengeringan = (int)$matches[1];
-    }
-    if (preg_match('/\$custom_harga_setrika_reguler\s*=\s*(\d+)/', $content, $matches)) {
-        $harga_setrika_reguler = (int)$matches[1];
-    }
-    if (preg_match('/\$custom_harga_setrika_saja\s*=\s*(\d+)/', $content, $matches)) {
-        $harga_setrika_saja = (int)$matches[1];
-    }
-    if (preg_match('/\$custom_harga_satuan_jaket\s*=\s*(\d+)/', $content, $matches)) {
-        $harga_satuan_jaket = (int)$matches[1];
-    }
-    if (preg_match('/\$custom_harga_satuan_selimut\s*=\s*(\d+)/', $content, $matches)) {
-        $harga_satuan_selimut = (int)$matches[1];
-    }
-    if (preg_match('/\$custom_harga_satuan_bed_cover\s*=\s*(\d+)/', $content, $matches)) {
-        $harga_satuan_bed_cover = (int)$matches[1];
-    }
-}
 
 function get_coords_from_google_maps($url) {
     $url = trim($url);
@@ -102,6 +78,20 @@ function get_coords_from_google_maps($url) {
 }
 
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
+
+    // ---- RESET PASSWORD (Emergency) ----
+    if (isset($_POST['action']) && $_POST['action'] === 'reset_password') {
+        try {
+            $default_password = password_hash('mitra123', PASSWORD_DEFAULT);
+            $stmt_reset = $pdo->prepare("UPDATE mitra_laundry SET password = ? WHERE id = ?");
+            $stmt_reset->execute([$default_password, $id]);
+            $success = 'Password mitra berhasil direset ke: mitra123';
+        } catch (PDOException $e) {
+            $error = 'Gagal mereset password: ' . $e->getMessage();
+        }
+    } else {
+
+    // ---- UPDATE MITRA DATA ----
     $nama_mitra = trim($_POST['nama_mitra'] ?? '');
     $latitude = trim($_POST['latitude'] ?? '');
     $longitude = trim($_POST['longitude'] ?? '');
@@ -123,36 +113,11 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     $status_buka = isset($_POST['status_buka']) ? 1 : 0;
     $is_rekomendasi = isset($_POST['is_rekomendasi']) ? 1 : 0;
     $rating = trim($_POST['rating'] ?? '5.0');
-    $fasilitas = isset($_POST['fasilitas']) ? implode(',', $_POST['fasilitas']) : '';
-    $keunggulan_lainnya = trim($_POST['keunggulan_lainnya'] ?? '');
-    
-    // Credentials
-    $username_input = trim($_POST['username_input'] ?? '');
-    $password_input = trim($_POST['password_input'] ?? '');
-    
-    // Custom Pricing Overrides
-    $harga_pengeringan = (int)($_POST['harga_pengeringan'] ?? 6000);
-    $harga_setrika_reguler = (int)($_POST['harga_setrika_reguler'] ?? 13000);
-    $harga_setrika_saja = (int)($_POST['harga_setrika_saja'] ?? 7000);
-    $harga_satuan_jaket = (int)($_POST['harga_satuan_jaket'] ?? 15000);
-    $harga_satuan_selimut = (int)($_POST['harga_satuan_selimut'] ?? 20000);
-    $harga_satuan_bed_cover = (int)($_POST['harga_satuan_bed_cover'] ?? 30000);
 
     // Validation
-    if (empty($nama_mitra) || empty($latitude) || empty($longitude) || empty($alamat) || empty($harga_per_kg) || empty($username_input)) {
-        $error = 'Nama Mitra, Koordinat (Latitude & Longitude), Alamat, Harga, dan Username wajib diisi.';
+    if (empty($nama_mitra) || empty($latitude) || empty($longitude) || empty($alamat) || empty($harga_per_kg)) {
+        $error = 'Nama Mitra, Koordinat (Latitude & Longitude), Alamat, dan Harga wajib diisi.';
     } else {
-        // Check if username is already taken by another partner
-        try {
-            $check_stmt = $pdo->prepare("SELECT id FROM mitra_laundry WHERE username = ? AND id != ?");
-            $check_stmt->execute([$username_input, $id]);
-            if ($check_stmt->fetch()) {
-                $error = 'Username kemitraan sudah digunakan oleh mitra lain. Silakan cari username yang unik.';
-            }
-        } catch (PDOException $e) {
-            $error = 'Gagal memeriksa keunikan username: ' . $e->getMessage();
-        }
-
         // File Upload
         $foto_toko = $mitra['foto_toko']; // keep old by default
         if (empty($error)) {
@@ -188,52 +153,23 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 
         if (empty($error)) {
             try {
-                // Update database (conditional password update)
-                if (!empty($password_input)) {
-                    $hashed_password = password_hash($password_input, PASSWORD_DEFAULT);
-                    $stmt = $pdo->prepare("UPDATE mitra_laundry SET nama_mitra = ?, username = ?, password = ?, foto_toko = ?, latitude = ?, longitude = ?, google_maps_link = ?, alamat = ?, no_telp = ?, rating = ?, harga_per_kg = ?, jam_buka = ?, status_buka = ?, icon_type = ?, is_rekomendasi = ?, fasilitas = ?, keunggulan_lainnya = ? WHERE id = ?");
-                    $stmt->execute([
-                        $nama_mitra,
-                        $username_input,
-                        $hashed_password,
-                        $foto_toko,
-                        $latitude,
-                        $longitude,
-                        $google_maps_link,
-                        $alamat,
-                        $no_telp,
-                        $rating,
-                        $harga_per_kg,
-                        $jam_buka,
-                        $status_buka,
-                        $icon_type,
-                        $is_rekomendasi,
-                        $fasilitas,
-                        $keunggulan_lainnya,
-                        $id
-                    ]);
-                } else {
-                    $stmt = $pdo->prepare("UPDATE mitra_laundry SET nama_mitra = ?, username = ?, foto_toko = ?, latitude = ?, longitude = ?, google_maps_link = ?, alamat = ?, no_telp = ?, rating = ?, harga_per_kg = ?, jam_buka = ?, status_buka = ?, icon_type = ?, is_rekomendasi = ?, fasilitas = ?, keunggulan_lainnya = ? WHERE id = ?");
-                    $stmt->execute([
-                        $nama_mitra,
-                        $username_input,
-                        $foto_toko,
-                        $latitude,
-                        $longitude,
-                        $google_maps_link,
-                        $alamat,
-                        $no_telp,
-                        $rating,
-                        $harga_per_kg,
-                        $jam_buka,
-                        $status_buka,
-                        $icon_type,
-                        $is_rekomendasi,
-                        $fasilitas,
-                        $keunggulan_lainnya,
-                        $id
-                    ]);
-                }
+                $stmt = $pdo->prepare("UPDATE mitra_laundry SET nama_mitra = ?, foto_toko = ?, latitude = ?, longitude = ?, google_maps_link = ?, alamat = ?, no_telp = ?, rating = ?, harga_per_kg = ?, jam_buka = ?, status_buka = ?, icon_type = ?, is_rekomendasi = ? WHERE id = ?");
+                $stmt->execute([
+                    $nama_mitra,
+                    $foto_toko,
+                    $latitude,
+                    $longitude,
+                    $google_maps_link,
+                    $alamat,
+                    $no_telp,
+                    $rating,
+                    $harga_per_kg,
+                    $jam_buka,
+                    $status_buka,
+                    $icon_type,
+                    $is_rekomendasi,
+                    $id
+                ]);
 
                 // Manage template files
                 $old_slug = str_replace(' ', '_', $mitra['nama_mitra']) . '.php';
@@ -294,6 +230,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             }
         }
     }
+    } // end else (bukan reset_password)
 }
 ?>
 <!DOCTYPE html>
@@ -514,6 +451,15 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                         </div>
                     </div>
                 <?php endif; ?>
+                <?php if (!empty($success)): ?>
+                    <div class="p-md bg-emerald-50 text-emerald-800 rounded-xl border border-emerald-200 flex items-center gap-md shadow-sm">
+                        <span class="material-symbols-outlined text-emerald-600 text-2xl">check_circle</span>
+                        <div>
+                            <p class="font-bold">Berhasil</p>
+                            <p class="text-xs"><?= htmlspecialchars($success); ?></p>
+                        </div>
+                    </div>
+                <?php endif; ?>
 
                 <!-- Form Grid -->
                 <form action="edit_mitra.php?id=<?= $id; ?>" method="POST" enctype="multipart/form-data" class="grid grid-cols-1 lg:grid-cols-3 gap-lg">
@@ -534,14 +480,12 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                                     <input type="text" id="no_telp" name="no_telp" value="<?= htmlspecialchars($mitra['no_telp']); ?>" placeholder="Contoh: 081234567890" class="w-full rounded-xl border-outline-variant focus:ring-primary focus:border-primary text-body-md py-2.5 px-md bg-white">
                                 </div>
                             </div>
-                            <div class="grid grid-cols-1 md:grid-cols-2 gap-md">
-                                <div class="space-y-xs">
-                                    <label for="username_input" class="text-label-md font-bold text-on-surface-variant">Username Kemitraan (untuk Login) *</label>
-                                    <input type="text" id="username_input" name="username_input" required value="<?= htmlspecialchars($mitra['username'] ?? ''); ?>" placeholder="Contoh: outletwashtra" class="w-full rounded-xl border-outline-variant focus:ring-primary focus:border-primary text-body-md py-2.5 px-md bg-white">
-                                </div>
-                                <div class="space-y-xs">
-                                    <label for="password_input" class="text-label-md font-bold text-on-surface-variant">Ubah Kata Sandi (Kosongkan jika tetap)</label>
-                                    <input type="password" id="password_input" name="password_input" placeholder="Masukkan kata sandi baru jika ingin diubah" class="w-full rounded-xl border-outline-variant focus:ring-primary focus:border-primary text-body-md py-2.5 px-md bg-white">
+                            <div class="p-md bg-slate-50 border border-slate-200 rounded-xl flex items-center gap-sm">
+                                <span class="material-symbols-outlined text-slate-400 text-[20px]">account_circle</span>
+                                <div>
+                                    <p class="text-label-md font-bold text-on-surface-variant">Username Login Mitra</p>
+                                    <p class="text-body-md font-bold text-on-surface"><?= htmlspecialchars($mitra['username'] ?? '-'); ?></p>
+                                    <p class="text-[11px] text-outline">Username dan password hanya bisa diubah oleh mitra sendiri melalui halaman Settings portal mitra.</p>
                                 </div>
                             </div>
                             <div class="space-y-xs">
@@ -594,44 +538,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                             </div>
                         </div>
 
-                        <!-- Custom Pricing Bento Card -->
-                        <div class="bento-card p-xl rounded-xl space-y-md">
-                            <h2 class="text-headline-sm font-bold text-primary flex items-center gap-xs">
-                                <span class="material-symbols-outlined">payments</span>
-                                <span>Tarif Kustom Layanan (Opsional)</span>
-                            </h2>
-                            <p class="text-xs text-on-surface-variant">Kustomisasi tarif jika ingin berbeda dari tarif kelipatan dasar sistem.</p>
-                            
-                            <div class="grid grid-cols-1 md:grid-cols-3 gap-md">
-                                <div class="space-y-xs">
-                                    <label for="harga_pengeringan" class="text-label-md font-bold text-on-surface-variant">Harga Pengeringan (Rp)</label>
-                                    <input type="number" id="harga_pengeringan" name="harga_pengeringan" value="<?= htmlspecialchars($harga_pengeringan); ?>" class="w-full rounded-xl border-outline-variant focus:ring-primary focus:border-primary text-body-md py-2.5 px-md bg-white">
-                                </div>
-                                <div class="space-y-xs">
-                                    <label for="harga_setrika_reguler" class="text-label-md font-bold text-on-surface-variant">Harga Setrika Reguler (Rp)</label>
-                                    <input type="number" id="harga_setrika_reguler" name="harga_setrika_reguler" value="<?= htmlspecialchars($harga_setrika_reguler); ?>" class="w-full rounded-xl border-outline-variant focus:ring-primary focus:border-primary text-body-md py-2.5 px-md bg-white">
-                                </div>
-                                <div class="space-y-xs">
-                                    <label for="harga_setrika_saja" class="text-label-md font-bold text-on-surface-variant">Harga Setrika Saja (Rp)</label>
-                                    <input type="number" id="harga_setrika_saja" name="harga_setrika_saja" value="<?= htmlspecialchars($harga_setrika_saja); ?>" class="w-full rounded-xl border-outline-variant focus:ring-primary focus:border-primary text-body-md py-2.5 px-md bg-white">
-                                </div>
-                            </div>
-                            
-                            <div class="grid grid-cols-1 md:grid-cols-3 gap-md">
-                                <div class="space-y-xs">
-                                    <label for="harga_satuan_jaket" class="text-label-md font-bold text-on-surface-variant">Harga Satuan Jaket (Rp)</label>
-                                    <input type="number" id="harga_satuan_jaket" name="harga_satuan_jaket" value="<?= htmlspecialchars($harga_satuan_jaket); ?>" class="w-full rounded-xl border-outline-variant focus:ring-primary focus:border-primary text-body-md py-2.5 px-md bg-white">
-                                </div>
-                                <div class="space-y-xs">
-                                    <label for="harga_satuan_selimut" class="text-label-md font-bold text-on-surface-variant">Harga Satuan Selimut (Rp)</label>
-                                    <input type="number" id="harga_satuan_selimut" name="harga_satuan_selimut" value="<?= htmlspecialchars($harga_satuan_selimut); ?>" class="w-full rounded-xl border-outline-variant focus:ring-primary focus:border-primary text-body-md py-2.5 px-md bg-white">
-                                </div>
-                                <div class="space-y-xs">
-                                    <label for="harga_satuan_bed_cover" class="text-label-md font-bold text-on-surface-variant">Harga Satuan Bed Cover (Rp)</label>
-                                    <input type="number" id="harga_satuan_bed_cover" name="harga_satuan_bed_cover" value="<?= htmlspecialchars($harga_satuan_bed_cover); ?>" class="w-full rounded-xl border-outline-variant focus:ring-primary focus:border-primary text-body-md py-2.5 px-md bg-white">
-                                </div>
-                            </div>
-                        </div>
+
 
                         <!-- Koordinat Geografis (Peta) * -->
                         <div class="bento-card p-xl rounded-xl space-y-md">
@@ -688,49 +595,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                             </div>
                         </div>
 
-                        <!-- Fasilitas & Keunggulan Bento Card -->
-                        <div class="bento-card p-xl rounded-xl space-y-md">
-                            <h2 class="text-headline-sm font-bold text-primary flex items-center gap-xs">
-                                <span class="material-symbols-outlined">workspace_premium</span>
-                                <span>Fasilitas &amp; Keunggulan (Opsional)</span>
-                            </h2>
-                            <p class="text-xs text-on-surface-variant">Tentukan fasilitas yang tersedia dan keunggulan laundry Anda.</p>
-                            
-                            <?php
-                            $selected_facilities = explode(',', $mitra['fasilitas'] ?? '');
-                            ?>
-                            <div class="space-y-md">
-                                <div class="space-y-xs">
-                                    <label class="text-label-md font-bold text-on-surface-variant">Fasilitas Standar</label>
-                                    <div class="flex flex-col gap-y-sm pt-xs">
-                                        <label class="inline-flex items-center gap-sm cursor-pointer select-none">
-                                            <input type="checkbox" name="fasilitas[]" value="wifi" <?= in_array('wifi', $selected_facilities) ? 'checked' : ''; ?> class="rounded border-outline-variant text-primary focus:ring-primary">
-                                            <span class="text-body-md text-on-surface">Free Wi-Fi</span>
-                                        </label>
-                                        <label class="inline-flex items-center gap-sm cursor-pointer select-none">
-                                            <input type="checkbox" name="fasilitas[]" value="ac" <?= in_array('ac', $selected_facilities) ? 'checked' : ''; ?> class="rounded border-outline-variant text-primary focus:ring-primary">
-                                            <span class="text-body-md text-on-surface">Ruang Tunggu AC</span>
-                                        </label>
-                                        <label class="inline-flex items-center gap-sm cursor-pointer select-none">
-                                            <input type="checkbox" name="fasilitas[]" value="parkir" <?= in_array('parkir', $selected_facilities) ? 'checked' : ''; ?> class="rounded border-outline-variant text-primary focus:ring-primary">
-                                            <span class="text-body-md text-on-surface">Parkir Luas</span>
-                                        </label>
-                                        <label class="inline-flex items-center gap-sm cursor-pointer select-none">
-                                            <input type="checkbox" name="fasilitas[]" value="air" <?= in_array('air', $selected_facilities) ? 'checked' : ''; ?> class="rounded border-outline-variant text-primary focus:ring-primary">
-                                            <span class="text-body-md text-on-surface">Air Minum Gratis</span>
-                                        </label>
-                                        <label class="inline-flex items-center gap-sm cursor-pointer select-none">
-                                            <input type="checkbox" name="fasilitas[]" value="antar" <?= in_array('antar', $selected_facilities) ? 'checked' : ''; ?> class="rounded border-outline-variant text-primary focus:ring-primary">
-                                            <span class="text-body-md text-on-surface">Antar Jemput</span>
-                                        </label>
-                                    </div>
-                                </div>
-                                <div class="space-y-xs">
-                                    <label for="keunggulan_lainnya" class="text-label-md font-bold text-on-surface-variant">Keunggulan Lainnya</label>
-                                    <textarea id="keunggulan_lainnya" name="keunggulan_lainnya" rows="3" placeholder="Contoh:&#10;Menggunakan deterjen ramah lingkungan&#10;Pengerjaan ekspres 2 jam selesai" class="w-full rounded-xl border-outline-variant focus:ring-primary focus:border-primary text-body-md py-2.5 px-md bg-white resize-none"><?= htmlspecialchars($mitra['keunggulan_lainnya'] ?? ''); ?></textarea>
-                                </div>
-                            </div>
-                        </div>
+
 
                         <!-- Actions Card -->
                         <div class="bento-card p-xl rounded-xl space-y-md bg-surface-container-low/50">
@@ -742,6 +607,22 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                                 <span class="material-symbols-outlined">close</span>
                                 <span>Batal</span>
                             </a>
+                        </div>
+
+                        <!-- Reset Password Card -->
+                        <div class="bento-card p-xl rounded-xl space-y-sm border border-rose-100">
+                            <h3 class="text-label-md font-extrabold text-rose-600 flex items-center gap-xs">
+                                <span class="material-symbols-outlined text-[18px]">lock_reset</span>
+                                <span>Reset Password Darurat</span>
+                            </h3>
+                            <p class="text-[11px] text-on-surface-variant leading-relaxed">Gunakan jika mitra tidak bisa login. Password akan direset ke <strong>mitra123</strong>. Mitra wajib ganti password setelah login.</p>
+                            <form action="edit_mitra.php?id=<?= $id; ?>" method="POST" onsubmit="return confirm('Yakin ingin mereset password mitra ini ke mitra123?')">
+                                <input type="hidden" name="action" value="reset_password">
+                                <button type="submit" class="w-full border border-rose-300 text-rose-600 bg-rose-50 hover:bg-rose-100 py-2.5 rounded-xl font-bold text-label-md flex items-center justify-center gap-xs transition-all active:scale-95">
+                                    <span class="material-symbols-outlined text-[18px]">lock_reset</span>
+                                    <span>Reset Password ke mitra123</span>
+                                </button>
+                            </form>
                         </div>
                     </div>
                 </form>
