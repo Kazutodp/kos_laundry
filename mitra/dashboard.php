@@ -976,20 +976,20 @@ function getIndonesianMonthName($ym) {
         </div>
     </div>
     <!-- Timbang Modal -->
-    <div id="timbang-modal" class="fixed inset-0 z-[100] hidden bg-black/50 backdrop-blur-sm flex items-center justify-center p-md">
-        <div class="bg-white rounded-3xl max-w-md w-full overflow-hidden shadow-2xl relative flex flex-col">
-            <div class="p-lg border-b border-slate-100 flex justify-between items-center bg-slate-50">
+    <div id="timbang-modal" class="fixed inset-0 z-[100] hidden bg-black/50 backdrop-blur-sm flex items-center justify-center p-4">
+        <div class="bg-white rounded-2xl max-w-md w-full overflow-hidden shadow-2xl relative flex flex-col">
+            <div class="p-6 border-b border-slate-100 flex justify-between items-center bg-slate-50">
                 <div>
                     <h3 class="font-extrabold text-slate-900 text-lg leading-tight">Input Timbangan Laundry</h3>
-                    <p class="text-xs text-slate-500 mt-0.5">Timbang pakaian & upload bukti foto timbangan</p>
+                    <p class="text-xs text-slate-500 mt-1">Timbang pakaian & upload bukti foto timbangan</p>
                 </div>
                 <button onclick="closeTimbangModal()" class="material-symbols-outlined text-slate-400 hover:text-slate-600 text-2xl">close</button>
             </div>
-            <form method="POST" enctype="multipart/form-data" class="p-lg space-y-md">
+            <form method="POST" enctype="multipart/form-data" class="p-6 space-y-4">
                 <input type="hidden" name="action" value="timbang">
                 <input type="hidden" id="timbang-order-id" name="order_id" value="">
                 
-                <div class="grid grid-cols-2 gap-sm text-xs bg-slate-50 p-md rounded-2xl border border-slate-100">
+                <div class="grid grid-cols-2 gap-4 text-xs bg-slate-50 p-4 rounded-xl border border-slate-100">
                     <div>
                         <p class="text-[10px] text-slate-400 font-bold uppercase tracking-wider">Pelanggan</p>
                         <p id="timbang-customer-name" class="font-extrabold text-slate-800 text-sm">-</p>
@@ -1002,18 +1002,18 @@ function getIndonesianMonthName($ym) {
                 </div>
 
                 <div>
-                    <label class="block text-xs font-bold text-slate-500 mb-xs">Berat Riil (Kg) *</label>
-                    <input type="number" step="0.01" min="0.05" id="timbang-real-weight" name="real_weight" class="w-full bg-slate-50 border border-slate-200 rounded-xl px-md py-sm outline-none focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500 text-sm font-semibold" required>
+                    <label class="block text-xs font-bold text-slate-500 mb-2">Berat Riil (Kg) *</label>
+                    <input type="number" step="0.01" min="0.05" id="timbang-real-weight" name="real_weight" class="w-full bg-slate-50 border border-slate-200 rounded-xl px-4 py-2 outline-none focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500 text-sm font-semibold" required>
                     <p class="text-[10px] text-slate-400 mt-1">Estimasi awal pelanggan: <span id="timbang-est-weight" class="font-bold">-</span> Kg</p>
                 </div>
 
                 <div>
-                    <label class="block text-xs font-bold text-slate-500 mb-xs">Foto Bukti Timbangan *</label>
-                    <input type="file" name="foto_timbangan" accept="image/*" class="w-full text-xs text-slate-500 file:mr-md file:py-sm file:px-md file:rounded-xl file:border-0 file:text-xs file:font-semibold file:bg-blue-50 file:text-blue-700 hover:file:bg-blue-100" required>
+                    <label class="block text-xs font-bold text-slate-500 mb-2">Foto Bukti Timbangan *</label>
+                    <input type="file" name="foto_timbangan" accept="image/*" class="w-full text-xs text-slate-500 file:mr-4 file:py-2 file:px-4 file:rounded-xl file:border-0 file:text-xs file:font-semibold file:bg-blue-50 file:text-blue-700 hover:file:bg-blue-100" required>
                     <p class="text-[10px] text-slate-400 mt-1">Unggah foto timbangan digital yang menunjukkan berat cucian dengan jelas.</p>
                 </div>
 
-                <button type="submit" class="w-full bg-primary hover:brightness-110 text-white font-bold py-md rounded-xl shadow-md transition-all active:scale-[0.98]">
+                <button type="submit" class="w-full bg-primary hover:brightness-110 text-white font-bold py-3 rounded-xl shadow-md transition-all active:scale-[0.98]">
                     Simpan & Tagih Pelanggan
                 </button>
             </form>
