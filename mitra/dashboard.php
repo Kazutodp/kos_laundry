@@ -37,8 +37,15 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['action']) && $_POST['
             $check_stmt = $pdo->prepare("SELECT id FROM orders WHERE id = ? AND mitra_id = ?");
             $check_stmt->execute([$order_id, $mitra_id]);
             if ($check_stmt->fetch()) {
-                $stmt = $pdo->prepare("UPDATE orders SET status_transfer = ? WHERE id = ?");
-                $stmt->execute([$new_status, $order_id]);
+                $status_order = 'Diproses';
+                if ($new_status === 'Selesai') {
+                    $status_order = 'Selesai';
+                } elseif ($new_status === 'Menunggu Penjemputan') {
+                    $status_order = 'Siap Diantar';
+                }
+                
+                $stmt = $pdo->prepare("UPDATE orders SET status_transfer = ?, status_order = ? WHERE id = ?");
+                $stmt->execute([$new_status, $status_order, $order_id]);
                 echo json_encode(['success' => true]);
             } else {
                 echo json_encode(['success' => false, 'message' => 'Pesanan tidak ditemukan atau bukan milik Anda.']);
@@ -625,10 +632,11 @@ function getIndonesianMonthName($ym) {
                                             <!-- Render drop down status selector if paid -->
                                             <select onchange="updateOrderStatus(<?= $order['id']; ?>, this.value)" 
                                                     class="text-xs font-semibold rounded-lg bg-white border border-slate-200 text-slate-700 py-1 px-2.5 focus:outline-none focus:ring-1 focus:ring-primary focus:border-primary transition-all">
-                                                <option value="Selesai" <?= $order['status_transfer'] === 'Selesai' ? 'selected' : ''; ?>>✓ Selesai</option>
+                                                <option value="Proses" <?= $order['status_transfer'] === 'Proses' ? 'selected' : ''; ?>>⏳ Baru Masuk (Antrean)</option>
                                                 <option value="Sedang Dicuci" <?= $order['status_transfer'] === 'Sedang Dicuci' ? 'selected' : ''; ?>>🧺 Sedang Dicuci</option>
                                                 <option value="Sedang Dikeringkan" <?= $order['status_transfer'] === 'Sedang Dikeringkan' ? 'selected' : ''; ?>>🔥 Sedang Dikeringkan</option>
                                                 <option value="Menunggu Penjemputan" <?= $order['status_transfer'] === 'Menunggu Penjemputan' ? 'selected' : ''; ?>>🚚 Menunggu Penjemputan</option>
+                                                <option value="Selesai" <?= $order['status_transfer'] === 'Selesai' ? 'selected' : ''; ?>>✓ Selesai</option>
                                             </select>
                                         <?php endif; ?>
                                     </td>
