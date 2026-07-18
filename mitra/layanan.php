@@ -216,6 +216,27 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             }
         }
     }
+
+    // 4. EDIT CUSTOM SERVICE
+    elseif (isset($_POST['action']) && $_POST['action'] === 'edit_service') {
+        $service_id = (int)($_POST['service_id'] ?? 0);
+        $nama_layanan = trim($_POST['nama_layanan'] ?? '');
+        $harga = (int)($_POST['harga'] ?? 0);
+        $detail = trim($_POST['detail'] ?? '');
+        $kategori = trim($_POST['kategori'] ?? 'kiloan');
+
+        if ($service_id > 0 && !empty($nama_layanan) && $harga > 0) {
+            try {
+                $stmt_edit = $pdo->prepare("UPDATE `mitra_layanan` SET nama_layanan = ?, harga = ?, detail = ?, kategori = ? WHERE id = ? AND mitra_id = ?");
+                $stmt_edit->execute([$nama_layanan, $harga, $detail, $kategori, $service_id, $mitra_id]);
+                $success = 'Layanan berhasil diperbarui.';
+            } catch (Exception $e) {
+                $error = 'Gagal memperbarui layanan: ' . $e->getMessage();
+            }
+        } else {
+            $error = 'Nama layanan dan harga positif wajib diisi.';
+        }
+    }
 }
 
 // Fetch all services of this partner
@@ -458,13 +479,29 @@ $services = $stmt_services->fetchAll(PDO::FETCH_ASSOC);
                                                 <?= htmlspecialchars($srv['detail']); ?>
                                             </td>
                                             <td class="py-4 px-4 text-center">
-                                                <form action="" method="POST" onsubmit="return confirm('Apakah Anda yakin ingin menghapus layanan ini?');">
-                                                    <input type="hidden" name="action" value="delete_service">
-                                                    <input type="hidden" name="service_id" value="<?= $srv['id']; ?>">
-                                                    <button type="submit" class="p-2 bg-rose-50 hover:bg-rose-100 text-rose-600 rounded-xl transition-colors inline-flex items-center justify-center border border-rose-100" title="Hapus Layanan">
-                                                        <span class="material-symbols-outlined text-[18px]">delete</span>
+                                                <div class="flex items-center justify-center gap-2">
+                                                    <!-- Edit Button -->
+                                                    <button type="button" 
+                                                            data-id="<?= $srv['id']; ?>"
+                                                            data-nama="<?= htmlspecialchars($srv['nama_layanan']); ?>"
+                                                            data-harga="<?= $srv['harga']; ?>"
+                                                            data-kategori="<?= htmlspecialchars($srv['kategori']); ?>"
+                                                            data-detail="<?= htmlspecialchars($srv['detail']); ?>"
+                                                            onclick="openEditModal(this)"
+                                                            class="p-2 bg-blue-50 hover:bg-blue-100 text-primary rounded-xl transition-colors inline-flex items-center justify-center border border-blue-100" 
+                                                            title="Edit Layanan">
+                                                        <span class="material-symbols-outlined text-[18px]">edit</span>
                                                     </button>
-                                                </form>
+                                                    
+                                                    <!-- Delete Button -->
+                                                    <form action="" method="POST" onsubmit="return confirm('Apakah Anda yakin ingin menghapus layanan ini?');" class="inline">
+                                                        <input type="hidden" name="action" value="delete_service">
+                                                        <input type="hidden" name="service_id" value="<?= $srv['id']; ?>">
+                                                        <button type="submit" class="p-2 bg-rose-50 hover:bg-rose-100 text-rose-600 rounded-xl transition-colors inline-flex items-center justify-center border border-rose-100" title="Hapus Layanan">
+                                                            <span class="material-symbols-outlined text-[18px]">delete</span>
+                                                        </button>
+                                                    </form>
+                                                </div>
                                             </td>
                                         </tr>
                                     <?php endforeach; ?>
@@ -539,6 +576,69 @@ $services = $stmt_services->fetchAll(PDO::FETCH_ASSOC);
         </div>
     </div>
 
+    <!-- EDIT SERVICE MODAL DIALOG -->
+    <div id="edit_modal" class="modal opacity-0 pointer-events-none fixed w-full h-full top-0 left-0 flex items-center justify-center z-50">
+        <div class="modal-overlay absolute w-full h-full bg-slate-900/50 backdrop-blur-sm" onclick="toggleEditModal()"></div>
+        
+        <div class="modal-container bg-white w-11/12 md:max-w-md mx-auto rounded-3xl shadow-2xl z-50 overflow-y-auto transform scale-95 transition-transform duration-300">
+            <div class="modal-content py-6 text-left px-6 space-y-4">
+                <!-- Title -->
+                <div class="flex justify-between items-center pb-3 border-b border-slate-100">
+                    <h3 class="text-md font-extrabold text-slate-950 flex items-center gap-1.5">
+                        <span class="material-symbols-outlined text-primary">edit_document</span>
+                        <span>Edit Layanan</span>
+                    </h3>
+                    <button class="modal-close cursor-pointer z-50 text-slate-400 hover:text-slate-600" onclick="toggleEditModal()">
+                        <span class="material-symbols-outlined">close</span>
+                    </button>
+                </div>
+
+                <!-- Form -->
+                <form action="" method="POST" class="space-y-4">
+                    <input type="hidden" name="action" value="edit_service">
+                    <input type="hidden" name="service_id" id="edit_service_id">
+
+                    <div class="space-y-1">
+                        <label for="edit_nama_layanan" class="block text-xs font-bold text-slate-500 uppercase tracking-wider">Nama Layanan *</label>
+                        <input type="text" id="edit_nama_layanan" name="nama_layanan" required placeholder="Contoh: Cuci Setrika Ekspres"
+                               class="w-full px-4 py-3 bg-slate-50 border border-slate-200 focus:bg-white focus:border-primary focus:ring-1 focus:ring-primary rounded-xl text-sm outline-none">
+                    </div>
+
+                    <div class="grid grid-cols-2 gap-4">
+                        <div class="space-y-1">
+                            <label for="edit_harga" class="block text-xs font-bold text-slate-500 uppercase tracking-wider">Tarif Harga (Rp) *</label>
+                            <input type="number" id="edit_harga" name="harga" required min="100" placeholder="Contoh: 15000"
+                                   class="w-full px-4 py-3 bg-slate-50 border border-slate-200 focus:bg-white focus:border-primary focus:ring-1 focus:ring-primary rounded-xl text-sm outline-none">
+                        </div>
+
+                        <div class="space-y-1">
+                            <label for="edit_kategori" class="block text-xs font-bold text-slate-500 uppercase tracking-wider">Kategori Tab *</label>
+                            <select id="edit_kategori" name="kategori" required
+                                    class="w-full px-4 py-3 bg-slate-50 border border-slate-200 focus:bg-white focus:border-primary focus:ring-1 focus:ring-primary rounded-xl text-sm outline-none cursor-pointer">
+                                <option value="kiloan">Cuci Kiloan</option>
+                                <option value="satuan">Cuci Satuan</option>
+                                <option value="express">Cuci Express</option>
+                                <option value="self">Self Service</option>
+                            </select>
+                        </div>
+                    </div>
+
+                    <div class="space-y-1">
+                        <label for="edit_detail" class="block text-xs font-bold text-slate-500 uppercase tracking-wider">Keterangan / Detail Layanan</label>
+                        <textarea id="edit_detail" name="detail" rows="3" placeholder="Contoh: Pengerjaan 6 jam selesai. Pakaian disetrika rapi menggunakan setrika uap."
+                                  class="w-full px-4 py-3 bg-slate-50 border border-slate-200 focus:bg-white focus:border-primary focus:ring-1 focus:ring-primary rounded-xl text-sm outline-none"></textarea>
+                    </div>
+
+                    <!-- Footer Buttons -->
+                    <div class="flex justify-end gap-3 pt-3 border-t border-slate-100">
+                        <button type="button" class="px-4 py-2.5 rounded-xl border border-slate-200 text-slate-500 text-xs font-bold hover:bg-slate-50 transition-colors" onclick="toggleEditModal()">Batal</button>
+                        <button type="submit" class="px-5 py-2.5 rounded-xl bg-primary text-white text-xs font-bold hover:brightness-110 transition-all shadow-md">Simpan Perubahan</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+
     <!-- Footer -->
     <footer class="bg-white border-t border-slate-100 py-4 px-6 text-center text-xs text-slate-400 mt-12">
         © 2026 MataramWash Portal Kemitraan. Pengaturan Mandiri Layanan & Profil Outlet.
@@ -557,6 +657,40 @@ $services = $stmt_services->fetchAll(PDO::FETCH_ASSOC);
         function toggleModal() {
             const body = document.querySelector('body');
             const modal = document.querySelector('#add_modal');
+            const modalContainer = modal.querySelector('.modal-container');
+            
+            modal.classList.toggle('opacity-0');
+            modal.classList.toggle('pointer-events-none');
+            body.classList.toggle('modal-active');
+            
+            if (modal.classList.contains('pointer-events-none')) {
+                modalContainer.classList.remove('scale-100');
+                modalContainer.classList.add('scale-95');
+            } else {
+                modalContainer.classList.remove('scale-95');
+                modalContainer.classList.add('scale-100');
+            }
+        }
+
+        function openEditModal(button) {
+            const id = button.getAttribute('data-id');
+            const nama = button.getAttribute('data-nama');
+            const harga = button.getAttribute('data-harga');
+            const kategori = button.getAttribute('data-kategori');
+            const detail = button.getAttribute('data-detail');
+            
+            document.getElementById('edit_service_id').value = id;
+            document.getElementById('edit_nama_layanan').value = nama;
+            document.getElementById('edit_harga').value = harga;
+            document.getElementById('edit_kategori').value = kategori;
+            document.getElementById('edit_detail').value = detail;
+            
+            toggleEditModal();
+        }
+
+        function toggleEditModal() {
+            const body = document.querySelector('body');
+            const modal = document.querySelector('#edit_modal');
             const modalContainer = modal.querySelector('.modal-container');
             
             modal.classList.toggle('opacity-0');
