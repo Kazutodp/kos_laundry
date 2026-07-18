@@ -10,124 +10,6 @@ require_once '../db_connect.php';
 $success_message = '';
 $error_message = '';
 
-// Handle weighing update & photo upload
-if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['action']) && $_POST['action'] === 'timbang') {
-    $order_id = intval($_POST['order_id'] ?? 0);
-    $real_weight = floatval($_POST['real_weight'] ?? 0.00);
-    
-    if ($order_id <= 0 || $real_weight <= 0) {
-        $error_message = 'ID Pesanan atau berat riil tidak valid.';
-    } else {
-        try {
-            // Fetch order details
-            $stmt = $pdo->prepare("SELECT * FROM orders WHERE id = ?");
-            $stmt->execute([$order_id]);
-            $order = $stmt->fetch();
-            
-            if ($order) {
-                $foto_path = $order['foto_timbangan'];
-                
-                // Handle upload
-                if (isset($_FILES['foto_timbangan']) && $_FILES['foto_timbangan']['error'] === UPLOAD_ERR_OK) {
-                    $file_tmp = $_FILES['foto_timbangan']['tmp_name'];
-                    $file_name = $_FILES['foto_timbangan']['name'];
-                    $ext = strtolower(pathinfo($file_name, PATHINFO_EXTENSION));
-                    
-                    if (in_array($ext, ['jpg', 'jpeg', 'png'])) {
-                        $upload_dir = '../uploads/timbangan/';
-                        $laravel_upload_dir = '../mataramwash_laravel/public/uploads/timbangan/';
-                        
-                        if (!is_dir($upload_dir)) {
-                            mkdir($upload_dir, 0777, true);
-                        }
-                        if (!is_dir($laravel_upload_dir)) {
-                            mkdir($laravel_upload_dir, 0777, true);
-                        }
-                        
-                        // Delete old file if exists
-                        if ($foto_path) {
-                            if (file_exists('../' . $foto_path)) {
-                                unlink('../' . $foto_path);
-                            }
-                            if (file_exists('../mataramwash_laravel/public/' . $foto_path)) {
-                                unlink('../mataramwash_laravel/public/' . $foto_path);
-                            }
-                        }
-                        
-                        $new_file_name = 'timbangan_' . $order_id . '_' . time() . '.' . $ext;
-                        $foto_path = 'uploads/timbangan/' . $new_file_name;
-                        
-                        if (move_uploaded_file($file_tmp, '../' . $foto_path)) {
-                            // Copy to Laravel public upload path as well
-                            copy('../' . $foto_path, '../mataramwash_laravel/public/' . $foto_path);
-                        }
-                    } else {
-                        $error_message = 'Format file tidak didukung. Gunakan JPG, JPEG, atau PNG.';
-                    }
-                }
-                
-                if (empty($error_message)) {
-                    // Recalculate price
-                    $total_harga = round($real_weight * $order['tarif_per_kg']) + $order['biaya_antar_jemput'];
-                    
-                    // Update database
-                    $update_stmt = $pdo->prepare("
-                        UPDATE orders 
-                        SET berat_atau_qty = ?, total_harga = ?, foto_timbangan = ?, status_order = 'Menunggu Pembayaran'
-                        WHERE id = ?
-                    ");
-                    $update_stmt->execute([$real_weight, $total_harga, $foto_path, $order_id]);
-                    
-                    $success_message = 'Berat riil berhasil diperbarui dan status diubah menjadi Menunggu Pembayaran.';
-                }
-            } else {
-                $error_message = 'Pesanan tidak ditemukan.';
-            }
-        } catch (PDOException $e) {
-            $error_message = 'Gagal memperbarui data timbangan: ' . $e->getMessage();
-        }
-    }
-}
-
-// Handle status change
-if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['action']) && $_POST['action'] === 'update_status') {
-    $order_id = intval($_POST['order_id'] ?? 0);
-    $status_order = trim($_POST['status_order'] ?? '');
-    
-    if ($order_id <= 0 || empty($status_order)) {
-        $error_message = 'ID Pesanan atau Status tidak valid.';
-    } else {
-        try {
-            $transfer_status = ($status_order === 'Selesai') ? 'Selesai' : 'Proses';
-            
-            // If status is updated to active processing, ready, or finished, auto-mark payment as success
-            $pay_update_sql = "";
-            $params = [$status_order, $transfer_status];
-            if (in_array($status_order, ['Diproses', 'Siap Diantar', 'Selesai'])) {
-                $pay_update_sql = ", status_pembayaran = 'success'";
-            }
-            $params[] = $order_id;
-            
-            $update_stmt = $pdo->prepare("
-                UPDATE orders 
-                SET status_order = ?, status_transfer = ? {$pay_update_sql}
-                WHERE id = ?
-            ");
-            $update_stmt->execute($params);
-            
-            // Trigger WA notification to partner for successful payment (if updated by admin)
-            if (in_array($status_order, ['Diproses', 'Siap Diantar', 'Selesai'])) {
-                require_once '../wa_helper.php';
-                notify_mitra_new_order($order_id, $pdo);
-            }
-            
-            $success_message = 'Status pesanan berhasil diperbarui menjadi: ' . $status_order;
-        } catch (PDOException $e) {
-            $error_message = 'Gagal memperbarui status: ' . $e->getMessage();
-        }
-    }
-}
-
 // Handle Order Delete/Hide Action (Soft vs Hard Delete for Admin)
 if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['action']) && $_POST['action'] === 'delete_order_admin') {
     header('Content-Type: application/json');
@@ -426,28 +308,40 @@ try {
                                             </span>
                                         </td>
                                         <td class="px-md py-md text-center space-x-xs align-middle">
-                                            <?php if ($order_status !== 'Dibatalkan'): ?>
-                                                <!-- Weigh & upload photo timbangan -->
-                                                <?php if ($is_kiloan && $order_status !== 'Selesai'): ?>
-                                                    <button onclick="openTimbangModal(<?= $order['id']; ?>, '<?= htmlspecialchars($order['nama_pelanggan']); ?>', '<?= htmlspecialchars($order['layanan']); ?>', <?= floatval($order['estimasi_berat']); ?>)" class="text-xs bg-blue-600 text-white font-bold py-1.5 px-3 rounded-lg shadow-xs hover:bg-blue-700 transition-colors">
-                                                        <?= floatval($order['berat_atau_qty']) > 0 ? 'Timbang Ulang' : 'Timbang'; ?>
-                                                    </button>
-                                                <?php endif; ?>
-
-                                                <!-- Update Order Status Dropdown -->
-                                                <button onclick="openStatusModal(<?= $order['id']; ?>, '<?= $order_status; ?>')" class="text-xs bg-slate-100 text-slate-700 border border-slate-200 font-bold py-1.5 px-3 rounded-lg shadow-xs hover:bg-slate-200 transition-colors">
-                                                    Status
+                                            <?php 
+                                            // Prepare order details data as array
+                                            $order_data = [
+                                                'id' => $order['id'],
+                                                'nama_pelanggan' => $order['nama_pelanggan'],
+                                                'nama_mitra' => $order['nama_mitra'],
+                                                'layanan' => $order['layanan'],
+                                                'is_kiloan' => $is_kiloan,
+                                                'is_self' => $is_self,
+                                                'estimasi_berat' => floatval($order['estimasi_berat']),
+                                                'berat_atau_qty' => floatval($order['berat_atau_qty']),
+                                                'total_harga' => intval($order['total_harga']),
+                                                'status_pembayaran' => $order['status_pembayaran'],
+                                                'status_order' => $order['status_order'],
+                                                'alamat_antar_jemput' => $order['alamat_antar_jemput'],
+                                                'catatan' => $order['catatan'],
+                                                'foto_timbangan' => $order['foto_timbangan']
+                                            ];
+                                            $order_json = htmlspecialchars(json_encode($order_data), ENT_QUOTES, 'UTF-8');
+                                            ?>
+                                            <div class="inline-flex items-center gap-2">
+                                                <!-- Detail Button -->
+                                                <button onclick='openDetailModal(<?= $order_json; ?>)' 
+                                                        class="text-xs bg-blue-50 text-blue-600 border border-blue-200 font-bold py-1.5 px-3 rounded-lg shadow-xs hover:bg-blue-100 transition-colors">
+                                                    Detail
                                                 </button>
-                                            <?php else: ?>
-                                                <div class="inline-flex items-center gap-2">
-                                                    <span class="text-xs text-rose-600 font-semibold bg-rose-50 border border-rose-100 px-3 py-1.5 rounded-lg">Dibatalkan</span>
-                                                    <button onclick="confirmDeleteAdmin(<?= $order['id']; ?>, '<?= htmlspecialchars($order['nama_pelanggan'], ENT_QUOTES); ?>')" 
-                                                            class="p-1.5 text-rose-600 hover:bg-rose-50 rounded-lg border border-transparent hover:border-rose-100 transition-all active:scale-95 flex items-center justify-center" 
-                                                            title="Hapus / Sembunyikan Pesanan">
-                                                        <span class="material-symbols-outlined text-[18px]">delete</span>
-                                                    </button>
-                                                </div>
-                                            <?php endif; ?>
+                                                
+                                                <!-- Delete Button -->
+                                                <button onclick="confirmDeleteAdmin(<?= $order['id']; ?>, '<?= htmlspecialchars($order['nama_pelanggan'], ENT_QUOTES); ?>')" 
+                                                        class="p-1.5 text-rose-600 hover:bg-rose-50 rounded-lg border border-transparent hover:border-rose-100 transition-all active:scale-95 flex items-center justify-center" 
+                                                        title="Hapus / Sembunyikan Pesanan">
+                                                    <span class="material-symbols-outlined text-[18px]">delete</span>
+                                                </button>
+                                            </div>
                                         </td>
                                     </tr>
                                 <?php endforeach; ?>
@@ -460,100 +354,120 @@ try {
     </div>
 </main>
 
-<!-- Timbang Modal -->
-<div id="timbang-modal" class="fixed inset-0 z-[100] hidden bg-black/50 backdrop-blur-sm flex items-center justify-center p-md">
-    <div class="bg-white rounded-3xl max-w-md w-full overflow-hidden shadow-2xl relative flex flex-col">
-        <div class="p-lg border-b border-slate-100 flex justify-between items-center">
-            <h3 class="font-bold text-slate-800 text-lg">Input Timbangan Laundry</h3>
-            <button onclick="closeTimbangModal()" class="material-symbols-outlined text-slate-400 hover:text-slate-600 text-2xl">close</button>
+<!-- Detail Modal -->
+<div id="detail-modal" class="fixed inset-0 z-[100] hidden bg-black/50 backdrop-blur-sm flex items-center justify-center p-md">
+    <div class="bg-white rounded-3xl max-w-lg w-full overflow-hidden shadow-2xl relative flex flex-col">
+        <div class="p-lg border-b border-slate-100 flex justify-between items-center bg-slate-50">
+            <div>
+                <h3 class="font-extrabold text-slate-900 text-lg leading-tight">Detail Pesanan</h3>
+                <p class="text-xs text-slate-500 mt-0.5" id="detail-order-id">Pesanan #</p>
+            </div>
+            <button onclick="closeDetailModal()" class="material-symbols-outlined text-slate-400 hover:text-slate-600 text-2xl">close</button>
         </div>
-        <form method="POST" enctype="multipart/form-data" class="p-lg space-y-md">
-            <input type="hidden" name="action" value="timbang">
-            <input type="hidden" id="timbang-order-id" name="order_id" value="">
-            
-            <div>
-                <p class="text-xs text-slate-400">Pelanggan</p>
-                <p id="timbang-customer-name" class="font-bold text-slate-800">-</p>
+        <div class="p-lg space-y-md overflow-y-auto max-h-[70vh] text-xs">
+            <div class="grid grid-cols-2 gap-md border-b border-slate-100 pb-md">
+                <div>
+                    <span class="block text-slate-400 uppercase font-bold tracking-wider mb-1">Pelanggan</span>
+                    <span class="block text-slate-800 font-extrabold text-sm" id="detail-customer-name">-</span>
+                </div>
+                <div>
+                    <span class="block text-slate-400 uppercase font-bold tracking-wider mb-1">Outlet Laundry</span>
+                    <span class="block text-slate-800 font-extrabold text-sm" id="detail-mitra-name">-</span>
+                </div>
             </div>
-            
-            <div>
-                <p class="text-xs text-slate-400">Layanan</p>
-                <p id="timbang-service-name" class="font-bold text-blue-600">-</p>
+
+            <div class="grid grid-cols-2 gap-md border-b border-slate-100 pb-md">
+                <div>
+                    <span class="block text-slate-400 uppercase font-bold tracking-wider mb-1">Layanan</span>
+                    <span class="block text-blue-600 font-bold text-sm" id="detail-service-name">-</span>
+                </div>
+                <div>
+                    <span class="block text-slate-400 uppercase font-bold tracking-wider mb-1">Berat / Qty</span>
+                    <span class="block text-slate-800 font-bold text-sm" id="detail-weight">-</span>
+                </div>
+            </div>
+
+            <div class="grid grid-cols-2 gap-md border-b border-slate-100 pb-md">
+                <div>
+                    <span class="block text-slate-400 uppercase font-bold tracking-wider mb-1">Total Tagihan</span>
+                    <span class="block text-slate-950 font-extrabold text-sm" id="detail-total-price">-</span>
+                </div>
+                <div>
+                    <span class="block text-slate-400 uppercase font-bold tracking-wider mb-1">Status Pembayaran</span>
+                    <span class="inline-block px-2 py-0.5 rounded text-[10px] font-bold text-white" id="detail-pay-status">-</span>
+                </div>
+            </div>
+
+            <div class="border-b border-slate-100 pb-md">
+                <span class="block text-slate-400 uppercase font-bold tracking-wider mb-1">Status Pemrosesan</span>
+                <span class="inline-block px-2.5 py-1 rounded-full text-xs font-bold" id="detail-order-status">-</span>
+            </div>
+
+            <div class="border-b border-slate-100 pb-md">
+                <span class="block text-slate-400 uppercase font-bold tracking-wider mb-1">Alamat Penjemputan / Pengantaran</span>
+                <span class="block text-slate-700 leading-relaxed" id="detail-address">-</span>
             </div>
 
             <div>
-                <label class="block text-xs font-bold text-slate-500 mb-base">Berat Riil (Kg)</label>
-                <input type="number" step="0.01" min="0.05" id="timbang-real-weight" name="real_weight" class="w-full bg-slate-50 border border-slate-200 rounded-xl px-md py-sm outline-none focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500 text-sm font-semibold" required>
-                <p class="text-[10px] text-slate-400 mt-1">Estimasi awal pelanggan: <span id="timbang-est-weight">-</span> Kg</p>
+                <span class="block text-slate-400 uppercase font-bold tracking-wider mb-1">Catatan Pelanggan</span>
+                <span class="block text-slate-700 italic" id="detail-notes">-</span>
             </div>
 
-            <div>
-                <label class="block text-xs font-bold text-slate-500 mb-base">Foto Bukti Timbangan</label>
-                <input type="file" name="foto_timbangan" accept="image/*" class="w-full text-xs text-slate-500 file:mr-md file:py-sm file:px-md file:rounded-xl file:border-0 file:text-xs file:font-semibold file:bg-blue-50 file:text-blue-700 hover:file:bg-blue-100" required>
-                <p class="text-[10px] text-slate-400 mt-1">Upload foto timbangan digital yang menunjukkan berat cucian dengan jelas.</p>
+            <div id="detail-photo-section" class="hidden pt-md border-t border-slate-100">
+                <span class="block text-slate-400 uppercase font-bold tracking-wider mb-2">Foto Bukti Timbangan</span>
+                <div class="relative rounded-2xl overflow-hidden aspect-video border border-slate-200 bg-slate-50 flex items-center justify-center max-w-sm">
+                    <img id="detail-photo-img" src="" alt="Foto Timbangan" class="w-full h-full object-cover">
+                </div>
             </div>
-
-            <button type="submit" class="w-full bg-blue-600 hover:bg-blue-700 text-white font-bold py-md rounded-xl shadow-md transition-all">
-                Simpan & Tagih Pelanggan
-            </button>
-        </form>
-    </div>
-</div>
-
-<!-- Status Update Modal -->
-<div id="status-modal" class="fixed inset-0 z-[100] hidden bg-black/50 backdrop-blur-sm flex items-center justify-center p-md">
-    <div class="bg-white rounded-3xl max-w-sm w-full overflow-hidden shadow-2xl relative flex flex-col">
-        <div class="p-lg border-b border-slate-100 flex justify-between items-center">
-            <h3 class="font-bold text-slate-800 text-lg">Update Status Pesanan</h3>
-            <button onclick="closeStatusModal()" class="material-symbols-outlined text-slate-400 hover:text-slate-600 text-2xl">close</button>
         </div>
-        <form method="POST" class="p-lg space-y-md">
-            <input type="hidden" name="action" value="update_status">
-            <input type="hidden" id="status-order-id" name="order_id" value="">
-            
-            <div>
-                <label class="block text-xs font-bold text-slate-500 mb-base">Pilih Status Baru</label>
-                <select id="status-order-select" name="status_order" class="w-full bg-slate-50 border border-slate-200 rounded-xl px-md py-sm outline-none focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500 text-sm font-semibold">
-                    <option value="Menunggu Penjemputan">Menunggu Penjemputan</option>
-                    <option value="Menunggu Timbangan">Menunggu Timbangan</option>
-                    <option value="Menunggu Pembayaran">Menunggu Pembayaran (Belum Bayar)</option>
-                    <option value="Diproses">Diproses (Sedang Dicuci)</option>
-                    <option value="Siap Diantar">Siap Diantar / Siap Diambil</option>
-                    <option value="Selesai">Selesai</option>
-                </select>
-            </div>
-
-            <button type="submit" class="w-full bg-blue-600 hover:bg-blue-700 text-white font-bold py-md rounded-xl shadow-md transition-all">
-                Perbarui Status
-            </button>
-        </form>
     </div>
 </div>
 
 <script>
-    function openTimbangModal(orderId, name, service, estWeight) {
-        document.getElementById('timbang-order-id').value = orderId;
-        document.getElementById('timbang-customer-name').innerText = name;
-        document.getElementById('timbang-service-name').innerText = service;
-        document.getElementById('timbang-real-weight').value = estWeight;
-        document.getElementById('timbang-est-weight').innerText = estWeight;
+    function openDetailModal(order) {
+        document.getElementById('detail-order-id').innerText = 'Pesanan #' + order.id;
+        document.getElementById('detail-customer-name').innerText = order.nama_pelanggan;
+        document.getElementById('detail-mitra-name').innerText = order.nama_mitra;
+        document.getElementById('detail-service-name').innerText = order.layanan;
         
-        document.getElementById('timbang-modal').classList.remove('hidden');
-    }
-    
-    function closeTimbangModal() {
-        document.getElementById('timbang-modal').classList.add('hidden');
-    }
-    
-    function openStatusModal(orderId, currentStatus) {
-        document.getElementById('status-order-id').value = orderId;
-        document.getElementById('status-order-select').value = currentStatus;
+        let weightText = '';
+        if (order.is_kiloan) {
+            weightText = 'Estimasi: ' + order.estimasi_berat + ' kg, Real: ' + (order.berat_atau_qty > 0 ? order.berat_atau_qty + ' kg' : '-');
+        } else if (order.is_self) {
+            weightText = order.berat_atau_qty + ' Slot';
+        } else {
+            weightText = order.estimasi_berat + ' Pasang';
+        }
+        document.getElementById('detail-weight').innerText = weightText;
+        document.getElementById('detail-total-price').innerText = 'Rp ' + new Intl.NumberFormat('id-ID').format(order.total_harga);
         
-        document.getElementById('status-modal').classList.remove('hidden');
+        const payBadge = document.getElementById('detail-pay-status');
+        payBadge.innerText = order.status_pembayaran.toUpperCase();
+        payBadge.className = 'inline-block px-2 py-0.5 rounded text-[10px] font-bold text-white ' + 
+            (order.status_pembayaran === 'success' ? 'bg-emerald-500' : (order.status_pembayaran === 'pending' ? 'bg-amber-500' : 'bg-rose-500'));
+            
+        const orderBadge = document.getElementById('detail-order-status');
+        orderBadge.innerText = order.status_order;
+        orderBadge.className = 'inline-block px-2.5 py-1 rounded-full text-xs font-bold ' + 
+            (order.status_order === 'Menunggu Pembayaran' ? 'bg-sky-100 text-sky-800' : (order.status_order === 'Selesai' ? 'bg-emerald-100 text-emerald-800' : (order.status_order === 'Dibatalkan' ? 'bg-rose-100 text-rose-800' : 'bg-slate-100 text-slate-700')));
+            
+        document.getElementById('detail-address').innerText = order.alamat_antar_jemput || 'Ambil Mandiri (Tidak ada layanan antar-jemput)';
+        document.getElementById('detail-notes').innerText = order.catatan || 'Tidak ada catatan tambahan.';
+        
+        const photoSection = document.getElementById('detail-photo-section');
+        if (order.foto_timbangan) {
+            document.getElementById('detail-photo-img').src = '../' + order.foto_timbangan;
+            photoSection.classList.remove('hidden');
+        } else {
+            photoSection.classList.add('hidden');
+        }
+        
+        document.getElementById('detail-modal').classList.remove('hidden');
     }
-    
-    function closeStatusModal() {
-        document.getElementById('status-modal').classList.add('hidden');
+
+    function closeDetailModal() {
+        document.getElementById('detail-modal').classList.add('hidden');
+    }
     }
     
     // Delete Confirmation Modal Controls for Admin

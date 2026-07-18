@@ -86,6 +86,89 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['action']) && $_POST['
     exit();
 }
 
+// Handle weighing update & photo upload by Mitra
+if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['action']) && $_POST['action'] === 'timbang') {
+    $order_id = intval($_POST['order_id'] ?? 0);
+    $real_weight = floatval($_POST['real_weight'] ?? 0.00);
+    
+    if ($order_id <= 0 || $real_weight <= 0) {
+        $_SESSION['error_message'] = 'ID Pesanan atau berat riil tidak valid.';
+    } else {
+        try {
+            // Fetch order details
+            $stmt = $pdo->prepare("SELECT * FROM orders WHERE id = ? AND mitra_id = ?");
+            $stmt->execute([$order_id, $mitra_id]);
+            $order = $stmt->fetch();
+            
+            if ($order) {
+                $foto_path = $order['foto_timbangan'];
+                
+                // Handle upload
+                if (isset($_FILES['foto_timbangan']) && $_FILES['foto_timbangan']['error'] === UPLOAD_ERR_OK) {
+                    $file_tmp = $_FILES['foto_timbangan']['tmp_name'];
+                    $file_name = $_FILES['foto_timbangan']['name'];
+                    $ext = strtolower(pathinfo($file_name, PATHINFO_EXTENSION));
+                    
+                    if (in_array($ext, ['jpg', 'jpeg', 'png', 'webp'])) {
+                        $upload_dir = '../uploads/timbangan/';
+                        $laravel_upload_dir = '../mataramwash_laravel/public/uploads/timbangan/';
+                        
+                        if (!is_dir($upload_dir)) {
+                            mkdir($upload_dir, 0777, true);
+                        }
+                        if (!is_dir($laravel_upload_dir)) {
+                            mkdir($laravel_upload_dir, 0777, true);
+                        }
+                        
+                        // Delete old file if exists
+                        if ($foto_path) {
+                            if (file_exists('../' . $foto_path)) {
+                                @unlink('../' . $foto_path);
+                            }
+                            if (file_exists('../mataramwash_laravel/public/' . $foto_path)) {
+                                @unlink('../mataramwash_laravel/public/' . $foto_path);
+                            }
+                        }
+                        
+                        $new_file_name = 'timbangan_' . $order_id . '_' . time() . '.' . $ext;
+                        $foto_path = 'uploads/timbangan/' . $new_file_name;
+                        
+                        if (move_uploaded_file($file_tmp, '../' . $foto_path)) {
+                            // Copy to Laravel public upload path as well
+                            @copy('../' . $foto_path, '../mataramwash_laravel/public/' . $foto_path);
+                        }
+                    } else {
+                        $_SESSION['error_message'] = 'Format file tidak didukung. Gunakan JPG, JPEG, PNG, atau WEBP.';
+                    }
+                } else {
+                    $_SESSION['error_message'] = 'Foto bukti timbangan wajib diunggah.';
+                }
+                
+                if (!isset($_SESSION['error_message']) || empty($_SESSION['error_message'])) {
+                    // Recalculate price
+                    $total_harga = round($real_weight * $order['tarif_per_kg']) + $order['biaya_antar_jemput'];
+                    
+                    // Update database
+                    $update_stmt = $pdo->prepare("
+                        UPDATE orders 
+                        SET berat_atau_qty = ?, total_harga = ?, foto_timbangan = ?, status_order = 'Menunggu Pembayaran'
+                        WHERE id = ?
+                    ");
+                    $update_stmt->execute([$real_weight, $total_harga, $foto_path, $order_id]);
+                    
+                    $_SESSION['success_message'] = 'Timbangan berhasil disimpan! Tagihan pelanggan diperbarui menjadi Rp ' . number_format($total_harga, 0, ',', '.');
+                }
+            } else {
+                $_SESSION['error_message'] = 'Pesanan tidak ditemukan atau bukan milik Anda.';
+            }
+        } catch (PDOException $e) {
+            $_SESSION['error_message'] = 'Gagal menyimpan timbangan: ' . $e->getMessage();
+        }
+    }
+    header("Location: dashboard.php");
+    exit();
+}
+
 // Handle Manual Payment Confirmation (Tandai Lunas - COD/Cash) by Mitra
 if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['action']) && $_POST['action'] === 'tandai_lunas') {
     header('Content-Type: application/json');
@@ -341,6 +424,22 @@ function getIndonesianMonthName($ym) {
             </div>
         <?php endif; ?>
 
+        <!-- Alert Messages -->
+        <?php if (isset($_SESSION['success_message']) && !empty($_SESSION['success_message'])): ?>
+            <div class="p-4 bg-emerald-50 border border-emerald-200 text-emerald-800 rounded-2xl text-sm flex items-center gap-3 shadow-sm mb-4">
+                <span class="material-symbols-outlined text-emerald-600 text-[24px]">check_circle</span>
+                <span class="font-bold"><?= htmlspecialchars($_SESSION['success_message']); ?></span>
+            </div>
+            <?php unset($_SESSION['success_message']); ?>
+        <?php endif; ?>
+        <?php if (isset($_SESSION['error_message']) && !empty($_SESSION['error_message'])): ?>
+            <div class="p-4 bg-rose-50 border border-rose-200 text-rose-800 rounded-2xl text-sm flex items-center gap-3 shadow-sm mb-4">
+                <span class="material-symbols-outlined text-rose-600 text-[24px]">error</span>
+                <span class="font-bold"><?= htmlspecialchars($_SESSION['error_message']); ?></span>
+            </div>
+            <?php unset($_SESSION['error_message']); ?>
+        <?php endif; ?>
+
         <!-- Banner & Notification Indicator Alert -->
         <div id="new-order-alert" class="hidden p-4 bg-amber-500 text-white rounded-2xl shadow-lg shadow-amber-500/20 flex items-center justify-between animate-bounce">
             <div class="flex items-center gap-3">
@@ -508,8 +607,20 @@ function getIndonesianMonthName($ym) {
                                     <td class="px-6 py-4 text-center text-xs font-bold text-slate-900"><?= floatval($order['berat_atau_qty']); ?></td>
                                     <td class="px-6 py-4 text-right text-xs font-bold text-slate-950">Rp <?= number_format($order['total_harga'], 0, ',', '.'); ?></td>
                                     <td class="px-6 py-4">
+                                        <?php 
+                                        $is_self = (strpos(strtolower($order['layanan']), 'self') !== false || strpos(strtolower($mitra['nama_mitra']), 'washtra') !== false);
+                                        $is_satuan = (strpos(strtolower($order['layanan']), 'sepatu') !== false || strpos(strtolower($order['layanan']), 'shoes') !== false || strpos(strtolower($mitra['nama_mitra']), 'shoes') !== false);
+                                        $is_kiloan = !$is_self && !$is_satuan;
+                                        ?>
                                         <?php if (!$is_success): ?>
-                                            <span class="px-2.5 py-1 bg-slate-100 text-slate-400 border border-slate-200/50 rounded-full text-[10px] font-extrabold uppercase select-none">Menunggu Pembayaran</span>
+                                            <?php if ($is_kiloan && in_array($order['status_order'], ['Menunggu Penjemputan', 'Menunggu Timbangan'])): ?>
+                                                <span class="px-2.5 py-1 bg-amber-50 text-amber-600 border border-amber-200 rounded-full text-[10px] font-extrabold uppercase select-none inline-flex items-center gap-1">
+                                                    <span class="material-symbols-outlined text-[12px]">scale</span>
+                                                    Menunggu Timbangan
+                                                </span>
+                                            <?php else: ?>
+                                                <span class="px-2.5 py-1 bg-slate-100 text-slate-400 border border-slate-200/50 rounded-full text-[10px] font-extrabold uppercase select-none">Menunggu Pembayaran</span>
+                                            <?php endif; ?>
                                         <?php else: ?>
                                             <!-- Render drop down status selector if paid -->
                                             <select onchange="updateOrderStatus(<?= $order['id']; ?>, this.value)" 
@@ -543,12 +654,21 @@ function getIndonesianMonthName($ym) {
                                         <?php endif; ?>
                                     </td>
                                     <td class="px-6 py-4 text-center">
-                                        <!-- Delete action button -->
-                                        <button onclick="confirmDelete(<?= $order['id']; ?>, '<?= htmlspecialchars($order['nama_pelanggan'], ENT_QUOTES); ?>')" 
-                                                class="p-2 text-rose-600 hover:bg-rose-50 rounded-xl transition-colors inline-flex items-center justify-center border border-transparent hover:border-rose-100" 
-                                                title="Hapus / Sembunyikan Pesanan">
-                                            <span class="material-symbols-outlined text-[18px]">delete</span>
-                                        </button>
+                                        <div class="flex items-center justify-center gap-2">
+                                            <?php if ($is_kiloan && !$is_success && in_array($order['status_order'], ['Menunggu Penjemputan', 'Menunggu Timbangan'])): ?>
+                                                <button onclick="openTimbangModal(<?= $order['id']; ?>, '<?= htmlspecialchars($order['nama_pelanggan'], ENT_QUOTES); ?>', '<?= htmlspecialchars($order['layanan'], ENT_QUOTES); ?>', <?= floatval($order['estimasi_berat']); ?>)" 
+                                                        class="inline-flex items-center gap-1 px-2.5 py-1.5 rounded-xl text-xs font-bold bg-primary text-white hover:brightness-110 active:scale-95 transition-all shadow-md shadow-primary/10">
+                                                    <span class="material-symbols-outlined text-[14px]">scale</span>
+                                                    <span>Timbang</span>
+                                                </button>
+                                            <?php endif; ?>
+                                            <!-- Delete action button -->
+                                            <button onclick="confirmDelete(<?= $order['id']; ?>, '<?= htmlspecialchars($order['nama_pelanggan'], ENT_QUOTES); ?>')" 
+                                                    class="p-2 text-rose-600 hover:bg-rose-50 rounded-xl transition-colors inline-flex items-center justify-center border border-transparent hover:border-rose-100" 
+                                                    title="Hapus / Sembunyikan Pesanan">
+                                                <span class="material-symbols-outlined text-[18px]">delete</span>
+                                            </button>
+                                        </div>
                                     </td>
                                 </tr>
                             <?php endforeach; ?>
@@ -787,6 +907,21 @@ function getIndonesianMonthName($ym) {
                 btn.innerHTML = '<span>Hapus Pesanan</span><span class="material-symbols-outlined text-[16px]">check</span>';
             });
         }
+
+        // Timbang Modal triggers
+        function openTimbangModal(orderId, name, service, estWeight) {
+            document.getElementById('timbang-order-id').value = orderId;
+            document.getElementById('timbang-customer-name').innerText = name;
+            document.getElementById('timbang-service-name').innerText = service;
+            document.getElementById('timbang-real-weight').value = estWeight;
+            document.getElementById('timbang-est-weight').innerText = estWeight;
+            
+            document.getElementById('timbang-modal').classList.remove('hidden');
+        }
+        
+        function closeTimbangModal() {
+            document.getElementById('timbang-modal').classList.add('hidden');
+        }
     </script>
 
     <!-- Delete Confirmation Modal -->
@@ -838,6 +973,50 @@ function getIndonesianMonthName($ym) {
                     <span class="material-symbols-outlined text-[16px]">check</span>
                 </button>
             </div>
+        </div>
+    </div>
+    <!-- Timbang Modal -->
+    <div id="timbang-modal" class="fixed inset-0 z-[100] hidden bg-black/50 backdrop-blur-sm flex items-center justify-center p-md">
+        <div class="bg-white rounded-3xl max-w-md w-full overflow-hidden shadow-2xl relative flex flex-col">
+            <div class="p-lg border-b border-slate-100 flex justify-between items-center bg-slate-50">
+                <div>
+                    <h3 class="font-extrabold text-slate-900 text-lg leading-tight">Input Timbangan Laundry</h3>
+                    <p class="text-xs text-slate-500 mt-0.5">Timbang pakaian & upload bukti foto timbangan</p>
+                </div>
+                <button onclick="closeTimbangModal()" class="material-symbols-outlined text-slate-400 hover:text-slate-600 text-2xl">close</button>
+            </div>
+            <form method="POST" enctype="multipart/form-data" class="p-lg space-y-md">
+                <input type="hidden" name="action" value="timbang">
+                <input type="hidden" id="timbang-order-id" name="order_id" value="">
+                
+                <div class="grid grid-cols-2 gap-sm text-xs bg-slate-50 p-md rounded-2xl border border-slate-100">
+                    <div>
+                        <p class="text-[10px] text-slate-400 font-bold uppercase tracking-wider">Pelanggan</p>
+                        <p id="timbang-customer-name" class="font-extrabold text-slate-800 text-sm">-</p>
+                    </div>
+                    
+                    <div>
+                        <p class="text-[10px] text-slate-400 font-bold uppercase tracking-wider">Layanan</p>
+                        <p id="timbang-service-name" class="font-bold text-blue-600 text-sm">-</p>
+                    </div>
+                </div>
+
+                <div>
+                    <label class="block text-xs font-bold text-slate-500 mb-xs">Berat Riil (Kg) *</label>
+                    <input type="number" step="0.01" min="0.05" id="timbang-real-weight" name="real_weight" class="w-full bg-slate-50 border border-slate-200 rounded-xl px-md py-sm outline-none focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500 text-sm font-semibold" required>
+                    <p class="text-[10px] text-slate-400 mt-1">Estimasi awal pelanggan: <span id="timbang-est-weight" class="font-bold">-</span> Kg</p>
+                </div>
+
+                <div>
+                    <label class="block text-xs font-bold text-slate-500 mb-xs">Foto Bukti Timbangan *</label>
+                    <input type="file" name="foto_timbangan" accept="image/*" class="w-full text-xs text-slate-500 file:mr-md file:py-sm file:px-md file:rounded-xl file:border-0 file:text-xs file:font-semibold file:bg-blue-50 file:text-blue-700 hover:file:bg-blue-100" required>
+                    <p class="text-[10px] text-slate-400 mt-1">Unggah foto timbangan digital yang menunjukkan berat cucian dengan jelas.</p>
+                </div>
+
+                <button type="submit" class="w-full bg-primary hover:brightness-110 text-white font-bold py-md rounded-xl shadow-md transition-all active:scale-[0.98]">
+                    Simpan & Tagih Pelanggan
+                </button>
+            </form>
         </div>
     </div>
 </body>
