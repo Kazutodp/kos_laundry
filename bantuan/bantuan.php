@@ -1,4 +1,4 @@
-﻿<?php
+<?php
 // bantuan/bantuan.php
 session_start();
 require_once '../db_connect.php';
@@ -16,6 +16,7 @@ $login_url = "../login/login.php";
     <script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&amp;display=swap" rel="stylesheet">
     <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="../css/logo_animation.css">
     
     <script id="tailwind-config">
       tailwind.config = {
@@ -137,9 +138,11 @@ $login_url = "../login/login.php";
 <nav class="sticky top-0 w-full z-50 bg-surface shadow-sm transition-all duration-300">
     <div class="max-w-7xl mx-auto px-gutter py-md flex justify-between items-center">
         <div class="flex items-center space-x-md lg:space-x-lg">
-            <a class="flex items-center space-x-xs text-headline-md font-headline-md font-bold text-primary" href="../index.php">
-                <img alt="MataramWash Logo" class="h-10 w-10 object-contain" src="../Logo_MataramWash.png?v=3">
-                <span class="">MataramWash</span>
+            <a class="mw-logo-brand-container" href="../index.php">
+                <img alt="MataramWash Logo" class="mw-logo-icon" src="../Logo_MataramWash.png?v=3">
+                <span class="mw-logo-text-wrap">
+                    <span class="mw-logo-text-mataram">Mataram</span><span class="mw-logo-text-wash">Wash</span>
+                </span>
             </a>
         </div>
         <div class="flex items-center space-x-md">
